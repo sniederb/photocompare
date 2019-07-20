@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?><!-- You need FrameLayout to stack elements over one another, and FAB needs to be the last child
+     node because it needs to stay on top of every other views. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/imageAndExifLayout"
+        android:orientation="vertical"
+        android:padding="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- The PhotoView will be added programatically in the ImagePagerAdapter -->
+        <ch.want.imagecompare.ui.FailsafeViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3" />
+
+        <TextView
+            android:id="@+id/exifIso"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_gravity="start"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/left_nav"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:alpha="0.7"
+        android:layout_gravity="center_vertical|start"
+        android:src="@drawable/ic_chevron_left" />
+
+    <ImageButton
+        android:id="@+id/right_nav"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:alpha="0.7"
+        android:layout_gravity="center_vertical|end"
+        android:src="@drawable/ic_chevron_right" />
+
+    <CheckBox
+        android:id="@+id/selectImageCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        android:alpha="0.7"
+        android:button="@drawable/ic_checkbox_36dp" />
+</FrameLayout>
