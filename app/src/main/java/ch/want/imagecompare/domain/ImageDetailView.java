@@ -43,4 +43,6 @@ public interface ImageDetailView {
     void enableMatrixListener();
 
     void setCheckboxStyleDark(boolean isDark);
+
+    void setShowExif(boolean showExifDetails);
 }

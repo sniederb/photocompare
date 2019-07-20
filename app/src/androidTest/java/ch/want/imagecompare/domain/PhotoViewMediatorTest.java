@@ -166,5 +166,9 @@ public class PhotoViewMediatorTest {
         @Override
         public void setCheckboxStyleDark(final boolean isDark) {
         }
+
+        @Override
+        public void setShowExif(final boolean showExifDetails) {
+        }
     }
 }

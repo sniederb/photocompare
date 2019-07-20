@@ -22,6 +22,7 @@ public class PhotoViewMediator {
 
     private boolean syncZoomAndPan = false;
     private boolean checkboxesDarkMode = true;
+    private boolean showExifDetails = true;
     private final Matrix deltaMatrixTopToBottom = new Matrix();
 
     public PhotoViewMediator(final ImageDetailView topView, final ImageDetailView bottomView) {
@@ -63,6 +64,13 @@ public class PhotoViewMediator {
         topView.setCheckboxStyleDark(checkboxesDarkMode);
         bottomView.setCheckboxStyleDark(checkboxesDarkMode);
         return checkboxesDarkMode;
+    }
+
+    public boolean toggleExifDisplay() {
+        showExifDetails = !showExifDetails;
+        topView.setShowExif(showExifDetails);
+        bottomView.setShowExif(showExifDetails);
+        return showExifDetails;
     }
 
     private void deriveInitialBottomIndex(final int bottomIndex) {

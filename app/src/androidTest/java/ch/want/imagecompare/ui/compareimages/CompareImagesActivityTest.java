@@ -58,6 +58,15 @@ public class CompareImagesActivityTest {
     }
 
     @Test
+    public void clickMenuShowExif() {
+        onCreate();
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
+        // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
+        onView(withText("Show EXIF")).perform(click());
+    }
+
+    @Test
     public void onToggleZoomPanSync() {
         onCreate();
         onView(withId(R.id.toggleZoomPanSync)).check(matches(isChecked()));

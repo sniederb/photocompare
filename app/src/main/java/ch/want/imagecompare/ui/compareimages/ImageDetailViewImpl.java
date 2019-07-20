@@ -184,6 +184,15 @@ public class ImageDetailViewImpl implements ImageDetailView {
         imageSelectionCheckbox.setButtonTintList(ColorStateList.valueOf(newColor));
     }
 
+    @Override
+    public void setShowExif(final boolean showExifDetails) {
+        if (showExifDetails) {
+            exifTextView.setVisibility(View.VISIBLE);
+        } else {
+            exifTextView.setVisibility(View.GONE);
+        }
+    }
+
     private PhotoView getOnScreenPhotoView() {
         return getPhotoView(imageViewPager.getCurrentItem());
     }

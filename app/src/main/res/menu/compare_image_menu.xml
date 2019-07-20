@@ -13,4 +13,10 @@
         android:checkable="true"
         android:checked="true"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/showExifDetails"
+        android:title="@string/show_exif"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never" />
 </menu>

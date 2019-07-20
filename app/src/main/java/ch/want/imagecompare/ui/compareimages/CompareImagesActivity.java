@@ -108,6 +108,10 @@ public class CompareImagesActivity extends AppCompatActivity {
                 final boolean isNowDarkMode = photoViewMediator.toggleCheckboxStyleDark();
                 item.setChecked(isNowDarkMode);
                 return true;
+            case R.id.showExifDetails:
+                final boolean isNowShowingExif = photoViewMediator.toggleExifDisplay();
+                item.setChecked(isNowShowingExif);
+                return true;
             case android.R.id.home:
                 new BackToImageListTransition(this, photoViewMediator.getGalleryImageList()).execute();
                 return true;

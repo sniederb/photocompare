@@ -9,6 +9,7 @@
     <string name="confirm_selection">Image was added to selection</string>
     <string name="show_selection">Show selection</string>
     <string name="checkbox_dark">Dark checkboxes</string>
+    <string name="show_exif">Show EXIF</string>
     <string name="selected_image_content">Selected image</string>
     <string name="current_selection">Image selection</string>
     <string name="invert_selection">Invert selection</string>
