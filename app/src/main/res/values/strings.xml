@@ -8,6 +8,7 @@
     <string name="sync_state">Sync zoom and pan</string>
     <string name="confirm_selection">Image was added to selection</string>
     <string name="show_selection">Show selection</string>
+    <string name="checkbox_dark">Dark checkboxes</string>
     <string name="selected_image_content">Selected image</string>
     <string name="current_selection">Image selection</string>
     <string name="invert_selection">Invert selection</string>
@@ -15,6 +16,8 @@
     <string name="delete_unselected">Delete all others</string>
     <string name="delete_unselected_confirmation_title">Confirm image delete</string>
     <string name="delete_unselected_confirmation">This action will delete %1$d file(s) in the folder %2$s.</string>
+    <string name="shareselected_largetx_confirmation">Attempting to share %1$d file(s), which is rather a lot and might cause Android to crash this app. Do you still want to try?</string>
+    <string name="shareselected_largetx_confirmation_title">Sharing a lot of images!</string>
     <string name="share_images_intent">Share images to ...</string>
     <string name="navigation_will_lose_selection_title">Discard selection?</string>
     <string name="navigation_will_lose_selection">Image selection for the current folder will be lost. Do you want to proceed to folder selection?</string>

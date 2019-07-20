@@ -2,6 +2,7 @@ package ch.want.imagecompare.ui.listimages;
 
 import android.content.res.Resources;
 import android.view.View;
+import android.widget.ImageView;
 
 import java.util.List;
 
@@ -47,8 +48,22 @@ class ListImagesThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<Singl
     }
 
     @Override
-    protected View.OnClickListener createClickHandler(final List<ImageBean> galleryImageList, final int i) {
-        return new OpenCompareClickHandler(galleryImageList, i);
+    protected View.OnClickListener createClickHandler(final List<ImageBean> galleryImageList, final int selectedIndex) {
+        return new OpenCompareClickHandler(galleryImageList, selectedIndex);
+    }
+
+    @Override
+    protected View.OnLongClickListener createLongClickHandler(final ImageBeanListRecyclerViewAdapter viewAdapter, final int selectedIndex) {
+        return new MarkForCompareLongClickHandler(viewAdapter, selectedIndex);
+    }
+
+    @Override
+    protected void postBind(final ImageView imageView, final ImageBean imageAndTitle) {
+        if (imageAndTitle.isInitialForCompare()) {
+            imageView.setAlpha(0.5f);
+        } else {
+            imageView.setAlpha(1f);
+        }
     }
 
     @Override

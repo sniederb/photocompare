@@ -33,7 +33,7 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
         galleryImageList = imageList;
     }
 
-    protected ImageBean getImageAndTitleBean(final int i) {
+    public ImageBean getImageAndTitleBean(final int i) {
         return galleryImageList.get(i);
     }
 
@@ -107,12 +107,22 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
                 .centerCrop() //
                 .into(imageView);
         imageView.setOnClickListener(createClickHandler(galleryImageList, i));
+        final View.OnLongClickListener longClickListener = createLongClickHandler(this, i);
+        if (longClickListener != null) {
+            imageView.setOnLongClickListener(longClickListener);
+        }
+        postBind(imageView, imageAndTitle);
+    }
+
+    protected void postBind(final ImageView imageView, final ImageBean imageAndTitle) {
     }
 
     protected abstract View.OnClickListener createClickHandler(ImageBean imageAndTitle);
 
-    protected View.OnClickListener createClickHandler(final List<ImageBean> galleryImageList, final int i) {
-        final ImageBean imageAndTitle = getImageAndTitleBean(i);
+    protected abstract View.OnLongClickListener createLongClickHandler(ImageBeanListRecyclerViewAdapter viewAdapter, final int selectedIndex);
+
+    protected View.OnClickListener createClickHandler(final List<ImageBean> galleryImageList, final int selectedIndex) {
+        final ImageBean imageAndTitle = getImageAndTitleBean(selectedIndex);
         return createClickHandler(imageAndTitle);
     }
 

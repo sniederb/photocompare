@@ -32,7 +32,7 @@ public class ListSelectionThumbnailsAdapter extends ImageBeanListRecyclerViewAda
     }
 
     @Override
-    protected ImageBean getImageAndTitleBean(final int i) {
+    public ImageBean getImageAndTitleBean(final int i) {
         return selectedImageList.get(i);
     }
 
@@ -72,7 +72,12 @@ public class ListSelectionThumbnailsAdapter extends ImageBeanListRecyclerViewAda
     }
 
     @Override
-    protected View.OnClickListener createClickHandler(final List<ImageBean> galleryImageList, final int i) {
+    protected View.OnClickListener createClickHandler(final List<ImageBean> galleryImageList, final int selectedIndex) {
+        return null;
+    }
+
+    @Override
+    protected View.OnLongClickListener createLongClickHandler(final ImageBeanListRecyclerViewAdapter viewAdapter, final int selectedIndex) {
         return null;
     }
 

@@ -10,17 +10,20 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.core.IsNot.not;
 
@@ -43,6 +46,15 @@ public class CompareImagesActivityTest {
     public void clickImageSelection() {
         onCreate();
         onView(allOf(withId(R.id.selectImageCheckbox), withParent(withId(R.id.upperImage)))).perform(click());
+    }
+
+    @Test
+    public void clickMenuDarkCheckboxes() {
+        onCreate();
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
+        // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
+        onView(withText("Dark checkboxes")).perform(click());
     }
 
     @Test

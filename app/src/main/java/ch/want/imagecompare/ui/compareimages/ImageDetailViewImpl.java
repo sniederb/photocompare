@@ -1,5 +1,7 @@
 package ch.want.imagecompare.ui.compareimages;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.view.View;
 import android.widget.CheckBox;
@@ -173,6 +175,13 @@ public class ImageDetailViewImpl implements ImageDetailView {
     public void resetMatrix() {
         final PhotoView currentPhoto = getOnScreenPhotoView();
         currentPhoto.setScale(1f);
+    }
+
+    @Override
+    public void setCheckboxStyleDark(final boolean isDark) {
+        // beware of the alpha of 0.7 defined in view_image_details.xml
+        final int newColor = isDark ? Color.BLACK : Color.WHITE;
+        imageSelectionCheckbox.setButtonTintList(ColorStateList.valueOf(newColor));
     }
 
     private PhotoView getOnScreenPhotoView() {

@@ -51,6 +51,11 @@ class ListFolderThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<Singl
     }
 
     @Override
+    protected View.OnLongClickListener createLongClickHandler(final ImageBeanListRecyclerViewAdapter viewAdapter, final int selectedIndex) {
+        return null;
+    }
+
+    @Override
     protected ImageLayoutSizeParams getSizeParams(final Resources resources) {
         return new ImageLayoutSizeParamsForImageAndTitle(resources);
     }

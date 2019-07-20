@@ -104,6 +104,10 @@ public class CompareImagesActivity extends AppCompatActivity {
             case R.id.showSelection:
                 new ShowSelectedImagesTransition(this, photoViewMediator).execute();
                 return true;
+            case R.id.checkboxStyleDark:
+                final boolean isNowDarkMode = photoViewMediator.toggleCheckboxStyleDark();
+                item.setChecked(isNowDarkMode);
+                return true;
             case android.R.id.home:
                 new BackToImageListTransition(this, photoViewMediator.getGalleryImageList()).execute();
                 return true;

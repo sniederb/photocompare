@@ -26,8 +26,23 @@ class OpenCompareClickHandler implements View.OnClickListener {
     public void onClick(final View v) {
         final Context context = v.getContext();
         final Intent intent = new Intent(context, CompareImagesActivity.class)//
-                .putParcelableArrayListExtra(BundleKeys.KEY_IMAGE_COLLECTION, galleryImageList)//
-                .putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, listIndex);
+                .putParcelableArrayListExtra(BundleKeys.KEY_IMAGE_COLLECTION, galleryImageList);
+        final Integer secondarySelection = getSecondarySelection();
+        if (secondarySelection != null) {
+            intent.putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, secondarySelection)//
+                    .putExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, listIndex);
+        } else {
+            intent.putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, listIndex);
+        }
         TransitionHandler.switchToActivity(context, intent);
+    }
+
+    private Integer getSecondarySelection() {
+        for (int i = 0; i < galleryImageList.size(); i++) {
+            if (i != listIndex && galleryImageList.get(i).isInitialForCompare()) {
+                return i;
+            }
+        }
+        return null;
     }
 }

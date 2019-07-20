@@ -162,5 +162,9 @@ public class PhotoViewMediatorTest {
         @Override
         public void enableMatrixListener() {
         }
+
+        @Override
+        public void setCheckboxStyleDark(final boolean isDark) {
+        }
     }
 }

@@ -31,7 +31,7 @@ public class ListImagesInFolderActivityTest {
     }
 
     @Test
-    public void onClickFolder() {
+    public void onClickSingleImage() {
         // arrange
         onCreate();
         final ListImagesInFolderActivity testee = mActivityRule.getActivity();
@@ -42,5 +42,19 @@ public class ListImagesInFolderActivityTest {
         final View cardView = viewHolderFirstItem.itemView.findViewById(R.id.thumbnailCard);
         // act
         cardView.performClick();
+    }
+
+    @Test
+    public void onLongClickImage() {
+        // arrange
+        onCreate();
+        final ListImagesInFolderActivity testee = mActivityRule.getActivity();
+        final RecyclerView recyclerView = testee.findViewById(R.id.imageThumbnails);
+        assertNotNull("Recycler view", recyclerView);
+        final RecyclerView.ViewHolder viewHolderFirstItem = recyclerView.findViewHolderForAdapterPosition(0);
+        assertNotNull("ViewHolder for first item", viewHolderFirstItem);
+        final View cardView = viewHolderFirstItem.itemView.findViewById(R.id.thumbnailCard);
+        // act
+        cardView.performLongClick();
     }
 }

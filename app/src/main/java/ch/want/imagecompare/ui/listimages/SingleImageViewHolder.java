@@ -11,7 +11,7 @@ import ch.want.imagecompare.R;
 import ch.want.imagecompare.ui.thumbnails.ThumbnailViewHolder;
 
 /**
- * Backing of 'view_image_and_titletle.xml'
+ * Backing of 'view_image_and_title.xml'
  */
 class SingleImageViewHolder extends RecyclerView.ViewHolder implements ThumbnailViewHolder {
 

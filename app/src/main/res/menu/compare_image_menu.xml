@@ -6,4 +6,11 @@
         android:id="@+id/showSelection"
         android:title="@string/show_selection"
         app:showAsAction="never" />
+    <!-- android:checked must match default value of PhotoViewMediator#checkboxesDarkMode -->
+    <item
+        android:id="@+id/checkboxStyleDark"
+        android:title="@string/checkbox_dark"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never" />
 </menu>

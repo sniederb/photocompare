@@ -19,6 +19,7 @@ public class ImageBean implements Comparable<ImageBean>, Parcelable {
     private final String contentPathToImage;
 
     private boolean selected;
+    private boolean initialForCompare;
 
     public ImageBean(final String displayName, final Uri fileUri) {
         this.displayName = displayName;
@@ -106,6 +107,14 @@ public class ImageBean implements Comparable<ImageBean>, Parcelable {
 
     public void setSelected(final boolean selected) {
         this.selected = selected;
+    }
+
+    public boolean isInitialForCompare() {
+        return initialForCompare;
+    }
+
+    public void setInitialForCompare(final boolean initialForCompare) {
+        this.initialForCompare = initialForCompare;
     }
 
     @Override
