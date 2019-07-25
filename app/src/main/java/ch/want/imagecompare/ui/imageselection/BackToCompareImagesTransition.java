@@ -1,5 +1,6 @@
 package ch.want.imagecompare.ui.imageselection;
 
+import android.app.Activity;
 import android.content.Intent;
 
 import java.util.ArrayList;
@@ -11,12 +12,14 @@ import ch.want.imagecompare.data.ImageBean;
 class BackToCompareImagesTransition {
 
     private final ArrayList<ImageBean> galleryImageList;
-    private final SelectedImagesActivity sourceActivity;
+    private final Activity sourceActivity;
+    private final String currentImageFolder;
     private final int topImageIndex;
     private final int bottomImageIndex;
 
-    BackToCompareImagesTransition(final SelectedImagesActivity sourceActivity, final ArrayList<ImageBean> galleryImageList, final int topImageIndex, final int bottomImageIndex) {
+    BackToCompareImagesTransition(final Activity sourceActivity, final String currentImageFolder, final ArrayList<ImageBean> galleryImageList, final int topImageIndex, final int bottomImageIndex) {
         this.sourceActivity = sourceActivity;
+        this.currentImageFolder = currentImageFolder;
         this.galleryImageList = galleryImageList;
         this.topImageIndex = topImageIndex;
         this.bottomImageIndex = bottomImageIndex;
@@ -25,7 +28,8 @@ class BackToCompareImagesTransition {
     void execute() {
         final Intent upIntent = sourceActivity.getParentActivityIntent();
         assert upIntent != null;
-        upIntent.putParcelableArrayListExtra(BundleKeys.KEY_IMAGE_COLLECTION, galleryImageList);
+        upIntent.putExtra(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder);
+        upIntent.putParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)));
         upIntent.putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, topImageIndex);
         upIntent.putExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, bottomImageIndex);
         NavUtils.navigateUpTo(sourceActivity, upIntent);

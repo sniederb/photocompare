@@ -21,11 +21,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
+import ch.want.imagecompare.domain.FileImageMediaQuery;
 import ch.want.imagecompare.domain.PhotoViewMediator;
 
 public class SelectedImagesActivity extends AppCompatActivity {
 
     private ListSelectionThumbnailsAdapter adapter;
+    private String currentImageFolder;
     private final ArrayList<ImageBean> galleryImageList = new ArrayList<>();
     private int topImageIndexForParentActivity;
     private int bottomImageIndexForParentActivity;
@@ -43,27 +45,35 @@ public class SelectedImagesActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putParcelableArrayList(BundleKeys.KEY_IMAGE_COLLECTION, galleryImageList);
+        savedInstanceState.putString(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder);
+        savedInstanceState.putParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)));
         savedInstanceState.putInt(BundleKeys.KEY_TOPIMAGE_INDEX, topImageIndexForParentActivity);
         savedInstanceState.putInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, bottomImageIndexForParentActivity);
     }
 
     private void initInitialState(final Bundle savedInstanceState) {
-        final ArrayList<ImageBean> imageBeansFromState;
+        final ArrayList<ImageBean> selectedBeansFromState;
         if (savedInstanceState == null) {
             final Intent intent = getIntent();
-            imageBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_IMAGE_COLLECTION);
+            currentImageFolder = intent.getStringExtra(BundleKeys.KEY_IMAGE_FOLDER);
+            selectedBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndexForParentActivity = intent.getIntExtra(BundleKeys.KEY_TOPIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
             bottomImageIndexForParentActivity = intent.getIntExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         } else {
-            imageBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_IMAGE_COLLECTION);
+            currentImageFolder = savedInstanceState.getString(BundleKeys.KEY_IMAGE_FOLDER);
+            selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndexForParentActivity = savedInstanceState.getInt(BundleKeys.KEY_TOPIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
             bottomImageIndexForParentActivity = savedInstanceState.getInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         }
         galleryImageList.clear();
-        if (imageBeansFromState != null) {
-            galleryImageList.addAll(imageBeansFromState);
+        loadImagesForCurrentImageFolder();
+        if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
+            ImageBean.copySelectedState(selectedBeansFromState, galleryImageList);
         }
+    }
+
+    private void loadImagesForCurrentImageFolder() {
+        galleryImageList.addAll(new FileImageMediaQuery(getContentResolver(), currentImageFolder).execute());
     }
 
     private void initToolbar() {
@@ -113,7 +123,7 @@ public class SelectedImagesActivity extends AppCompatActivity {
                 adapter.notifySelectionChanged();
                 return true;
             case android.R.id.home:
-                new BackToCompareImagesTransition(this, galleryImageList, topImageIndexForParentActivity, bottomImageIndexForParentActivity)//
+                new BackToCompareImagesTransition(this, currentImageFolder, galleryImageList, topImageIndexForParentActivity, bottomImageIndexForParentActivity)//
                         .execute();
                 return true;
             default:

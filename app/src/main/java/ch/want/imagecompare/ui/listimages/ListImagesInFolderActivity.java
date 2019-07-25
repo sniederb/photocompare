@@ -2,19 +2,15 @@ package ch.want.imagecompare.ui.listimages;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.MenuItem;
 
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 
-import java.io.File;
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
-import ch.want.imagecompare.domain.ImageMediaQuery;
+import ch.want.imagecompare.domain.FileImageMediaQuery;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 
 public class ListImagesInFolderActivity extends AppCompatActivity {
@@ -47,27 +43,25 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
     }
 
     private void initInitialState(final Bundle savedInstanceState) {
-        final ArrayList<ImageBean> imageBeansFromState;
+        final ArrayList<ImageBean> selectedBeansFromState;
         if (savedInstanceState == null) {
             final Intent intent = getIntent();
             currentImageFolder = intent.getStringExtra(BundleKeys.KEY_IMAGE_FOLDER);
-            imageBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_IMAGE_COLLECTION);
+            selectedBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION);
         } else {
             currentImageFolder = savedInstanceState.getString(BundleKeys.KEY_IMAGE_FOLDER);
-            imageBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_IMAGE_COLLECTION);
+            selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
         }
         galleryImageList.clear();
-        if (imageBeansFromState != null) {
-            galleryImageList.addAll(imageBeansFromState);
+        loadImagesForCurrentImageFolder();
+        if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
+            ImageBean.copySelectedState(selectedBeansFromState, galleryImageList);
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (galleryImageList.isEmpty()) {
-            loadImagesForFolder(currentImageFolder);
-        }
         initRecyclerImageView();
     }
 
@@ -80,7 +74,7 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder);
-        savedInstanceState.putParcelableArrayList(BundleKeys.KEY_IMAGE_COLLECTION, galleryImageList);
+        savedInstanceState.putParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)));
     }
 
     @Override
@@ -97,21 +91,12 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
         return !ImageBean.getSelectedImageBeans(galleryImageList).isEmpty();
     }
 
-    private void loadImagesForFolder(@NonNull final String bucketPath) {
-        new ImageMediaQuery(getContentResolver(), MediaStore.Images.Media.DATA + " like ?", new String[]{bucketPath + "%"}) {
-
-            @Override
-            public void doWithCursor(final String bucketPath, final String imageFilePath, final Uri imageContentUri) {
-                final File file = new File(imageFilePath);
-                if (file.exists()) {
-                    galleryImageList.add(new ImageBean(file.getName(), Uri.fromFile(file), imageContentUri));
-                }
-            }
-        }.execute();
+    private void loadImagesForCurrentImageFolder() {
+        galleryImageList.addAll(new FileImageMediaQuery(getContentResolver(), currentImageFolder).execute());
     }
 
     private void initRecyclerImageView() {
-        final ImageBeanListRecyclerViewAdapter adapter = new ListImagesThumbnailsAdapter(galleryImageList);
+        final ImageBeanListRecyclerViewAdapter adapter = new ListImagesThumbnailsAdapter(currentImageFolder, galleryImageList);
         final RecyclerView recyclerView = findViewById(R.id.imageThumbnails);
         final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this, FlexDirection.ROW, FlexWrap.WRAP);
         recyclerView.setLayoutManager(layoutManager);

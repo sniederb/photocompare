@@ -48,9 +48,9 @@ public class SelectedImagesActivityTest {
     @Test
     public void onCreate() {
         final Intent i = new Intent();
-        final ArrayList<ImageBean> beans = buildImageBeanList();
-        beans.get(0).setSelected(true);
-        i.putParcelableArrayListExtra(BundleKeys.KEY_IMAGE_COLLECTION, beans);
+        final ArrayList<ImageBean> selectedBeans = buildSelectedImageBeanList();
+        i.putExtra(BundleKeys.KEY_IMAGE_FOLDER, "/storage/emulated/0/Download");
+        i.putParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION, selectedBeans);
         mActivityRule.launchActivity(i);
     }
 
@@ -83,11 +83,9 @@ public class SelectedImagesActivityTest {
         onView(withText("Delete all others")).perform(click());
     }
 
-    private static ArrayList<ImageBean> buildImageBeanList() {
+    private static ArrayList<ImageBean> buildSelectedImageBeanList() {
         final ArrayList<ImageBean> beans = new ArrayList<>();
         beans.add(new ImageBean("J0091157.jpg", Uri.parse("file:///storage/emulated/0/Download/EOS77D/J0091157.JPG")));
-        beans.add(new ImageBean("J0091158.jpg", Uri.parse("file:///storage/emulated/0/Download/EOS77D/J0091158.JPG")));
-        beans.add(new ImageBean("J0091159.jpg", Uri.parse("file:///storage/emulated/0/Download/EOS77D/J0091159.JPG")));
         return beans;
     }
 }

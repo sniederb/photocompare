@@ -37,7 +37,8 @@ public class CompareImagesActivityTest {
     @Test
     public void onCreate() {
         final Intent i = new Intent();
-        i.putParcelableArrayListExtra(BundleKeys.KEY_IMAGE_COLLECTION, buildImageBeanList());
+        i.putExtra(BundleKeys.KEY_IMAGE_FOLDER, "/storage/emulated/0/Download");
+        i.putParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION, buildSelectedImageBeanList());
         i.putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, 0);
         mActivityRule.launchActivity(i);
     }
@@ -80,11 +81,9 @@ public class CompareImagesActivityTest {
         onView(withId(R.id.resetMatrix)).perform(click());
     }
 
-    private static ArrayList<ImageBean> buildImageBeanList() {
+    private static ArrayList<ImageBean> buildSelectedImageBeanList() {
         final ArrayList<ImageBean> beans = new ArrayList<>();
         beans.add(new ImageBean("J0091157.jpg", Uri.parse("file:///storage/emulated/0/Download/EOS77D/J0091157.JPG")));
-        beans.add(new ImageBean("J0091158.jpg", Uri.parse("file:///storage/emulated/0/Download/EOS77D/J0091158.JPG")));
-        beans.add(new ImageBean("J0091159.jpg", Uri.parse("file:///storage/emulated/0/Download/EOS77D/J0091159.JPG")));
         return beans;
     }
 }

@@ -15,9 +15,11 @@ import ch.want.imagecompare.ui.compareimages.CompareImagesActivity;
 class OpenCompareClickHandler implements View.OnClickListener {
 
     private final ArrayList<ImageBean> galleryImageList;
+    private final String imageFolder;
     private final int listIndex;
 
-    OpenCompareClickHandler(final List<ImageBean> galleryImageList, final int i) {
+    OpenCompareClickHandler(final String imageFolder, final List<ImageBean> galleryImageList, final int i) {
+        this.imageFolder = imageFolder;
         this.galleryImageList = new ArrayList<>(galleryImageList);
         listIndex = i;
     }
@@ -26,7 +28,8 @@ class OpenCompareClickHandler implements View.OnClickListener {
     public void onClick(final View v) {
         final Context context = v.getContext();
         final Intent intent = new Intent(context, CompareImagesActivity.class)//
-                .putParcelableArrayListExtra(BundleKeys.KEY_IMAGE_COLLECTION, galleryImageList);
+                .putExtra(BundleKeys.KEY_IMAGE_FOLDER, imageFolder)//
+                .putParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)));
         final Integer secondarySelection = getSecondarySelection();
         if (secondarySelection != null) {
             intent.putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, secondarySelection)//

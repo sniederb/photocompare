@@ -18,8 +18,11 @@ import ch.want.imagecompare.ui.thumbnails.ImageLayoutSizeParams;
  */
 class ListImagesThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<SingleImageViewHolder> {
 
-    ListImagesThumbnailsAdapter(final List<ImageBean> imageList) {
+    private final String currentImageFolder;
+
+    ListImagesThumbnailsAdapter(final String currentImageFolder, final List<ImageBean> imageList) {
         super(imageList);
+        this.currentImageFolder = currentImageFolder;
     }
 
     @Override
@@ -49,7 +52,7 @@ class ListImagesThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<Singl
 
     @Override
     protected View.OnClickListener createClickHandler(final List<ImageBean> galleryImageList, final int selectedIndex) {
-        return new OpenCompareClickHandler(galleryImageList, selectedIndex);
+        return new OpenCompareClickHandler(currentImageFolder, galleryImageList, selectedIndex);
     }
 
     @Override

@@ -13,9 +13,23 @@ import java.util.List;
  */
 public class ImageBean implements Comparable<ImageBean>, Parcelable {
 
+    /**
+     * Something like {@code J0091157.jpg}
+     */
     private final String displayName;
-    // store Uri as String internally so class remains serializable
+
+    /**
+     * Something like {@code file:///storage/emulated/0/Download/EOS77D/J0091157.JPG}, ie a file locator
+     * indicating the storage location.
+     * This valued is stored as String internally so class remains serializable (Uri would violated that)
+     */
     private final String filePathToImage;
+    /**
+     * Something like {@code content://media/external/images/media/52}, ie a reference to the media
+     * library.
+     * This valued is stored as String internally so class remains serializable (Uri would violated that)
+     */
+    //
     private final String contentPathToImage;
 
     private boolean selected;
@@ -58,6 +72,15 @@ public class ImageBean implements Comparable<ImageBean>, Parcelable {
             }
         }
         return selectedImages;
+    }
+
+    public static void copySelectedState(final List<ImageBean> selectedImageBeans, final List<ImageBean> allImageBeans) {
+        for (final ImageBean image : selectedImageBeans) {
+            final int index = allImageBeans.indexOf(image);
+            if (index >= 0) {
+                allImageBeans.get(index).setSelected(true);
+            }
+        }
     }
 
     public static final Creator<ImageBean> CREATOR = new Creator<ImageBean>() {
@@ -120,5 +143,22 @@ public class ImageBean implements Comparable<ImageBean>, Parcelable {
     @Override
     public int compareTo(final ImageBean o) {
         return displayName.compareTo(o.displayName);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ImageBean imageBean = (ImageBean) o;
+        return filePathToImage.equals(imageBean.filePathToImage);
+    }
+
+    @Override
+    public int hashCode() {
+        return filePathToImage.hashCode();
     }
 }

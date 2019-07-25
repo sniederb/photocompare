@@ -8,7 +8,6 @@ import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
-import ch.want.imagecompare.domain.ImageMediaQuery;
+import ch.want.imagecompare.domain.FolderImageMediaQuery;
 import ch.want.imagecompare.domain.PermissionChecker;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 
@@ -64,18 +63,7 @@ public class ListAllImageFoldersActivity extends AppCompatActivity implements Sw
         if (!permissionChecker.hasPermissions()) {
             permissionChecker.askNicely();
         } else {
-            new ImageMediaQuery(getContentResolver()) {
-
-                @Override
-                public void doWithCursor(final String bucketPath, final String imageFilePath, final Uri imageContentUri) {
-                    if (!imageBuckets.containsKey(bucketPath)) {
-                        final File file = new File(imageFilePath);
-                        if (file.exists()) {
-                            imageBuckets.put(bucketPath, Uri.fromFile(file));
-                        }
-                    }
-                }
-            }.execute();
+            imageBuckets.putAll(new FolderImageMediaQuery(getContentResolver()).execute());
         }
     }
 

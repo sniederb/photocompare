@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.Switch;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import androidx.appcompat.widget.Toolbar;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
+import ch.want.imagecompare.domain.FileImageMediaQuery;
 import ch.want.imagecompare.domain.PhotoViewMediator;
 
 /**
@@ -25,6 +27,7 @@ import ch.want.imagecompare.domain.PhotoViewMediator;
  */
 public class CompareImagesActivity extends AppCompatActivity {
 
+    private String currentImageFolder;
     private PhotoViewMediator photoViewMediator;
     private Switch syncToggle;
 
@@ -61,21 +64,25 @@ public class CompareImagesActivity extends AppCompatActivity {
     private void initInitialState(final Bundle savedInstanceState) {
         final int topImageIndex;
         final int bottomIndex;
-        final ArrayList<ImageBean> imageBeansFromState;
+        final ArrayList<ImageBean> selectedBeansFromState;
         if (savedInstanceState == null) {
             final Intent intent = getIntent();
-            imageBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_IMAGE_COLLECTION);
+            currentImageFolder = intent.getStringExtra(BundleKeys.KEY_IMAGE_FOLDER);
+            selectedBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndex = intent.getIntExtra(BundleKeys.KEY_TOPIMAGE_INDEX, 0);
             bottomIndex = intent.getIntExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         } else {
-            imageBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_IMAGE_COLLECTION);
+            currentImageFolder = savedInstanceState.getString(BundleKeys.KEY_IMAGE_FOLDER);
+            selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndex = savedInstanceState.getInt(BundleKeys.KEY_TOPIMAGE_INDEX);
             bottomIndex = savedInstanceState.getInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         }
-        if (imageBeansFromState != null) {
-            photoViewMediator.initGalleryImageList(imageBeansFromState, topImageIndex, bottomIndex);
-            syncToggle.setChecked(true);
+        final List<ImageBean> allImageBeans = new FileImageMediaQuery(getContentResolver(), currentImageFolder).execute();
+        if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
+            ImageBean.copySelectedState(selectedBeansFromState, allImageBeans);
         }
+        photoViewMediator.initGalleryImageList(allImageBeans, topImageIndex, bottomIndex);
+        syncToggle.setChecked(true);
     }
 
     private void initToolbar() {
@@ -94,15 +101,17 @@ public class CompareImagesActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder);
         savedInstanceState.putInt(BundleKeys.KEY_TOPIMAGE_INDEX, photoViewMediator.getTopIndex());
-        savedInstanceState.putParcelableArrayList(BundleKeys.KEY_IMAGE_COLLECTION, photoViewMediator.getGalleryImageList());
+        savedInstanceState.putInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, photoViewMediator.getBottomIndex());
+        savedInstanceState.putParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(photoViewMediator.getGalleryImageList())));
     }
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.showSelection:
-                new ShowSelectedImagesTransition(this, photoViewMediator).execute();
+                new ShowSelectedImagesTransition(this, currentImageFolder, photoViewMediator).execute();
                 return true;
             case R.id.checkboxStyleDark:
                 final boolean isNowDarkMode = photoViewMediator.toggleCheckboxStyleDark();
@@ -113,7 +122,7 @@ public class CompareImagesActivity extends AppCompatActivity {
                 item.setChecked(isNowShowingExif);
                 return true;
             case android.R.id.home:
-                new BackToImageListTransition(this, photoViewMediator.getGalleryImageList()).execute();
+                new BackToImageListTransition(this, currentImageFolder, photoViewMediator.getGalleryImageList()).execute();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
