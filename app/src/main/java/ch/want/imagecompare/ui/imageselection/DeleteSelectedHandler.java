@@ -14,18 +14,18 @@ import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.domain.ImageMediaStore;
 import ch.want.imagecompare.ui.listfolders.ListAllImageFoldersActivity;
 
-class DeleteUnselectedHandler {
+class DeleteSelectedHandler {
 
     private final SelectedImagesActivity sourceActivity;
     private final ArrayList<ImageBean> galleryImageList;
 
-    DeleteUnselectedHandler(final SelectedImagesActivity selectedImagesActivity, final ArrayList<ImageBean> galleryImageList) {
+    DeleteSelectedHandler(final SelectedImagesActivity selectedImagesActivity, final ArrayList<ImageBean> galleryImageList) {
         sourceActivity = selectedImagesActivity;
         this.galleryImageList = galleryImageList;
     }
 
     void execute() {
-        final List<ImageBean> obsoleteImages = ImageBean.getUnselectedImageBeans(galleryImageList);
+        final List<ImageBean> obsoleteImages = ImageBean.getSelectedImageBeans(galleryImageList);
         if (!obsoleteImages.isEmpty()) {
             final File firstImage = obsoleteImages.get(0).getImageFile();
             showDeleteConfirmationDialog(obsoleteImages, firstImage.getParentFile().getName());
@@ -37,7 +37,7 @@ class DeleteUnselectedHandler {
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(final DialogInterface dialog, final int id) {
-                deleteUnSelected(obsoleteImages);
+                deleteSelected(obsoleteImages);
                 navigateToFolderSelection();
             }
         });
@@ -48,7 +48,7 @@ class DeleteUnselectedHandler {
         builder.show();
     }
 
-    private void deleteUnSelected(final List<ImageBean> obsoleteImages) {
+    private void deleteSelected(final List<ImageBean> obsoleteImages) {
         final ImageMediaStore mediaStore = new ImageMediaStore(sourceActivity.getContentResolver());
         for (final ImageBean imageBean : obsoleteImages) {
             final File imageFile = imageBean.getImageFile();

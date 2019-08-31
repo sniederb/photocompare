@@ -122,6 +122,10 @@ public class SelectedImagesActivity extends AppCompatActivity {
                         .execute();
                 adapter.notifySelectionChanged();
                 return true;
+            case R.id.deleteSelected:
+                new DeleteSelectedHandler(this, galleryImageList)//
+                        .execute();
+                return true;
             case android.R.id.home:
                 new BackToCompareImagesTransition(this, currentImageFolder, galleryImageList, topImageIndexForParentActivity, bottomImageIndexForParentActivity)//
                         .execute();

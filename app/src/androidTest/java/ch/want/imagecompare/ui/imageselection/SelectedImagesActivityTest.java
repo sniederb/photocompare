@@ -83,6 +83,16 @@ public class SelectedImagesActivityTest {
         onView(withText("Delete all others")).perform(click());
     }
 
+    @Test
+    public void removeSelectedAction() {
+        // arrange
+        onCreate();
+        // act
+        //Espresso.openContextualActionModeOverflowMenu();
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        onView(withText("Delete selected images")).perform(click());
+    }
+
     private static ArrayList<ImageBean> buildSelectedImageBeanList() {
         final ArrayList<ImageBean> beans = new ArrayList<>();
         beans.add(new ImageBean("J0091157.jpg", Uri.parse("file:///storage/emulated/0/Download/EOS77D/J0091157.JPG")));
