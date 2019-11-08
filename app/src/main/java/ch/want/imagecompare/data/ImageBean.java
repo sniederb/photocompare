@@ -4,9 +4,12 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Bean class holding information for an image
@@ -142,7 +145,7 @@ public class ImageBean implements Comparable<ImageBean>, Parcelable {
 
     @Override
     public int compareTo(final ImageBean o) {
-        return displayName.compareTo(o.displayName);
+        return StringUtils.compare(displayName, o.displayName, true);
     }
 
     @Override
@@ -154,7 +157,7 @@ public class ImageBean implements Comparable<ImageBean>, Parcelable {
             return false;
         }
         final ImageBean imageBean = (ImageBean) o;
-        return filePathToImage.equals(imageBean.filePathToImage);
+        return Objects.equals(filePathToImage, imageBean.filePathToImage);
     }
 
     @Override

@@ -31,6 +31,18 @@ public class ImageBeanTest {
     }
 
     @Test
+    public void compareTo_imageWithNullDisplayName() {
+        // arrange
+        final Uri uri = Uri.parse("ftp://ftp.is.co.za/rfc/rfc1808.txt");
+        final ImageBean testee = new ImageBean("foobar", uri);
+        final ImageBean other = new ImageBean(null, uri);
+        // act
+        final int result = testee.compareTo(other);
+        // assert
+        assertEquals(result, 1);
+    }
+
+    @Test
     public void copySelectedState_uriIsStoredCorrectly() {
         // arrange
         final ArrayList<ImageBean> images = buildImageBeanList();
