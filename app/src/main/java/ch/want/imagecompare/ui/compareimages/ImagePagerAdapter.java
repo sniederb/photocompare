@@ -10,12 +10,14 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.Target;
 import com.github.chrisbanes.photoview.PhotoView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import androidx.exifinterface.media.ExifInterface;
 import androidx.viewpager.widget.PagerAdapter;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.domain.CrossViewEventHandler;
@@ -26,7 +28,16 @@ import ch.want.imagecompare.domain.CrossViewEventHandler;
  * "showing to the user"
  */
 class ImagePagerAdapter extends PagerAdapter {
-    private static final int MAX_PHOTOVIEW_ZOOM = 10;
+
+    /**
+     * This value is set to a somewhat standard 24MP image. Most phones will be able to handle this
+     * resolution, and most images won't experience downscaling. For large images (eg. 64MP), the canvas
+     * will break if not downscaled.
+     */
+    private static final int HIRES_OVERRIDE_WIDTH = 6000;
+    private static final int HIRES_OVERRIDE_HEIGHT = 4000;
+    private static final int MAX_PHOTOVIEW_ZOOM = 12;
+
     private static final int ID_OFFSET = 100000;
     private CrossViewEventHandler matrixChangeListener;
     private ZoomPanRestoreHandler zoomPanHandler;
@@ -35,7 +46,7 @@ class ImagePagerAdapter extends PagerAdapter {
     private final ConcurrentMap<Integer, PhotoView> highResPositions = new ConcurrentHashMap<>();
     private Integer futureHighResIndex;
 
-    public ImagePagerAdapter(final ArrayList<ImageBean> galleryImageList) {
+    ImagePagerAdapter(final ArrayList<ImageBean> galleryImageList) {
         this.galleryImageList = galleryImageList;
     }
 
@@ -104,6 +115,20 @@ class ImagePagerAdapter extends PagerAdapter {
     }
 
     private void loadHighResImage(final PhotoView photoView, final int position) {
+        int overrideWidth = HIRES_OVERRIDE_WIDTH;
+        int overrideHeight = HIRES_OVERRIDE_HEIGHT;
+        try {
+            final ExifInterface exif = new ExifInterface(galleryImageList.get(position).getFileUri().getPath());
+            final int imageWidth = exif.getAttributeInt(ExifInterface.TAG_PIXEL_X_DIMENSION, 0);
+            final int imageHeight = exif.getAttributeInt(ExifInterface.TAG_PIXEL_Y_DIMENSION, 0);
+            if ((imageWidth > 0) && (imageWidth <= HIRES_OVERRIDE_WIDTH)  //
+                    && (imageHeight > 0) && (imageHeight <= HIRES_OVERRIDE_HEIGHT)) {
+                overrideWidth = Target.SIZE_ORIGINAL;
+                overrideHeight = Target.SIZE_ORIGINAL;
+            }
+        } catch (final IOException e) {
+            // leave override at defensive values
+        }
         photoView.setOnMatrixChangeListener(matrixChangeListener);
         photoView.addOnLayoutChangeListener(zoomPanHandler);
         zoomPanHandler.resetImageResourceState();
@@ -111,8 +136,8 @@ class ImagePagerAdapter extends PagerAdapter {
                 .load(galleryImageList.get(position).getFileUri())//
                 .dontAnimate() //
                 // tell Glide to load full image, so zoom will look ok
-                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)//
-                .centerCrop() //
+                .override(overrideWidth, overrideHeight)//
+                .fitCenter() //
                 .listener(zoomPanHandler)
                 // reduce footprint as much as possible
                 .diskCacheStrategy(DiskCacheStrategy.NONE) //
