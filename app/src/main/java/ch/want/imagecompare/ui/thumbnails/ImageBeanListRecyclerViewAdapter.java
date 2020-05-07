@@ -102,7 +102,7 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
         final ImageBean imageAndTitle = getImageAndTitleBean(i);
         Glide.with(imageView.getContext())//
                 .load(imageAndTitle.getFileUri())//
-                .diskCacheStrategy(DiskCacheStrategy.RESULT) //
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC) //
                 .placeholder(R.mipmap.ic_image_placeholder)//
                 .centerCrop() //
                 .into(imageView);

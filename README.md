@@ -22,13 +22,13 @@ The main actions are
 * Manage image selection
 * Provide actions to share selected images
 
-The "matrix listener" on a PhotoView is toggled in two cases:
+The "pan and zoom listener" on a PhotoView is toggled in two cases:
 
 * During loading of a new image
 ** Disabled when starting to load a new high-resolution image
-** Re-enabled once in the onApplyZoomPanMatrix() implementation of the ImageDetailViewImpl
+** Re-enabled once in the onApplyZoomPanMatrix() implementation of the `ImageDetailViewImpl`
 * When applying a display matrix
-** Disabled at the start of PhotoViewMediator.copyMatrix()
+** Disabled at the start of `PhotoViewMediator.copyPanAndZoom()`
 ** Re-enabled in the finally block of above method 
 
 
@@ -41,69 +41,17 @@ The main actions are
 
 ## Libraries
 
-The only non-Android library used is [Glide](https://github.com/bumptech/glide) and [PhotoView](https://github.com/chrisbanes/PhotoView).
+The only non-Android library used are [Glide](https://github.com/bumptech/glide) and [Subsampling Scale Image View](https://github.com/davemorrissey/subsampling-scale-image-view).
 
-We're using the 3.x version of Glide for now, because the "Generated API" stuff in version 4 looks complicated
-and daunting.
+### Subsampling Scale Image View
 
-### PhotoView (chrisbanes)
-
-Swipes can be handled using
-```java
-myPhotoView.setOnSingleFlingListener(new ImageSwipeHandler(viewContext));
+Based on [06. State of the documentation](https://github.com/davemorrissey/subsampling-scale-image-view/wiki/06.-State), view state synchronization
+is based on OnImageEventListener (basic image readiness) and OnStateChangedListener (pan and zoom). The class
 ```
-where the FlingListener needs to do the math on fling distance and velocity to decide whether this was a swipe or not.
-(There are various stackoverflow posts to that end.) However, we're using a ViewPager which makes the swipe
-handling redundant.
-
-In ImagePageAdapter.instantiateItem():
-
-```java
-myPhotoView.setOnScaleChangeListener(new ScaleChangeListener());
+ImageViewListener implements SubsamplingScaleImageView.OnImageEventListener, SubsamplingScaleImageView.OnStateChangedListener 
 ```
-introduces a listener for zoom changes. The listener receives
-* @param scaleFactor the +incremental+ scale factor (less than 1 for zoom out, greater than 1 for zoom in)
-* @param focusX      focal point X position
-* @param focusY      focal point Y position
 
-To get a total scale factor for an image, do:
-```java
-private float cumulativeScaleFactor = 1;
-photoViewAttacher.setOnScaleChangeListener(new PhotoViewAttacher.OnScaleChangeListener() {
-  @Override
-  public void onScaleChange(final float scaleFactor, final float focusX, final float focusY) {
-    cumulativeScaleFactor = cumulativeScaleFactor * scaleFactor;
-  }
-});
-
-```
-Beware that Photoview#setScale() expects the absolute scale, not an incremental factor.
-
-```java
-myPhotoView.setOnMatrixChangeListener(new MatrixChangeListener());
-```
-introduces a listener for Photoview "matrix" changes.
-
-A "matrix" holds rotation, scale, and pivot properties. A PhotoView instance holds three matrices:
-
-1. 'mBaseMatrix' .. matrix describing the image
-2. 'mDrawMatrix' .. returned by PhotoView#getImageMatrix()
-3. 'mSuppMatrix' .. delta-matrix to get from mBaseMatrix to mDrawMatrix, set with #setDisplayMatrix() [sic]
-
-Note that PhotoView#getMatrix() doesn't return any of the above elements, but rather the default 
-transformation matrix from the View superclass.
-
-The bottom line is that while the photo view will hold an internal base matrix (mBaseMatrix), that
-matrix is simply derived from the image. The viewport is derived solely from the mSuppMatrix, so
-synchronizing zoom/pan need to
-```java
-final Matrix newImageMatrix = new Matrix();
-currentPhoto.getAttacher().getSuppMatrix(newImageMatrix);
-```
-and then copy that matrix over with
-```java
-currentPhoto.setDisplayMatrix(matrix);
-```
+wraps these two, and passes the events to our own `ImageViewEventListener`, so that multiple listeners can react to event.
 
 ### Glide / PhotoView / ViewPager and OOM
 

@@ -1,8 +1,11 @@
 package ch.want.imagecompare.ui.listfolders;
 
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
@@ -43,6 +46,7 @@ public class ListAllImageFoldersActivity extends AppCompatActivity implements Sw
         onRefresh();
         final Toolbar toolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
+        setAppNameAndVersion();
     }
 
     private void initContentViews() {
@@ -91,5 +95,16 @@ public class ListAllImageFoldersActivity extends AppCompatActivity implements Sw
         }
         Collections.sort(buckets);
         return buckets;
+    }
+
+    private void setAppNameAndVersion() {
+        final TextView txtView = findViewById(R.id.appNameAndVersion);
+        try {
+            final PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            final String version = pInfo.versionName;
+            txtView.setText(getString(R.string.app_name) + " - " + version);
+        } catch (final PackageManager.NameNotFoundException e) {
+            Log.w("setAppNameAndVersion", "App name and version are not displayed: " + e.getMessage());
+        }
     }
 }

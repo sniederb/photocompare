@@ -1,6 +1,6 @@
 package ch.want.imagecompare.domain;
 
-import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.net.Uri;
 
 import org.junit.Test;
@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import ch.want.imagecompare.data.ImageBean;
+import ch.want.imagecompare.ui.compareimages.PanAndZoomState;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,43 +18,13 @@ import static org.junit.Assert.assertEquals;
 public class PhotoViewMediatorTest {
 
     @Test
-    public void matrix_invertTwiceYieldsOriginalMatrix() {
-        // arrange
-        final Matrix matrix = buildMatrix(4.22f, 2602f, 1134f);
-        // act
-        final Matrix invertedMatrix = new Matrix();
-        matrix.invert(invertedMatrix);
-        final Matrix reInvertedMatrix = new Matrix();
-        invertedMatrix.invert(reInvertedMatrix);
-        // assert
-        assertEquals(matrix, reInvertedMatrix);
-    }
-
-    @Test
-    public void updateDeltaMatrixTopToBottom_applyDeltaMatrixTopToBottom() {
-        // arrange
-        final Matrix topMatrix = buildMatrix(4.22f, 2602f, 1134f);
-        final Matrix bottomMatrix = buildMatrix(4.01f, 2602f, 1134f);
-        final ImageDetailView topView = new ImageDetailViewStub(topMatrix);
-        final ImageDetailView bottomView = new ImageDetailViewStub(bottomMatrix);
-        final PhotoViewMediator testee = new PhotoViewMediator(topView, bottomView);
-        // act
-        testee.setSyncZoomAndPan(false);
-        testee.onMatrixChanged(topView);
-        testee.setSyncZoomAndPan(true);
-        testee.onMatrixChanged(topView);
-        // assert
-        assertEquals(bottomMatrix, bottomView.getMatrix());
-    }
-
-    @Test
     public void getNextValidImageIndex_limitToLowerIndex() {
         // arrange
         final ArrayList<ImageBean> images = buildImageBeans(5);
-        final Matrix topMatrix = buildMatrix(4.22f, 2602f, 1134f);
-        final Matrix bottomMatrix = buildMatrix(4.01f, 2602f, 1134f);
-        final ImageDetailViewStub topView = new ImageDetailViewStub(topMatrix);
-        final ImageDetailViewStub bottomView = new ImageDetailViewStub(bottomMatrix);
+        final PanAndZoomState topPanAndZoomState = new PanAndZoomState(1.2f, new PointF(0, 1));
+        final PanAndZoomState bottomPanAndZoomState = new PanAndZoomState(1.1f, new PointF(1, 2));
+        final ImageDetailViewStub topView = new ImageDetailViewStub(topPanAndZoomState);
+        final ImageDetailViewStub bottomView = new ImageDetailViewStub(bottomPanAndZoomState);
         final PhotoViewMediator testee = new PhotoViewMediator(topView, bottomView);
         testee.initGalleryImageList(images, 0, 1);
         // act
@@ -66,33 +37,16 @@ public class PhotoViewMediatorTest {
     public void onPageSelected_limitToLowerIndex() {
         // arrange
         final ArrayList<ImageBean> images = buildImageBeans(5);
-        final Matrix topMatrix = buildMatrix(4.22f, 2602f, 1134f);
-        final Matrix bottomMatrix = buildMatrix(4.01f, 2602f, 1134f);
-        final ImageDetailViewStub topView = new ImageDetailViewStub(topMatrix);
-        final ImageDetailViewStub bottomView = new ImageDetailViewStub(bottomMatrix);
+        final PanAndZoomState topPanAndZoomState = new PanAndZoomState(1.2f, new PointF(0, 1));
+        final PanAndZoomState bottomPanAndZoomState = new PanAndZoomState(1.1f, new PointF(1, 2));
+        final ImageDetailViewStub topView = new ImageDetailViewStub(topPanAndZoomState);
+        final ImageDetailViewStub bottomView = new ImageDetailViewStub(bottomPanAndZoomState);
         final PhotoViewMediator testee = new PhotoViewMediator(topView, bottomView);
         testee.initGalleryImageList(images, 0, 1);
         // act
         testee.onPageSelected(bottomView, 0);
         // assert
         assertEquals(1, bottomView.getCurrentIndex());
-    }
-
-    private static Matrix buildMatrix(final float zoom, final float imageWidth, final float imageHeight) {
-        final float[] values = new float[9];
-        values[Matrix.MSCALE_X] = zoom;
-        values[Matrix.MSKEW_X] = 0f;
-        values[Matrix.MTRANS_X] = -imageWidth;
-        values[Matrix.MSKEW_Y] = 0f;
-        values[Matrix.MSCALE_Y] = zoom;
-        values[Matrix.MTRANS_Y] = -imageHeight;
-        values[Matrix.MPERSP_0] = 0f;
-        values[Matrix.MPERSP_1] = 0f;
-        values[Matrix.MPERSP_2] = 1f;
-        final Matrix matrix = new Matrix();
-        matrix.setValues(values);
-        //when(matrix.setValues(any())).thenCallRealMethod();
-        return matrix;
     }
 
     private static ArrayList<ImageBean> buildImageBeans(final int size) {
@@ -105,12 +59,12 @@ public class PhotoViewMediatorTest {
 
     private static class ImageDetailViewStub implements ImageDetailView {
 
-        private Matrix matrix;
+        private final PanAndZoomState panAndZoomState;
         private ArrayList<ImageBean> galleryImageList;
         private int viewIndex;
 
-        ImageDetailViewStub(final Matrix matrix) {
-            this.matrix = matrix;
+        ImageDetailViewStub(final PanAndZoomState panAndZoomState) {
+            this.panAndZoomState = panAndZoomState;
         }
 
         @Override
@@ -142,25 +96,24 @@ public class PhotoViewMediatorTest {
         }
 
         @Override
-        public void disableMatrixListener() {
+        public void disableStateChangedListener() {
         }
 
         @Override
-        public void setMatrix(final Matrix matrix) {
-            this.matrix = matrix;
+        public void setPanAndZoomState(final PanAndZoomState panAndZoomState) {
         }
 
         @Override
-        public Matrix getMatrix() {
-            return matrix;
+        public PanAndZoomState getPanAndZoomState() {
+            return null;
         }
 
         @Override
-        public void resetMatrix() {
+        public void resetPanAndZoomState() {
         }
 
         @Override
-        public void enableMatrixListener() {
+        public void enableStateChangedListener() {
         }
 
         @Override

@@ -1,51 +1,67 @@
 package ch.want.imagecompare.ui.compareimages;
 
-import android.graphics.Matrix;
-import android.net.Uri;
-import android.view.View;
+import android.graphics.PointF;
 
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
+import java.util.Optional;
 
+import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
 /**
  * This class handles the responsibility of remembering zoom/pan of an image, and
  * restoring that matrix on the next image on paging.
  */
-abstract class ZoomPanRestoreHandler implements ViewPager.OnPageChangeListener, View.OnLayoutChangeListener, RequestListener<Uri, GlideDrawable> {
+abstract class ZoomPanRestoreHandler implements ViewPager.OnPageChangeListener, ImageViewEventListener {
 
     private int latestPagerIndex = 0;
     private boolean pagerStateIdle;
-    private boolean imageResourceReady;
-    private Matrix lastSuppMatrix;
+    private boolean imageResourceReady = false;
+    private PanAndZoomState lastPanAndZoomState = null;
 
-    abstract void onApplyZoomPanMatrix(Matrix targetDisplayMatrix);
+    abstract void onApplyPanAndZoomState(PanAndZoomState targetPanAndZoomState);
 
     /**
      * Called when the ViewPager has selected a new page. Beware that at the point
-     * of this method being called, not all view elements have been layed out. Esp.
+     * of this method being called, not all view elements have been laid out. Esp.
      * the PhotoView is still in the process of loading / layout
-     *
-     * @param position
      */
     abstract void onNewPageSelected(int position);
 
     @Override
-    public boolean onException(final Exception e, final Uri model, final Target<GlideDrawable> target, final boolean isFirstResource) {
-        return false;
-    }
-
-    @Override
-    public boolean onResourceReady(final GlideDrawable resource, final Uri model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
+    public void onImageReady() {
         imageResourceReady = true;
-        return false;
+        checkStateAndApplyPanAndZoomState();
     }
 
     @Override
-    public void onLayoutChange(final View v, final int left, final int top, final int right, final int bottom, final int oldLeft, final int oldTop, final int oldRight, final int oldBottom) {
-        checkStateAndApplyMatrix();
+    public void onError() {
+        imageResourceReady = false;
+    }
+
+    @Override
+    public void onPanChanged(final PointF newCenter) {
+        updateLastPanAndZoomState(null, newCenter);
+    }
+
+    @Override
+    public void onZoomChanged(final float newScale) {
+        updateLastPanAndZoomState(newScale, null);
+    }
+
+    void onPanOrZoomChanged(final PanAndZoomState newPanAndZoomState) {
+        lastPanAndZoomState = new PanAndZoomState(newPanAndZoomState);
+    }
+
+    private void updateLastPanAndZoomState(final @Nullable Float newScale, final @Nullable PointF newCenter) {
+        final float scale = Optional.ofNullable(newScale)//
+                .orElse(Optional.ofNullable(lastPanAndZoomState)//
+                        .map(PanAndZoomState::getScale)//
+                        .orElse(1f));
+        final PointF center = Optional.ofNullable(newCenter)//
+                .orElse(Optional.ofNullable(lastPanAndZoomState)//
+                        .map(PanAndZoomState::getCenterPoint)//
+                        .orElse(null));
+        lastPanAndZoomState = new PanAndZoomState(scale, center);
     }
 
     @Override
@@ -59,7 +75,7 @@ abstract class ZoomPanRestoreHandler implements ViewPager.OnPageChangeListener, 
     @Override
     public void onPageScrollStateChanged(final int state) {
         pagerStateIdle = state == ViewPager.SCROLL_STATE_IDLE;
-        checkStateAndApplyMatrix();
+        checkStateAndApplyPanAndZoomState();
     }
 
     @Override
@@ -69,26 +85,17 @@ abstract class ZoomPanRestoreHandler implements ViewPager.OnPageChangeListener, 
 
     /**
      * Reset the internal state of "image resource is ready". Calling this method
-     * ensures that the {@link #lastSuppMatrix} will not be applied anymore until
+     * ensures that the {@link #lastPanAndZoomState} will not be applied anymore until
      * a new image resource is loaded.
      */
     void resetImageResourceState() {
         imageResourceReady = false;
     }
 
-    /**
-     * Set the supplMatrix of the PhotoView instance currently selected by the ViewPager.
-     *
-     * @param currentPhotoViewSuppMatrix
-     */
-    void setLastSuppMatrix(final Matrix currentPhotoViewSuppMatrix) {
-        lastSuppMatrix = new Matrix(currentPhotoViewSuppMatrix);
-    }
-
-    private void checkStateAndApplyMatrix() {
-        if (imageResourceReady && pagerStateIdle && lastSuppMatrix != null) {
+    void checkStateAndApplyPanAndZoomState() {
+        if (imageResourceReady && pagerStateIdle && lastPanAndZoomState != null) {
             resetImageResourceState();
-            onApplyZoomPanMatrix(lastSuppMatrix);
+            onApplyPanAndZoomState(lastPanAndZoomState);
         }
     }
 }

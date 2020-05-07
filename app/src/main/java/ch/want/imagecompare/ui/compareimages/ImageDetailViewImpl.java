@@ -2,17 +2,17 @@ package ch.want.imagecompare.ui.compareimages;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.github.chrisbanes.photoview.PhotoView;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 
 import androidx.exifinterface.media.ExifInterface;
 import androidx.viewpager.widget.ViewPager;
@@ -36,6 +36,7 @@ public class ImageDetailViewImpl implements ImageDetailView {
     private static final int OFFSCREEN_PAGES_TO_KEEP = 1;
     private CrossViewEventHandler crossViewEventHandler;
     private final ZoomPanRestoreHandler zoomPanHandler;
+
     /*
      * The imageViewPager holds the state of the currently shown image. It relies
      * on the imageViewPagerAdapter to create views on-the-fly.
@@ -56,31 +57,15 @@ public class ImageDetailViewImpl implements ImageDetailView {
         exifTextView = containerView.findViewById(R.id.exifIso);
         imageSelectionCheckbox = containerView.findViewById(R.id.selectImageCheckbox);
         imageSelectionCheckbox.setOnClickListener(new SelectImageHandler(this));
-        containerView.findViewById(R.id.left_nav).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                imageViewPager.arrowScroll(View.FOCUS_LEFT);
-            }
+        containerView.findViewById(R.id.left_nav).setOnClickListener(v -> imageViewPager.arrowScroll(View.FOCUS_LEFT));
+        containerView.findViewById(R.id.left_nav).setOnLongClickListener(v -> {
+            imageViewPager.setCurrentItem(crossViewEventHandler.getOtherImageIndex() - 1);
+            return true;
         });
-        containerView.findViewById(R.id.left_nav).setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(final View v) {
-                imageViewPager.setCurrentItem(crossViewEventHandler.getOtherImageIndex() - 1);
-                return true;
-            }
-        });
-        containerView.findViewById(R.id.right_nav).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                imageViewPager.arrowScroll(View.FOCUS_RIGHT);
-            }
-        });
-        containerView.findViewById(R.id.right_nav).setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(final View v) {
-                imageViewPager.setCurrentItem(crossViewEventHandler.getOtherImageIndex() + 1);
-                return true;
-            }
+        containerView.findViewById(R.id.right_nav).setOnClickListener(v -> imageViewPager.arrowScroll(View.FOCUS_RIGHT));
+        containerView.findViewById(R.id.right_nav).setOnLongClickListener(v -> {
+            imageViewPager.setCurrentItem(crossViewEventHandler.getOtherImageIndex() + 1);
+            return true;
         });
         zoomPanHandler = buildZoomPanRestoreHandler();
     }
@@ -121,8 +106,6 @@ public class ImageDetailViewImpl implements ImageDetailView {
     /**
      * Passes an image index to the ViewPager. Note that indexes violating the underlying
      * image array will be quietly changed to be within the array boundaries.
-     *
-     * @param imageIndex
      */
     @Override
     public void setCurrentIndex(final int imageIndex) {
@@ -146,35 +129,34 @@ public class ImageDetailViewImpl implements ImageDetailView {
     }
 
     @Override
-    public void disableMatrixListener() {
-        crossViewEventHandler.disableMatrixListener();
+    public void disableStateChangedListener() {
+        crossViewEventHandler.disableCrossViewEvents();
     }
 
     @Override
-    public void enableMatrixListener() {
-        crossViewEventHandler.enableMatrixListener();
+    public void enableStateChangedListener() {
+        crossViewEventHandler.enableCrossViewEvents();
     }
 
     @Override
-    public Matrix getMatrix() {
-        final PhotoView currentPhoto = getOnScreenPhotoView();
-        final Matrix newImageMatrix = new Matrix();
-        currentPhoto.getAttacher().getSuppMatrix(newImageMatrix);
-        zoomPanHandler.setLastSuppMatrix(newImageMatrix);
-        return newImageMatrix;
+    public PanAndZoomState getPanAndZoomState() {
+        final SubsamplingScaleImageView currentPhoto = getOnScreenPhotoView();
+        return new PanAndZoomState(currentPhoto.getScale(), currentPhoto.getCenter());
     }
 
     @Override
-    public void setMatrix(final Matrix matrix) {
-        final PhotoView currentPhoto = getOnScreenPhotoView();
-        currentPhoto.setDisplayMatrix(matrix);
-        zoomPanHandler.setLastSuppMatrix(matrix);
+    public void setPanAndZoomState(final PanAndZoomState panAndZoomState) {
+        final SubsamplingScaleImageView currentPhoto = getOnScreenPhotoView();
+        currentPhoto.setScaleAndCenter(panAndZoomState.getScale(), panAndZoomState.getCenterPoint());
+        // as pan/zoom events are only passed for "origin = touch", we need to remember state here
+        // for the sync'ed view where origin is "animation"
+        zoomPanHandler.onPanOrZoomChanged(panAndZoomState);
     }
 
     @Override
-    public void resetMatrix() {
-        final PhotoView currentPhoto = getOnScreenPhotoView();
-        currentPhoto.setScale(1f);
+    public void resetPanAndZoomState() {
+        final SubsamplingScaleImageView currentPhoto = getOnScreenPhotoView();
+        currentPhoto.resetScaleAndCenter();
     }
 
     @Override
@@ -193,11 +175,11 @@ public class ImageDetailViewImpl implements ImageDetailView {
         }
     }
 
-    private PhotoView getOnScreenPhotoView() {
+    private SubsamplingScaleImageView getOnScreenPhotoView() {
         return getPhotoView(imageViewPager.getCurrentItem());
     }
 
-    private PhotoView getPhotoView(final int position) {
+    private SubsamplingScaleImageView getPhotoView(final int position) {
         return imageViewPager.findViewById(ImagePagerAdapter.getPhotoViewId(position));
     }
 
@@ -205,9 +187,9 @@ public class ImageDetailViewImpl implements ImageDetailView {
         return new ZoomPanRestoreHandler() {
 
             @Override
-            void onApplyZoomPanMatrix(final Matrix targetDisplayMatrix) {
-                getOnScreenPhotoView().setDisplayMatrix(targetDisplayMatrix);
-                crossViewEventHandler.enableMatrixListener();
+            void onApplyPanAndZoomState(final PanAndZoomState targetPanAndZoomState) {
+                getOnScreenPhotoView().setScaleAndCenter(targetPanAndZoomState.getScale(), targetPanAndZoomState.getCenterPoint());
+                crossViewEventHandler.enableCrossViewEvents();
             }
 
             @Override
@@ -223,7 +205,7 @@ public class ImageDetailViewImpl implements ImageDetailView {
     private void updateExifData() {
         try {
             final File imageFile = getCurrentImageBean().getImageFile();
-            final ExifInterface exif = new ExifInterface(getCurrentImageBean().getFileUri().getPath());
+            final ExifInterface exif = new ExifInterface(Objects.requireNonNull(getCurrentImageBean().getFileUri().getPath()));
             final long megaPixel = exif.getAttributeInt(ExifInterface.TAG_PIXEL_X_DIMENSION, 0) * (long) exif.getAttributeInt(ExifInterface.TAG_PIXEL_Y_DIMENSION, 0) / //
                     (1000 * 1000);
             final String exifData = String.format(Locale.ENGLISH, "%s: ƒ/%.1f %s %.0fmm ISO %s %dMP",//

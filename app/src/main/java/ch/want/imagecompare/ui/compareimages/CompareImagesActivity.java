@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Switch;
 
@@ -43,21 +41,11 @@ public class CompareImagesActivity extends AppCompatActivity {
     private PhotoViewMediator buildPhotoViewMediator() {
         final PhotoViewMediator mediator = new PhotoViewMediator(new ImageDetailViewImpl(findViewById(R.id.upperImage)), new ImageDetailViewImpl(findViewById(R.id.bottomImage)));
         syncToggle = findViewById(R.id.toggleZoomPanSync);
-        syncToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-                mediator.setSyncZoomAndPan(isChecked);
-            }
-        });
+        syncToggle.setOnCheckedChangeListener((buttonView, isChecked) -> mediator.setSyncZoomAndPan(isChecked));
         syncToggle.setChecked(false);
         //
         final ImageButton resetMatrixButton = findViewById(R.id.resetMatrix);
-        resetMatrixButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                photoViewMediator.resetMatrix();
-            }
-        });
+        resetMatrixButton.setOnClickListener(v -> photoViewMediator.resetState());
         return mediator;
     }
 

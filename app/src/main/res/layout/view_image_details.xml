@@ -33,7 +33,8 @@
         android:layout_height="48dp"
         android:alpha="0.7"
         android:layout_gravity="center_vertical|start"
-        android:src="@drawable/ic_chevron_left" />
+        android:src="@drawable/ic_chevron_left"
+        android:contentDescription="@string/action_nav_left" />
 
     <ImageButton
         android:id="@+id/right_nav"
@@ -41,7 +42,8 @@
         android:layout_height="48dp"
         android:alpha="0.7"
         android:layout_gravity="center_vertical|end"
-        android:src="@drawable/ic_chevron_right" />
+        android:src="@drawable/ic_chevron_right"
+        android:contentDescription="@string/action_nav_right" />
 
     <CheckBox
         android:id="@+id/selectImageCheckbox"

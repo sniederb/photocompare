@@ -1,11 +1,12 @@
 package ch.want.imagecompare.domain;
 
-import android.graphics.Matrix;
+import android.graphics.PointF;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.want.imagecompare.data.ImageBean;
+import ch.want.imagecompare.ui.compareimages.PanAndZoomState;
 
 /**
  * This class handles mediation between the upper and lower photo view incl. context
@@ -21,9 +22,10 @@ public class PhotoViewMediator {
     private int bottomViewIndex;
 
     private boolean syncZoomAndPan = false;
+    // beware that the values of this member are *offsets*
+    private PanAndZoomState panAndZoomOffset = new PanAndZoomState(1f, new PointF(0, 0));
     private boolean checkboxesDarkMode = true;
     private boolean showExifDetails = true;
-    private final Matrix deltaMatrixTopToBottom = new Matrix();
 
     public PhotoViewMediator(final ImageDetailView topView, final ImageDetailView bottomView) {
         this.topView = topView;
@@ -142,122 +144,58 @@ public class PhotoViewMediator {
     }
 
     /**
-     * Propagate matrix change from one view to the other, and return the source matrix
-     *
-     * @param sourceView
-     * @return
+     * Propagate pan/zoom change from one view to the other
      */
-    void onMatrixChanged(final ImageDetailView sourceView) {
+    void onPanOrZoomChanged(final ImageDetailView sourceView) {
         final ImageDetailView copyToView = sourceView == topView ? bottomView : topView;
         if (isSyncZoomAndPan()) {
-            copyMatrix(sourceView, copyToView);
+            copyPanAndZoom(sourceView, copyToView);
         } else {
-            updateDeltaMatrix();
+            updatePanAndZoomOffset();
         }
     }
 
-    public void resetMatrix() {
-        resetDeltaMatrix();
-        topView.resetMatrix();
-        bottomView.resetMatrix();
+    private void updatePanAndZoomOffset() {
+        final PanAndZoomState topPanAndZoom = topView.getPanAndZoomState();
+        final PanAndZoomState bottomPanAndZoom = bottomView.getPanAndZoomState();
+        final float scaleOffset = topPanAndZoom.getScale() / bottomPanAndZoom.getScale();
+        final PointF centerOffset = new PointF(topPanAndZoom.getCenterPoint().x - bottomPanAndZoom.getCenterPoint().x, topPanAndZoom.getCenterPoint().y - bottomPanAndZoom.getCenterPoint().y);
+        panAndZoomOffset = new PanAndZoomState(scaleOffset, centerOffset);
     }
 
-    private void resetDeltaMatrix() {
-        final float[] deltaValues = new float[9];
-        deltaValues[Matrix.MSCALE_X] = 1f;
-        deltaValues[Matrix.MSKEW_X] = 0f;
-        deltaValues[Matrix.MTRANS_X] = 0f;
-        deltaValues[Matrix.MSKEW_Y] = 0f;
-        deltaValues[Matrix.MSCALE_Y] = 1f;
-        deltaValues[Matrix.MTRANS_Y] = 0f;
-        deltaValues[Matrix.MPERSP_0] = 0f;
-        deltaValues[Matrix.MPERSP_1] = 0f;
-        deltaValues[Matrix.MPERSP_2] = 1f;
-        deltaMatrixTopToBottom.setValues(deltaValues);
+    private PanAndZoomState getPanAndZoomWithOffset(final PanAndZoomState sourcePanAndZoomState, final boolean sourceIsBottom) {
+        final float scaleOffset;
+        final PointF centerOffset;
+        if (sourceIsBottom) {
+            scaleOffset = sourcePanAndZoomState.getScale() * panAndZoomOffset.getScale();
+            centerOffset = new PointF(sourcePanAndZoomState.getCenterPoint().x + panAndZoomOffset.getCenterPoint().x, sourcePanAndZoomState.getCenterPoint().y + panAndZoomOffset.getCenterPoint().y);
+        } else {
+            scaleOffset = sourcePanAndZoomState.getScale() / panAndZoomOffset.getScale();
+            centerOffset = new PointF(sourcePanAndZoomState.getCenterPoint().x - panAndZoomOffset.getCenterPoint().x, sourcePanAndZoomState.getCenterPoint().y - panAndZoomOffset.getCenterPoint().y);
+        }
+        return new PanAndZoomState(scaleOffset, centerOffset);
+    }
+
+    public void resetState() {
+        topView.resetPanAndZoomState();
+        bottomView.resetPanAndZoomState();
     }
 
     /**
-     * Take matrix from sourceView, apply {@link #deltaMatrixTopToBottom}, and send that
-     * to the targetView. As the {@link #deltaMatrixTopToBottom} is for transformation
-     * from top to bottm, it needs to be inverted to sync from bottom to top.
-     *
-     * @param sourceView
-     * @param targetView
+     * Take pan and zoom from sourceView, and send that to the targetView.
      */
-    private void copyMatrix(final ImageDetailView sourceView, final ImageDetailView targetView) {
-        copyMatrix(sourceView.getMatrix(), targetView, sourceView == bottomView);
+    private void copyPanAndZoom(final ImageDetailView sourceView, final ImageDetailView targetView) {
+        copyPanAndZoom(sourceView.getPanAndZoomState(), targetView, sourceView == bottomView);
     }
 
-    private void copyMatrix(final Matrix sourceMatrix, final ImageDetailView targetView, final boolean invertDeltaMatrix) {
-        targetView.disableMatrixListener();
+    private void copyPanAndZoom(final PanAndZoomState sourcePanAndZoomState, final ImageDetailView targetView, final boolean sourceIsBottom) {
+        targetView.disableStateChangedListener();
         try {
-            final Matrix resultingMatrix = applyDeltaMatrixTopToBottom(sourceMatrix, invertDeltaMatrix);
-            targetView.setMatrix(resultingMatrix);
+            final PanAndZoomState targetPanAndZoomState = getPanAndZoomWithOffset(sourcePanAndZoomState, sourceIsBottom);
+            targetView.setPanAndZoomState(targetPanAndZoomState);
         } finally {
-            targetView.enableMatrixListener();
+            targetView.enableStateChangedListener();
         }
-    }
-
-    /**
-     * Take the top- and bottom-view matrices and derive a delta so that
-     * {@link Matrix#setConcat(Matrix, Matrix)} with source and delta will result
-     * in the bottom matrix.
-     */
-    private void updateDeltaMatrix() {
-        final Matrix topMatrix = topView.getMatrix();
-        final Matrix bottomMatrix = bottomView.getMatrix();
-        updateDeltaMatrixTopToBottom(topMatrix, bottomMatrix);
-    }
-
-    /**
-     * Build a delta matrix with a zoom ratio and trans offsets, so that running
-     * {@link #applyDeltaMatrixTopToBottom(Matrix, boolean)} on {@code fromMatrix} will yield
-     * {@code toMatrix}
-     *
-     * @param topMatrix
-     * @param bottomMatrix
-     * @return
-     */
-    private void updateDeltaMatrixTopToBottom(final Matrix topMatrix, final Matrix bottomMatrix) {
-        final float[] fromMatrixValues = new float[9];
-        topMatrix.getValues(fromMatrixValues);
-        final float[] toMatrixValues = new float[9];
-        bottomMatrix.getValues(toMatrixValues);
-        final float[] deltaValues = new float[9];
-        deltaValues[Matrix.MSCALE_X] = toMatrixValues[Matrix.MSCALE_X] / fromMatrixValues[Matrix.MSCALE_X];
-        deltaValues[Matrix.MSKEW_X] = 0f;
-        deltaValues[Matrix.MTRANS_X] = toMatrixValues[Matrix.MTRANS_X] - fromMatrixValues[Matrix.MTRANS_X];
-        deltaValues[Matrix.MSKEW_Y] = 0f;
-        deltaValues[Matrix.MSCALE_Y] = toMatrixValues[Matrix.MSCALE_Y] / fromMatrixValues[Matrix.MSCALE_Y];
-        deltaValues[Matrix.MTRANS_Y] = toMatrixValues[Matrix.MTRANS_Y] - fromMatrixValues[Matrix.MTRANS_Y];
-        deltaValues[Matrix.MPERSP_0] = 0f;
-        deltaValues[Matrix.MPERSP_1] = 0f;
-        deltaValues[Matrix.MPERSP_2] = 1f;
-        deltaMatrixTopToBottom.setValues(deltaValues);
-    }
-
-    private Matrix applyDeltaMatrixTopToBottom(final Matrix fromMatrix, final boolean inverse) {
-        final float[] targetMatrixValues = new float[9];
-        fromMatrix.getValues(targetMatrixValues);
-        final float[] deltaValues = new float[9];
-        deltaMatrixTopToBottom.getValues(deltaValues);
-        if (inverse) {
-            targetMatrixValues[Matrix.MSCALE_X] = targetMatrixValues[Matrix.MSCALE_X] / deltaValues[Matrix.MSCALE_X];
-            targetMatrixValues[Matrix.MTRANS_X] = targetMatrixValues[Matrix.MTRANS_X] - deltaValues[Matrix.MTRANS_X];
-            targetMatrixValues[Matrix.MSCALE_Y] = targetMatrixValues[Matrix.MSCALE_Y] / deltaValues[Matrix.MSCALE_Y];
-            targetMatrixValues[Matrix.MTRANS_Y] = targetMatrixValues[Matrix.MTRANS_Y] - deltaValues[Matrix.MTRANS_Y];
-        } else {
-            targetMatrixValues[Matrix.MSCALE_X] = targetMatrixValues[Matrix.MSCALE_X] * deltaValues[Matrix.MSCALE_X];
-            targetMatrixValues[Matrix.MTRANS_X] = targetMatrixValues[Matrix.MTRANS_X] + deltaValues[Matrix.MTRANS_X];
-            targetMatrixValues[Matrix.MSCALE_Y] = targetMatrixValues[Matrix.MSCALE_Y] * deltaValues[Matrix.MSCALE_Y];
-            targetMatrixValues[Matrix.MTRANS_Y] = targetMatrixValues[Matrix.MTRANS_Y] + deltaValues[Matrix.MTRANS_Y];
-        }
-        // note that com.github.chrisbanes.photoview.PhotoViewAttacher.getDrawMatrix does:
-        // mDrawMatrix.set(mBaseMatrix);
-        // mDrawMatrix.postConcat(mSuppMatrix);
-        final Matrix result = new Matrix();
-        result.setValues(targetMatrixValues);
-        return result;
     }
 }
 

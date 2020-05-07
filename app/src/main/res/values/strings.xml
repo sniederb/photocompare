@@ -5,6 +5,9 @@
     <string name="action_select_folder">Select folder</string>
     <string name="action_select_image">Select image</string>
     <string name="action_compare_images">Compare</string>
+    <string name="action_nav_right">Navigate right</string>
+    <string name="action_nav_left">Navigate left</string>
+
     <string name="sync_state">Sync zoom and pan</string>
     <string name="confirm_selection">Image was added to selection</string>
     <string name="show_selection">Show selection</string>

@@ -18,19 +18,37 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="@string/action_select_folder" />
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/preventSwipeLayoutToUseFullHeightLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/folderThumbnails"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="6dp"
-            android:paddingLeft="18dp"
-            android:paddingRight="18dp"
-            android:divider="@null"
-            android:dividerHeight="0dp" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            android:layout_marginBottom="24dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/folderThumbnails"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="6dp"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:paddingLeft="18dp"
+                android:paddingRight="18dp" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/appNameAndVersion"
+        android:layout_width="match_parent"
+        android:layout_height="12dp"
+        android:layout_gravity="start"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:textSize="10sp" />
 </LinearLayout>

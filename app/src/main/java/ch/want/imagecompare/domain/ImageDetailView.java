@@ -1,10 +1,9 @@
 package ch.want.imagecompare.domain;
 
-import android.graphics.Matrix;
-
 import java.util.ArrayList;
 
 import ch.want.imagecompare.data.ImageBean;
+import ch.want.imagecompare.ui.compareimages.PanAndZoomState;
 
 public interface ImageDetailView {
     void notifyDataSetChanged();
@@ -19,28 +18,24 @@ public interface ImageDetailView {
 
     void setImageList(ArrayList<ImageBean> galleryImageList);
 
-    void disableMatrixListener();
+    void disableStateChangedListener();
 
     /**
-     * Set the 'supp' matrix of the PhotoView instance
-     *
-     * @param matrix
+     * Set the pan and zoom image state
      */
-    void setMatrix(Matrix matrix);
+    void setPanAndZoomState(PanAndZoomState panAndZoomState);
 
     /**
-     * Get the 'supp' matrix of the PhotoView instance
-     *
-     * @return
+     * Get the pan and zoom image state
      */
-    Matrix getMatrix();
+    PanAndZoomState getPanAndZoomState();
 
     /**
      * Reset view back to 100% view (no zoom, no pan)
      */
-    void resetMatrix();
+    void resetPanAndZoomState();
 
-    void enableMatrixListener();
+    void enableStateChangedListener();
 
     void setCheckboxStyleDark(boolean isDark);
 

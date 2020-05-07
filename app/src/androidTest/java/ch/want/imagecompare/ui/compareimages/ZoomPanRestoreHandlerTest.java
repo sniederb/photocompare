@@ -1,94 +1,82 @@
 package ch.want.imagecompare.ui.compareimages;
 
-import android.graphics.Matrix;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.viewpager.widget.ViewPager;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 
 @RunWith(AndroidJUnit4.class)
 public class ZoomPanRestoreHandlerTest {
 
-    private Matrix matrixAppliedByTestee;
+    private PanAndZoomState stateAppliedByTestee;
 
-    @Test
-    public void eventOrderResourceReadyLayoutChangePagerIdle_copyOfMatrixApplied() {
-        // arrange
-        matrixAppliedByTestee = null;
-        final Matrix matrix = new Matrix();
-        final ZoomPanRestoreHandler testee = buildTestee();
-        testee.setLastSuppMatrix(matrix);
-        // act
-        testee.onResourceReady(null, null, null, true, true);
-        testee.onLayoutChange(null, 0, 0, 0, 0, 0, 0, 0, 0);
-        testee.onPageScrollStateChanged(ViewPager.SCROLL_STATE_IDLE);
-        // assert
-        assertNotNull(matrixAppliedByTestee);
-        assertNotSame(matrixAppliedByTestee, matrix);
-        assertEquals(matrixAppliedByTestee, matrix);
+    @Before
+    public void init() {
+        stateAppliedByTestee = null;
     }
 
     @Test
-    public void eventOrderPagerIdleResourceReadyLayoutChange_copyOfMatrixApplied() {
+    public void eventOrderResourceReadyLayoutChangePagerIdleShouldApplyPanAndZoom() {
         // arrange
-        matrixAppliedByTestee = null;
-        final Matrix matrix = new Matrix();
         final ZoomPanRestoreHandler testee = buildTestee();
-        testee.setLastSuppMatrix(matrix);
         // act
-        testee.onResourceReady(null, null, null, true, true);
-        testee.onLayoutChange(null, 0, 0, 0, 0, 0, 0, 0, 0);
+        testee.onImageReady();
+        testee.onZoomChanged(1f);
+        testee.checkStateAndApplyPanAndZoomState();
         testee.onPageScrollStateChanged(ViewPager.SCROLL_STATE_IDLE);
         // assert
-        assertNotNull(matrixAppliedByTestee);
-        assertNotSame(matrixAppliedByTestee, matrix);
-        assertEquals(matrixAppliedByTestee, matrix);
+        assertNotNull(stateAppliedByTestee);
     }
 
     @Test
-    public void eventOrderResourceReadyPagerIdleLayoutChange_copyOfMatrixApplied() {
+    public void eventOrderPagerIdleResourceReadyLayoutChangeShouldApplyPanAndZoom() {
         // arrange
-        matrixAppliedByTestee = null;
-        final Matrix matrix = new Matrix();
         final ZoomPanRestoreHandler testee = buildTestee();
-        testee.setLastSuppMatrix(matrix);
         // act
-        testee.onResourceReady(null, null, null, true, true);
         testee.onPageScrollStateChanged(ViewPager.SCROLL_STATE_IDLE);
-        testee.onLayoutChange(null, 0, 0, 0, 0, 0, 0, 0, 0);
+        testee.onImageReady();
+        testee.onZoomChanged(1f);
+        testee.checkStateAndApplyPanAndZoomState();
         // assert
-        assertNotNull(matrixAppliedByTestee);
-        assertNotSame(matrixAppliedByTestee, matrix);
-        assertEquals(matrixAppliedByTestee, matrix);
+        assertNotNull(stateAppliedByTestee);
     }
 
     @Test
-    public void eventOrderResourceReadyLayoutChange_matrixNotApplied() {
+    public void eventOrderResourceReadyPagerIdleLayoutChangeShouldApplyPanAndZoom() {
         // arrange
-        matrixAppliedByTestee = null;
-        final Matrix matrix = new Matrix();
         final ZoomPanRestoreHandler testee = buildTestee();
-        testee.setLastSuppMatrix(matrix);
         // act
-        testee.onResourceReady(null, null, null, true, true);
-        testee.onLayoutChange(null, 0, 0, 0, 0, 0, 0, 0, 0);
+        testee.onImageReady();
+        testee.onPageScrollStateChanged(ViewPager.SCROLL_STATE_IDLE);
+        testee.onZoomChanged(1f);
+        testee.checkStateAndApplyPanAndZoomState();
         // assert
-        assertNull(matrixAppliedByTestee);
+        assertNotNull(stateAppliedByTestee);
+    }
+
+    @Test
+    public void eventOrderResourceReadyLayoutChangeShouldNotApplyPanAndZoom() {
+        // arrange
+        final ZoomPanRestoreHandler testee = buildTestee();
+        // act
+        testee.onImageReady();
+        testee.onZoomChanged(1f);
+        testee.checkStateAndApplyPanAndZoomState();
+        // assert
+        assertNull(stateAppliedByTestee);
     }
 
     private ZoomPanRestoreHandler buildTestee() {
         return new ZoomPanRestoreHandler() {
 
             @Override
-            void onApplyZoomPanMatrix(final Matrix targetDisplayMatrix) {
-                matrixAppliedByTestee = targetDisplayMatrix;
+            void onApplyPanAndZoomState(final PanAndZoomState targetPanAndZoomState) {
+                stateAppliedByTestee = targetPanAndZoomState;
             }
 
             @Override
