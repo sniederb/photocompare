@@ -50,15 +50,11 @@ public class ImageViewListener implements SubsamplingScaleImageView.OnImageEvent
 
     @Override
     public void onScaleChanged(final float newScale, final int origin) {
-        if (origin == SubsamplingScaleImageView.ORIGIN_TOUCH) {
-            listeners.forEach(l -> l.onZoomChanged(newScale));
-        }
+        listeners.forEach(l -> l.onZoomChanged(newScale));
     }
 
     @Override
     public void onCenterChanged(final PointF newCenter, final int origin) {
-        if (origin == SubsamplingScaleImageView.ORIGIN_TOUCH) {
-            listeners.forEach(l -> l.onPanChanged(newCenter));
-        }
+        listeners.forEach(l -> l.onPanChanged(newCenter));
     }
 }

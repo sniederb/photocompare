@@ -53,6 +53,11 @@ ImageViewListener implements SubsamplingScaleImageView.OnImageEventListener, Sub
 
 wraps these two, and passes the events to our own `ImageViewEventListener`, so that multiple listeners can react to event.
 
+#### Fling
+
+`SubsamplingScaleImageView` sets a `GestureDetector` internally, which runs if `panEnabled` is true. The resulting pan has `ORIGIN_FLING`,
+thus it's important that `ImageViewListener` does **not** restrict event handling on "origin".
+
 ### Glide / PhotoView / ViewPager and OOM
 
 According to [this github issue](https://github.com/bumptech/glide/issues/974),
