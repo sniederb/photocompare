@@ -4,12 +4,13 @@ import android.graphics.PointF;
 
 public class PanAndZoomState {
 
+    static final PanAndZoomState DEFAULT = new PanAndZoomState();
     private final float scale;
     private final PointF centerPoint;
 
-    PanAndZoomState() {
-        scale = 1;
-        centerPoint = new PointF(0, 0);
+    private PanAndZoomState() {
+        scale = 0;
+        centerPoint = null;
     }
 
     public PanAndZoomState(final float scale, final PointF centerPoint) {

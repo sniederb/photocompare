@@ -95,7 +95,11 @@ abstract class ZoomPanRestoreHandler implements ViewPager.OnPageChangeListener, 
     void checkStateAndApplyPanAndZoomState() {
         if (imageResourceReady && pagerStateIdle && lastPanAndZoomState != null) {
             resetImageResourceState();
-            onApplyPanAndZoomState(lastPanAndZoomState);
+            if (lastPanAndZoomState.getScale() > 0) {
+                // on a fully zoomed-out image, there's nothing to adjust
+                // so prevent any flicker caused by applying such a view state
+                onApplyPanAndZoomState(lastPanAndZoomState);
+            }
         }
     }
 }

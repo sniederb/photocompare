@@ -157,6 +157,9 @@ public class ImageDetailViewImpl implements ImageDetailView {
     public void resetPanAndZoomState() {
         final SubsamplingScaleImageView currentPhoto = getOnScreenPhotoView();
         currentPhoto.resetScaleAndCenter();
+        // beware that this will NOT trigger a pan/zoom event, so we need to reset
+        // the handler manually
+        zoomPanHandler.onPanOrZoomChanged(PanAndZoomState.DEFAULT);
     }
 
     @Override
