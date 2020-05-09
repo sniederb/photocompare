@@ -109,6 +109,7 @@ class ImagePagerAdapter extends PagerAdapter {
 
     private static SubsamplingScaleImageView buildPhotoView(final Context context, final int position) {
         final SubsamplingScaleImageView photoView = new SubsamplingScaleImageView(context);
+        photoView.setOrientation(SubsamplingScaleImageView.ORIENTATION_USE_EXIF);
         // beware that we can't set a tag on PhotoView, as that will break Glide
         // "You must not call setTag() on a view Glide is targeting"
         photoView.setId(getPhotoViewId(position));

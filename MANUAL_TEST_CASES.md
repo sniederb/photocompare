@@ -19,6 +19,10 @@ tests seems overly complicated
 - Top image is zoomed accordingly
 - Top image is panned accordingly
 
+## Test case 1b - Simple sync with different orientation
+
+- Run "test case 1" with images "image_landscape.JPG" and "image_portrait.JPG"
+
 ## Test case 2 - Sync and page
 
 ### Given
