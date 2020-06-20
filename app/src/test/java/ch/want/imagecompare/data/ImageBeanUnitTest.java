@@ -12,7 +12,7 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ImageBeanTest {
+public class ImageBeanUnitTest {
 
     @Test
     public void getSelectedImageBeans_noSelection() {

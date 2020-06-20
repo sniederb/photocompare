@@ -159,21 +159,33 @@ public class PhotoViewMediator {
         final PanAndZoomState topPanAndZoom = topView.getPanAndZoomState();
         final PanAndZoomState bottomPanAndZoom = bottomView.getPanAndZoomState();
         final float scaleOffset = topPanAndZoom.getScale() / bottomPanAndZoom.getScale();
-        final PointF centerOffset = new PointF(topPanAndZoom.getCenterPoint().x - bottomPanAndZoom.getCenterPoint().x, topPanAndZoom.getCenterPoint().y - bottomPanAndZoom.getCenterPoint().y);
-        panAndZoomOffset = new PanAndZoomState(scaleOffset, centerOffset);
+        final PointF topCenterPoint = topPanAndZoom.getCenterPoint().orElse(null);
+        final PointF bottomCenterPoint = bottomPanAndZoom.getCenterPoint().orElse(null);
+        if ((topCenterPoint != null) && (bottomCenterPoint != null)) {
+            final PointF centerOffset = new PointF(topCenterPoint.x - bottomCenterPoint.x, topCenterPoint.y - bottomCenterPoint.y);
+            panAndZoomOffset = new PanAndZoomState(scaleOffset, centerOffset);
+        } else {
+            panAndZoomOffset = new PanAndZoomState(scaleOffset, null);
+        }
     }
 
     private PanAndZoomState getPanAndZoomWithOffset(final PanAndZoomState sourcePanAndZoomState, final boolean sourceIsBottom) {
-        final float scaleOffset;
-        final PointF centerOffset;
+        final float scaleWithOffset;
+        final PointF centerOffset = panAndZoomOffset.getCenterPoint().orElse(null);
+        final PointF centerSource = sourcePanAndZoomState.getCenterPoint().orElse(null);
+        PointF centerWithOffset = null;
         if (sourceIsBottom) {
-            scaleOffset = sourcePanAndZoomState.getScale() * panAndZoomOffset.getScale();
-            centerOffset = new PointF(sourcePanAndZoomState.getCenterPoint().x + panAndZoomOffset.getCenterPoint().x, sourcePanAndZoomState.getCenterPoint().y + panAndZoomOffset.getCenterPoint().y);
+            scaleWithOffset = sourcePanAndZoomState.getScale() * panAndZoomOffset.getScale();
+            if ((centerOffset != null) && (centerSource != null)) {
+                centerWithOffset = new PointF(centerSource.x + centerOffset.x, centerSource.y + centerOffset.y);
+            }
         } else {
-            scaleOffset = sourcePanAndZoomState.getScale() / panAndZoomOffset.getScale();
-            centerOffset = new PointF(sourcePanAndZoomState.getCenterPoint().x - panAndZoomOffset.getCenterPoint().x, sourcePanAndZoomState.getCenterPoint().y - panAndZoomOffset.getCenterPoint().y);
+            scaleWithOffset = sourcePanAndZoomState.getScale() / panAndZoomOffset.getScale();
+            if ((centerOffset != null) && (centerSource != null)) {
+                centerWithOffset = new PointF(centerSource.x - centerOffset.x, centerSource.y - centerOffset.y);
+            }
         }
-        return new PanAndZoomState(scaleOffset, centerOffset);
+        return new PanAndZoomState(scaleWithOffset, centerWithOffset);
     }
 
     public void resetState() {

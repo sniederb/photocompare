@@ -59,7 +59,7 @@ abstract class ZoomPanRestoreHandler implements ViewPager.OnPageChangeListener, 
                         .orElse(1f));
         final PointF center = Optional.ofNullable(newCenter)//
                 .orElse(Optional.ofNullable(lastPanAndZoomState)//
-                        .map(PanAndZoomState::getCenterPoint)//
+                        .map(panAndZoom -> panAndZoom.getCenterPoint().orElse(null))//
                         .orElse(null));
         lastPanAndZoomState = new PanAndZoomState(scale, center);
     }
