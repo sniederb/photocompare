@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import ch.want.imagecompare.data.Dimension;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.ui.compareimages.PanAndZoomState;
 
@@ -104,8 +105,17 @@ public class PhotoViewMediatorTest {
         }
 
         @Override
+        public void updateDynamicViewStateText(final float newScale) {
+        }
+
+        @Override
         public PanAndZoomState getPanAndZoomState() {
             return null;
+        }
+
+        @Override
+        public Dimension getSourceDimension() {
+            return new Dimension(1, 1);
         }
 
         @Override

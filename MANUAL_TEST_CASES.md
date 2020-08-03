@@ -3,6 +3,14 @@
 This document describes a series of tests to perform manually, as the implementation of automated
 tests seems overly complicated
 
+## Using two-finger movements in emulator
+
+1. move your mouse to where you want the centre of the pinch zoom. (do NOT press the mouse button)
+2. press SHIFT (do not press the mouse button)
+3. press CTRL (do not press the mouse button)
+4. Press left mouse button
+5. Drag 'n' drop
+
 ## Test case 1 - Simple sync
 
 ### Given

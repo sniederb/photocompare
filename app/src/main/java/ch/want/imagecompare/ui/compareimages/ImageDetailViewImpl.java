@@ -17,6 +17,7 @@ import java.util.Objects;
 import androidx.exifinterface.media.ExifInterface;
 import androidx.viewpager.widget.ViewPager;
 import ch.want.imagecompare.R;
+import ch.want.imagecompare.data.Dimension;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.domain.CrossViewEventHandler;
 import ch.want.imagecompare.domain.ImageDetailView;
@@ -43,12 +44,12 @@ public class ImageDetailViewImpl implements ImageDetailView {
      */
     private final ViewPager imageViewPager;
     private final TextView exifTextView;
+    private String exifData = "";
     private final CheckBox imageSelectionCheckbox;
     /*
      * The adapter is responsible for creating and deleting view objects. It does NOT
      * hold the state of the current item index (see imageViewPager for that)
      */
-
     private ImagePagerAdapter imageViewPagerAdapter;
 
     ImageDetailViewImpl(final View containerView) {
@@ -148,6 +149,7 @@ public class ImageDetailViewImpl implements ImageDetailView {
     public void setPanAndZoomState(final PanAndZoomState panAndZoomState) {
         final SubsamplingScaleImageView currentPhoto = getOnScreenPhotoView();
         currentPhoto.setScaleAndCenter(panAndZoomState.getScale(), panAndZoomState.getCenterPoint().orElse(null));
+        updateExifTextView(currentPhoto.getScale());
         // as pan/zoom events are only passed for "origin = touch", we need to remember state here
         // for the sync'ed view where origin is "animation"
         zoomPanHandler.onPanOrZoomChanged(panAndZoomState);
@@ -157,9 +159,16 @@ public class ImageDetailViewImpl implements ImageDetailView {
     public void resetPanAndZoomState() {
         final SubsamplingScaleImageView currentPhoto = getOnScreenPhotoView();
         currentPhoto.resetScaleAndCenter();
+        updateExifTextView(null);
         // beware that this will NOT trigger a pan/zoom event, so we need to reset
         // the handler manually
         zoomPanHandler.onPanOrZoomChanged(PanAndZoomState.DEFAULT);
+    }
+
+    @Override
+    public Dimension getSourceDimension() {
+        final SubsamplingScaleImageView currentPhoto = getOnScreenPhotoView();
+        return new Dimension(currentPhoto.getSHeight(), currentPhoto.getSWidth());
     }
 
     @Override
@@ -205,22 +214,36 @@ public class ImageDetailViewImpl implements ImageDetailView {
         };
     }
 
+    @Override
+    public void updateDynamicViewStateText(final float newScale) {
+        // scale is a "source/view pixels ratio"
+        updateExifTextView(newScale);
+    }
+
     private void updateExifData() {
         try {
             final File imageFile = getCurrentImageBean().getImageFile();
             final ExifInterface exif = new ExifInterface(Objects.requireNonNull(getCurrentImageBean().getFileUri().getPath()));
             final long megaPixel = exif.getAttributeInt(ExifInterface.TAG_PIXEL_X_DIMENSION, 0) * (long) exif.getAttributeInt(ExifInterface.TAG_PIXEL_Y_DIMENSION, 0) / //
                     (1000 * 1000);
-            final String exifData = String.format(Locale.ENGLISH, "%s: ƒ/%.1f %s %.0fmm ISO %s %dMP",//
+            exifData = String.format(Locale.ENGLISH, "%s: ƒ/%.1f %s %.0fmm ISO %s %dMP",//
                     imageFile.getName(), //
                     exif.getAttributeDouble(ExifInterface.TAG_F_NUMBER, 0d), //
                     formatShutterSpeed(exif.getAttributeDouble(ExifInterface.TAG_EXPOSURE_TIME, 0d)), //
                     exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, 0d), //
                     exif.getAttribute(ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY),//
                     megaPixel);
-            exifTextView.setText(exifData);
         } catch (final IOException e) {
-            exifTextView.setText(e.getMessage());
+            exifData = e.getMessage();
+        }
+        updateExifTextView(null);
+    }
+
+    private void updateExifTextView(final Float newScale) {
+        if (newScale == null) {
+            exifTextView.setText(exifData);
+        } else {
+            exifTextView.setText(String.format(Locale.ENGLISH, "%s, %.0f%%", exifData, newScale * 100));
         }
     }
 

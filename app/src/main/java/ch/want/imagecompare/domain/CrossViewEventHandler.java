@@ -1,6 +1,7 @@
 package ch.want.imagecompare.domain;
 
 import android.graphics.PointF;
+import android.widget.TextView;
 
 import ch.want.imagecompare.ui.compareimages.ImageViewEventListener;
 
@@ -11,17 +12,17 @@ public class CrossViewEventHandler implements ImageViewEventListener {
 
     private final PhotoViewMediator photoViewMediator;
     private ImageDetailView imageDetailView;
+    private TextView dynamicTextView;
     private boolean matrixListenerActive;
-
-    private final int currentPageIndex = 0;
 
     CrossViewEventHandler(final PhotoViewMediator photoViewMediator) {
         this.photoViewMediator = photoViewMediator;
         matrixListenerActive = true;
     }
 
-    public void setImageDetailView(final ImageDetailView imageDetailView) {
+    public CrossViewEventHandler setImageDetailView(final ImageDetailView imageDetailView) {
         this.imageDetailView = imageDetailView;
+        return this;
     }
 
     @Override
@@ -40,6 +41,7 @@ public class CrossViewEventHandler implements ImageViewEventListener {
 
     @Override
     public void onZoomChanged(final float newScale) {
+        imageDetailView.updateDynamicViewStateText(newScale);
         onPanOrZoomChanged();
     }
 
