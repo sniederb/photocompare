@@ -36,7 +36,7 @@ public class ImageDetailViewImpl implements ImageDetailView {
 
     private static final int OFFSCREEN_PAGES_TO_KEEP = 1;
     private CrossViewEventHandler crossViewEventHandler;
-    private final ZoomPanRestoreHandler zoomPanHandler;
+    private final ZoomPanRestoreHandler zoomPanMemorizer;
 
     /*
      * The imageViewPager holds the state of the currently shown image. It relies
@@ -68,7 +68,7 @@ public class ImageDetailViewImpl implements ImageDetailView {
             imageViewPager.setCurrentItem(crossViewEventHandler.getOtherImageIndex() + 1);
             return true;
         });
-        zoomPanHandler = buildZoomPanRestoreHandler();
+        zoomPanMemorizer = buildZoomPanRestoreHandler();
     }
 
     @Override
@@ -83,14 +83,14 @@ public class ImageDetailViewImpl implements ImageDetailView {
         }
         this.crossViewEventHandler = crossViewEventHandler;
         crossViewEventHandler.setImageDetailView(this);
-        imageViewPager.addOnPageChangeListener(zoomPanHandler);
+        imageViewPager.addOnPageChangeListener(zoomPanMemorizer);
         imageViewPagerAdapter.setMatrixListener(crossViewEventHandler);
     }
 
     @Override
     public void setImageList(final ArrayList<ImageBean> galleryImageList) {
         imageViewPagerAdapter = new ImagePagerAdapter(galleryImageList);
-        imageViewPagerAdapter.setZoomPanRestoreHandler(zoomPanHandler);
+        imageViewPagerAdapter.setZoomPanRestoreHandler(zoomPanMemorizer);
         imageViewPager.setAdapter(imageViewPagerAdapter);
     }
 
@@ -152,7 +152,7 @@ public class ImageDetailViewImpl implements ImageDetailView {
         updateExifTextView(currentPhoto.getScale());
         // as pan/zoom events are only passed for "origin = touch", we need to remember state here
         // for the sync'ed view where origin is "animation"
-        zoomPanHandler.onPanOrZoomChanged(panAndZoomState);
+        zoomPanMemorizer.onPanOrZoomChanged(panAndZoomState);
     }
 
     @Override
@@ -162,13 +162,13 @@ public class ImageDetailViewImpl implements ImageDetailView {
         updateExifTextView(null);
         // beware that this will NOT trigger a pan/zoom event, so we need to reset
         // the handler manually
-        zoomPanHandler.onPanOrZoomChanged(PanAndZoomState.DEFAULT);
+        zoomPanMemorizer.onPanOrZoomChanged(PanAndZoomState.DEFAULT);
     }
 
     @Override
     public Dimension getSourceDimension() {
         final SubsamplingScaleImageView currentPhoto = getOnScreenPhotoView();
-        return new Dimension(currentPhoto.getSHeight(), currentPhoto.getSWidth());
+        return new Dimension(currentPhoto.getSWidth(), currentPhoto.getSHeight());
     }
 
     @Override

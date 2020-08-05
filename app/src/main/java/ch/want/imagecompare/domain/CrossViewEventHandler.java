@@ -1,7 +1,6 @@
 package ch.want.imagecompare.domain;
 
 import android.graphics.PointF;
-import android.widget.TextView;
 
 import ch.want.imagecompare.ui.compareimages.ImageViewEventListener;
 
@@ -12,7 +11,6 @@ public class CrossViewEventHandler implements ImageViewEventListener {
 
     private final PhotoViewMediator photoViewMediator;
     private ImageDetailView imageDetailView;
-    private TextView dynamicTextView;
     private boolean matrixListenerActive;
 
     CrossViewEventHandler(final PhotoViewMediator photoViewMediator) {

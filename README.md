@@ -29,8 +29,26 @@ The "pan and zoom listener" on a PhotoView is toggled in two cases:
 ** Re-enabled once in the onApplyZoomPanMatrix() implementation of the `ImageDetailViewImpl`
 * When applying a display matrix
 ** Disabled at the start of `PhotoViewMediator.copyPanAndZoom()`
-** Re-enabled in the finally block of above method 
+** Re-enabled in the finally block of above method
 
+#### Synchronizing pan and zoom
+
+When a user changes pan/zoom on one of the images:
+
+1. The `SubsamplingScaleImageView` triggers the registered `StateChangedListener`; this will be a `ImageViewListener`
+2. The `ImageViewListener` notifies all registered `ImageViewEventListener`
+    a. The `CrossViewEventHandler` sync's pan/zoom to the other image. There will be 2 instances, one sync'ing top to bottom, and one bottom to top. 
+    b. The `ZoomPanRestoreHandler` remembers pan/zoom so those settings can be applied to the next image when swiping
+3. The `CrossViewEventHandler` calls `PhotoViewMediator.onPanOrZoomChanged()`
+4. The `PhotoViewMediator` checks if synchronization is currently active or not.
+    a. If not active, the `PhotoViewMediator` updates its internal offsets
+    b. If active, the `PhotoViewMediator` maps the pan/zoom to _the other_ `ImageDetailView`
+5. `ImageDetailView` receives a `setPanAndZoomState()` with the new settings
+
+Relevant points to be aware of:
+
+* SubsamplingScaleImageView does **not** enfore maxScale when using setScaleAndCenter(), but does
+  so on user interaction
 
 ### SelectedImagesActivity
 

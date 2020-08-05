@@ -24,7 +24,10 @@ public class PhotoViewMediator {
 
     private boolean syncZoomAndPan = false;
     /**
-     * <strong>Offset</strong> of scale and pan between top and bottom image
+     * <p><strong>Offset</strong> of scale and pan between top and bottom image such
+     * that offsets are applied positively (+ and x) from bottom to top, and
+     * negatively (- and %) from top to bottom.</p>
+     * <p>Note that the internal {@code centerPoint} is a <strong>ratio</strong></p>
      */
     private PanAndZoomState panAndZoomOffset = null;
     private boolean checkboxesDarkMode = true;
@@ -169,60 +172,102 @@ public class PhotoViewMediator {
     private void copyPanAndZoom(final PanAndZoomState sourcePanAndZoomState, final ImageDetailView targetView, final boolean sourceIsBottom) {
         targetView.disableStateChangedListener();
         try {
-            final PanAndZoomState targetPanAndZoomState = getPanAndZoomWithOffset(sourcePanAndZoomState, sourceIsBottom);
+            final PanAndZoomState targetPanAndZoomState = applyOffset(sourcePanAndZoomState, sourceIsBottom);
             targetView.setPanAndZoomState(targetPanAndZoomState);
         } finally {
             targetView.enableStateChangedListener();
         }
     }
 
-    private PanAndZoomState getPanAndZoomWithOffset(final PanAndZoomState sourcePanAndZoomState, final boolean sourceIsBottom) {
+    private PanAndZoomState applyOffset(final PanAndZoomState sourcePanAndZoomState, final boolean sourceIsBottom) {
         if (panAndZoomOffset == null) {
             initPanAndZoomOffset();
         }
         final float scaleWithOffset;
-        final PointF centerOffset = panAndZoomOffset.getCenterPoint().orElse(null);
-        final PointF centerSource = sourcePanAndZoomState.getCenterPoint().orElse(null);
-        PointF centerWithOffset = null;
         if (sourceIsBottom) {
             scaleWithOffset = sourcePanAndZoomState.getScale() * panAndZoomOffset.getScale();
-            if ((centerOffset != null) && (centerSource != null)) {
-                centerWithOffset = new PointF(centerSource.x + centerOffset.x, centerSource.y + centerOffset.y);
-            }
         } else {
             scaleWithOffset = sourcePanAndZoomState.getScale() / panAndZoomOffset.getScale();
-            if ((centerOffset != null) && (centerSource != null)) {
-                centerWithOffset = new PointF(centerSource.x - centerOffset.x, centerSource.y - centerOffset.y);
-            }
         }
+        final PointF centerSource = sourcePanAndZoomState.getCenterPoint().orElse(null);
+        final PointF centerWithOffset = applyDimensionPointOffset(topView.getSourceDimension(), bottomView.getSourceDimension(), centerSource, sourceIsBottom);
         return new PanAndZoomState(scaleWithOffset, centerWithOffset);
     }
 
+    /**
+     * Create an initial {@link #panAndZoomOffset}
+     */
     private void initPanAndZoomOffset() {
         final Dimension topDimension = topView.getSourceDimension();
         final Dimension bottomDimension = bottomView.getSourceDimension();
-        final float initScale = (float) bottomDimension.width / topDimension.width;
-        panAndZoomOffset = new PanAndZoomState(initScale, new PointF(0, 0));
+        final float dimensionScaleOffset = getDimensionScaleOffset(topDimension, bottomDimension);
+        panAndZoomOffset = new PanAndZoomState(dimensionScaleOffset, null);
     }
 
+    /**
+     * Update the internal {@link #panAndZoomOffset} when {@link #topView} and {@link #bottomView}
+     * are not synchronized.
+     */
     private void updatePanAndZoomOffset() {
         final PanAndZoomState topPanAndZoom = topView.getPanAndZoomState();
+        final Dimension topDimension = topView.getSourceDimension();
         final PanAndZoomState bottomPanAndZoom = bottomView.getPanAndZoomState();
+        final Dimension bottomDimension = bottomView.getSourceDimension();
+        // note that here it would be wrong to apply getDimensionScaleOffset() again
         final float scaleOffset = topPanAndZoom.getScale() / bottomPanAndZoom.getScale();
+        //
         final PointF topCenterPoint = topPanAndZoom.getCenterPoint().orElse(null);
         final PointF bottomCenterPoint = bottomPanAndZoom.getCenterPoint().orElse(null);
-        // FIXME: need to adapt for base image size here
         if ((topCenterPoint != null) && (bottomCenterPoint != null)) {
-            final PointF centerOffset = new PointF(topCenterPoint.x - bottomCenterPoint.x, topCenterPoint.y - bottomCenterPoint.y);
+            final PointF centerOffset = getRelativeOffsetAsPoint(topDimension, topCenterPoint, bottomDimension, bottomCenterPoint);
             panAndZoomOffset = new PanAndZoomState(scaleOffset, centerOffset);
         } else {
             panAndZoomOffset = new PanAndZoomState(scaleOffset, null);
         }
     }
 
+    private static float getDimensionScaleOffset(final Dimension topDimension, final Dimension bottomDimension) {
+        return bottomDimension.getDiagonal() / topDimension.getDiagonal();
+    }
+
+    /**
+     * This method creates a {@link PointF} instance, which holds <strong>ratios</strong> for the x/y axis
+     */
+    private static PointF getRelativeOffsetAsPoint(final Dimension topDimension, final PointF topCenterPoint, final Dimension bottomDimension, final PointF bottomCenterPoint) {
+        final float ratioX = (topCenterPoint.x / topDimension.width) / (bottomCenterPoint.x / bottomDimension.width);
+        final float ratioY = (topCenterPoint.y / topDimension.height) / (bottomCenterPoint.y / bottomDimension.height);
+        return new PointF(ratioX, ratioY);
+    }
+
+    /**
+     * Sync'ing pan between a 12MP and a 24MP image, eg. moving horizontally on the 24MP image would "over-move"
+     * the 12MP image. This method adjusts for varying dimensions.
+     */
+    private PointF applyDimensionPointOffset(final Dimension topDimension, final Dimension bottomDimension, final PointF sourcePoint, final boolean sourceIsBottom) {
+        if (sourcePoint == null) {
+            return null;
+        }
+        final float relativeX;
+        final float relativeY;
+        if (sourceIsBottom) {
+            relativeX = sourcePoint.x / bottomDimension.width * topDimension.width;
+            relativeY = sourcePoint.y / bottomDimension.height * topDimension.height;
+        } else {
+            relativeX = sourcePoint.x / topDimension.width * bottomDimension.width;
+            relativeY = sourcePoint.y / topDimension.height * bottomDimension.height;
+        }
+        return panAndZoomOffset.getCenterPoint().map(centerOffset -> {
+            if (sourceIsBottom) {
+                return new PointF(relativeX * centerOffset.x, relativeY * centerOffset.y);
+            }
+            return new PointF(relativeX / centerOffset.x, relativeY / centerOffset.y);
+        }).orElseGet(() -> new PointF(relativeX, relativeY));
+    }
+
     public void resetState() {
         topView.resetPanAndZoomState();
         bottomView.resetPanAndZoomState();
+        panAndZoomOffset = null;
     }
 }
 

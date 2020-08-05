@@ -2,6 +2,8 @@ package ch.want.imagecompare.ui.compareimages;
 
 import android.graphics.PointF;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.util.Optional;
 
 public class PanAndZoomState {
@@ -31,5 +33,10 @@ public class PanAndZoomState {
 
     public float getScale() {
         return scale;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("scale", scale).append("centerPoint", centerPoint).toString();
     }
 }
