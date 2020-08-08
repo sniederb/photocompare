@@ -24,7 +24,11 @@
 
     <string name="shareselected_largetx_confirmation">Attempting to share %1$d file(s), which is rather a lot and might cause Android to crash this app. Do you still want to try?</string>
     <string name="shareselected_largetx_confirmation_title">Sharing a lot of images!</string>
-    <string name="share_images_intent">Share images to ...</string>
+    <string name="share_images_intent">Share images to …</string>
     <string name="navigation_will_lose_selection_title">Discard selection?</string>
     <string name="navigation_will_lose_selection">Image selection for the current folder will be lost. Do you want to proceed to folder selection?</string>
+
+    <string name="channel_filedelete_name">File deletes</string>
+    <string name="channel_filedelete_description">Show progress of deleting unwanted files</string>
+    <string name="channel_filedelete_title">Deleting unwanted images</string>
 </resources>
