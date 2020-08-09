@@ -148,11 +148,15 @@ public class ImageDetailViewImpl implements ImageDetailView {
     @Override
     public void setPanAndZoomState(final PanAndZoomState panAndZoomState) {
         final SubsamplingScaleImageView currentPhoto = getOnScreenPhotoView();
-        currentPhoto.setScaleAndCenter(panAndZoomState.getScale(), panAndZoomState.getCenterPoint().orElse(null));
-        updateExifTextView(currentPhoto.getScale());
+        setScaleAndCenter(currentPhoto, panAndZoomState);
         // as pan/zoom events are only passed for "origin = touch", we need to remember state here
         // for the sync'ed view where origin is "animation"
         zoomPanMemorizer.onPanOrZoomChanged(panAndZoomState);
+    }
+
+    private void setScaleAndCenter(final SubsamplingScaleImageView imageView, final PanAndZoomState panAndZoomState) {
+        imageView.setScaleAndCenter(panAndZoomState.getScale(), panAndZoomState.getCenterPoint().orElse(null));
+        updateExifTextView(imageView.getScale());
     }
 
     @Override
@@ -200,7 +204,7 @@ public class ImageDetailViewImpl implements ImageDetailView {
 
             @Override
             void onApplyPanAndZoomState(final PanAndZoomState targetPanAndZoomState) {
-                getOnScreenPhotoView().setScaleAndCenter(targetPanAndZoomState.getScale(), targetPanAndZoomState.getCenterPoint().orElse(null));
+                setScaleAndCenter(getOnScreenPhotoView(), targetPanAndZoomState);
                 crossViewEventHandler.enableCrossViewEvents();
             }
 
