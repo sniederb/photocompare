@@ -5,17 +5,21 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageButton;
-import android.widget.Switch;
+
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-import androidx.appcompat.app.ActionBar;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
+import ch.want.imagecompare.data.ImageBeanComparators;
 import ch.want.imagecompare.domain.FileImageMediaQuery;
 import ch.want.imagecompare.domain.PhotoViewMediator;
 
@@ -26,8 +30,9 @@ import ch.want.imagecompare.domain.PhotoViewMediator;
 public class CompareImagesActivity extends AppCompatActivity {
 
     private String currentImageFolder;
+    private boolean sortNewToOld = true;
     private PhotoViewMediator photoViewMediator;
-    private Switch syncToggle;
+    private SwitchMaterial syncToggle;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -56,16 +61,19 @@ public class CompareImagesActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             final Intent intent = getIntent();
             currentImageFolder = intent.getStringExtra(BundleKeys.KEY_IMAGE_FOLDER);
+            sortNewToOld = intent.getBooleanExtra(BundleKeys.KEY_SORT_NEWEST_FIRST, true);
             selectedBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndex = intent.getIntExtra(BundleKeys.KEY_TOPIMAGE_INDEX, 0);
             bottomIndex = intent.getIntExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         } else {
             currentImageFolder = savedInstanceState.getString(BundleKeys.KEY_IMAGE_FOLDER);
+            sortNewToOld = savedInstanceState.getBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, true);
             selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndex = savedInstanceState.getInt(BundleKeys.KEY_TOPIMAGE_INDEX);
             bottomIndex = savedInstanceState.getInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         }
         final List<ImageBean> allImageBeans = new FileImageMediaQuery(getContentResolver(), currentImageFolder).execute();
+        Collections.sort(allImageBeans, sortNewToOld ? ImageBeanComparators.byDateDesc() : ImageBeanComparators.byDateAsc());
         if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
             ImageBean.copySelectedState(selectedBeansFromState, allImageBeans);
         }
@@ -76,8 +84,7 @@ public class CompareImagesActivity extends AppCompatActivity {
     private void initToolbar() {
         final Toolbar toolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
-        final ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+        Optional.ofNullable(getSupportActionBar()).ifPresent(actionBar -> actionBar.setDisplayHomeAsUpEnabled(true));
     }
 
     @Override
@@ -87,9 +94,10 @@ public class CompareImagesActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(final Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder);
+        savedInstanceState.putBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, sortNewToOld);
         savedInstanceState.putInt(BundleKeys.KEY_TOPIMAGE_INDEX, photoViewMediator.getTopIndex());
         savedInstanceState.putInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, photoViewMediator.getBottomIndex());
         savedInstanceState.putParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(photoViewMediator.getGalleryImageList())));
@@ -110,7 +118,7 @@ public class CompareImagesActivity extends AppCompatActivity {
                 item.setChecked(isNowShowingExif);
                 return true;
             case android.R.id.home:
-                new BackToImageListTransition(this, currentImageFolder, photoViewMediator.getGalleryImageList()).execute();
+                new BackToImageListTransition(this, currentImageFolder, sortNewToOld, photoViewMediator.getGalleryImageList()).execute();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

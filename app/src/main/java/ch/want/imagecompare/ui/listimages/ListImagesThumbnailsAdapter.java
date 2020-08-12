@@ -20,8 +20,8 @@ class ListImagesThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<Singl
 
     private final String currentImageFolder;
 
-    ListImagesThumbnailsAdapter(final String currentImageFolder, final List<ImageBean> imageList) {
-        super(imageList);
+    ListImagesThumbnailsAdapter(final String currentImageFolder, final boolean sortNewestFirst, final List<ImageBean> imageList) {
+        super(imageList, sortNewestFirst);
         this.currentImageFolder = currentImageFolder;
     }
 
@@ -52,7 +52,7 @@ class ListImagesThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<Singl
 
     @Override
     protected View.OnClickListener createClickHandler(final List<ImageBean> galleryImageList, final int selectedIndex) {
-        return new OpenCompareClickHandler(currentImageFolder, galleryImageList, selectedIndex);
+        return new OpenCompareClickHandler(currentImageFolder, getSortNewestFirst(), galleryImageList, selectedIndex);
     }
 
     @Override

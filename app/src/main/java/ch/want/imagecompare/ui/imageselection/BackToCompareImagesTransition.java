@@ -9,6 +9,9 @@ import androidx.core.app.NavUtils;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.data.ImageBean;
 
+/**
+ * From "show selection", handle navigation to {@link ch.want.imagecompare.ui.compareimages.CompareImagesActivity}
+ */
 class BackToCompareImagesTransition {
 
     private final ArrayList<ImageBean> galleryImageList;

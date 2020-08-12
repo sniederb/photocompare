@@ -10,6 +10,9 @@ import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.ui.TransitionHandler;
 import ch.want.imagecompare.ui.listimages.ListImagesInFolderActivity;
 
+/**
+ * Handle click to open {@link ListImagesInFolderActivity}
+ */
 class OpenFolderClickHandler implements View.OnClickListener {
 
     private final File imageDirectory;

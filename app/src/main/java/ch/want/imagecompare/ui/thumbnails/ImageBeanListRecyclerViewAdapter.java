@@ -9,12 +9,14 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
+import ch.want.imagecompare.data.ImageBeanComparators;
 
 /**
  * A RecyclerView only creates minimum number of Views needed to fill the screen. And it works by reusing the old/created Views.
@@ -28,9 +30,11 @@ import ch.want.imagecompare.data.ImageBean;
  */
 public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.ViewHolder & ThumbnailViewHolder> extends RecyclerView.Adapter<T> {
     protected final List<ImageBean> galleryImageList;
+    private boolean sortNewestFirst;
 
-    protected ImageBeanListRecyclerViewAdapter(final List<ImageBean> imageList) {
+    protected ImageBeanListRecyclerViewAdapter(final List<ImageBean> imageList, final boolean sortNewestFirst) {
         galleryImageList = imageList;
+        this.sortNewestFirst = sortNewestFirst;
     }
 
     public ImageBean getImageAndTitleBean(final int i) {
@@ -39,10 +43,6 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
 
     /**
      * Create as many views as needed to fill the screen
-     *
-     * @param viewGroup
-     * @param i
-     * @return
      */
     @NonNull
     @Override
@@ -54,8 +54,6 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
 
     /**
      * Get the layout id for the recycler view item (eg 'view_image_and_title')
-     *
-     * @return
      */
     protected abstract int getLayoutForViewHolder();
 
@@ -64,8 +62,6 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
     /**
      * Adjust the size of the layout holding the image card plus - optionally - text to
      * the calculated view size.
-     *
-     * @param view
      */
     private void adjustViewBasedOnScreenWidth(final View view) {
         final ImageLayoutSizeParams imageLayoutSizeParams = getSizeParams(view.getResources());
@@ -78,8 +74,6 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
 
     /**
      * Adjust the size of a single card to that of the image.
-     *
-     * @param view
      */
     private void adjustCardview(final View view) {
         final View cardview = view.findViewById(getThumbnailCardId());
@@ -93,9 +87,6 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
 
     /**
      * Helper method to be called during {@link #onBindViewHolder(RecyclerView.ViewHolder, int)}
-     *
-     * @param viewHolder
-     * @param i
      */
     protected void onBind(@NonNull final T viewHolder, final int i) {
         final ImageView imageView = viewHolder.getImageView();
@@ -119,7 +110,7 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
 
     protected abstract View.OnClickListener createClickHandler(ImageBean imageAndTitle);
 
-    protected abstract View.OnLongClickListener createLongClickHandler(ImageBeanListRecyclerViewAdapter viewAdapter, final int selectedIndex);
+    protected abstract View.OnLongClickListener createLongClickHandler(ImageBeanListRecyclerViewAdapter<T> viewAdapter, final int selectedIndex);
 
     protected View.OnClickListener createClickHandler(final List<ImageBean> galleryImageList, final int selectedIndex) {
         final ImageBean imageAndTitle = getImageAndTitleBean(selectedIndex);
@@ -131,5 +122,15 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
     @Override
     public int getItemCount() {
         return galleryImageList == null ? 0 : galleryImageList.size();
+    }
+
+    protected boolean getSortNewestFirst() {
+        return sortNewestFirst;
+    }
+
+    public void toggleSort() {
+        sortNewestFirst = !sortNewestFirst;
+        Collections.sort(galleryImageList, sortNewestFirst ? ImageBeanComparators.byDateDesc() : ImageBeanComparators.byDateAsc());
+        notifyDataSetChanged();
     }
 }

@@ -16,7 +16,7 @@ public class FileImageMediaQuery {
     private final String bucketPath;
     private final List<ImageBean> galleryImageList = new ArrayList<>();
 
-    public FileImageMediaQuery(ContentResolver contentResolver, final String bucketPath) {
+    public FileImageMediaQuery(final ContentResolver contentResolver, final String bucketPath) {
         this.contentResolver = contentResolver;
         this.bucketPath = bucketPath;
     }
@@ -28,7 +28,7 @@ public class FileImageMediaQuery {
             public void doWithCursor(final String bucketPath, final String imageFilePath, final Uri imageContentUri) {
                 final File file = new File(imageFilePath);
                 if (file.exists()) {
-                    galleryImageList.add(new ImageBean(file.getName(), Uri.fromFile(file), imageContentUri));
+                    galleryImageList.add(new ImageBean(file.getName(), file.lastModified(), Uri.fromFile(file), imageContentUri));
                 }
             }
         }.execute();

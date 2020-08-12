@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Photo Compare</string>
+    <string name="app_name_with_version">Photo Compare - %s</string>
     <string name="permissions_title">Need storage permission</string>
     <string name="permissions_explanation">This app is useless without the permission to read your images, and to cache bitmaps on the internal storage.</string>
     <string name="action_select_folder">Select folder</string>
@@ -12,6 +13,7 @@
     <string name="confirm_selection">Image was added to selection</string>
     <string name="show_selection">Show selection</string>
     <string name="checkbox_dark">Dark checkboxes</string>
+    <string name="show_newest_first">Show newest first</string>
     <string name="show_exif">Show EXIF</string>
     <string name="selected_image_content">Selected image</string>
     <string name="current_selection">Image selection</string>

@@ -18,7 +18,7 @@ public class ListSelectionThumbnailsAdapter extends ImageBeanListRecyclerViewAda
     private final List<ImageBean> selectedImageList = new ArrayList<>();
 
     ListSelectionThumbnailsAdapter(final List<ImageBean> imageList) {
-        super(imageList);
+        super(imageList, true);
         selectedImageList.addAll(ImageBean.getSelectedImageBeans(imageList));
     }
 

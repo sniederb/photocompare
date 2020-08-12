@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
+import ch.want.imagecompare.data.ImageBeanComparators;
 import ch.want.imagecompare.domain.FolderImageMediaQuery;
 import ch.want.imagecompare.domain.PermissionChecker;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
@@ -81,7 +82,7 @@ public class ListAllImageFoldersActivity extends AppCompatActivity implements Sw
     }
 
     private void updateLayoutFromImageBuckets() {
-        final ImageBeanListRecyclerViewAdapter adapter = new ListFolderThumbnailsAdapter(getImageFolders());
+        final ImageBeanListRecyclerViewAdapter<SingleFolderViewHolder> adapter = new ListFolderThumbnailsAdapter(getImageFolders());
         final RecyclerView recyclerView = findViewById(R.id.folderThumbnails);
         final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this, FlexDirection.ROW, FlexWrap.WRAP);
         recyclerView.setLayoutManager(layoutManager);
@@ -93,7 +94,7 @@ public class ListAllImageFoldersActivity extends AppCompatActivity implements Sw
         for (final Map.Entry<String, Uri> entry : imageBuckets.entrySet()) {
             buckets.add(new ImageBean(entry.getKey(), entry.getValue()));
         }
-        Collections.sort(buckets);
+        Collections.sort(buckets, ImageBeanComparators.byImageName());
         return buckets;
     }
 
@@ -102,7 +103,7 @@ public class ListAllImageFoldersActivity extends AppCompatActivity implements Sw
         try {
             final PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             final String version = pInfo.versionName;
-            txtView.setText(getString(R.string.app_name) + " - " + version);
+            txtView.setText(getString(R.string.app_name_with_version, version));
         } catch (final PackageManager.NameNotFoundException e) {
             Log.w("setAppNameAndVersion", "App name and version are not displayed: " + e.getMessage());
         }

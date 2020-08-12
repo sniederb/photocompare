@@ -19,7 +19,7 @@ import ch.want.imagecompare.ui.thumbnails.ImageLayoutSizeParams;
 class ListFolderThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<SingleFolderViewHolder> {
 
     ListFolderThumbnailsAdapter(final List<ImageBean> imageList) {
-        super(imageList);
+        super(imageList, true);
     }
 
     @Override

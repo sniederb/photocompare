@@ -9,10 +9,15 @@ import org.junit.runner.RunWith;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(AndroidJUnit4.class)
@@ -28,6 +33,15 @@ public class ListImagesInFolderActivityTest {
         final Intent i = new Intent();
         i.putExtra(BundleKeys.KEY_IMAGE_FOLDER, "/storage/emulated/0/Download");
         mActivityRule.launchActivity(i);
+    }
+
+    @Test
+    public void clickSortCheckbox() {
+        onCreate();
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
+        // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
+        onView(withText("Show newest first")).perform(click());
     }
 
     @Test

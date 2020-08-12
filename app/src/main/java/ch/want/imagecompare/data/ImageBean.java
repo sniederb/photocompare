@@ -4,8 +4,6 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +12,14 @@ import java.util.Objects;
 /**
  * Bean class holding information for an image
  */
-public class ImageBean implements Comparable<ImageBean>, Parcelable {
+public class ImageBean implements Parcelable {
 
     /**
      * Something like {@code J0091157.jpg}
      */
     private final String displayName;
+
+    private final long lastModified;
 
     /**
      * Something like {@code file:///storage/emulated/0/Download/EOS77D/J0091157.JPG}, ie a file locator
@@ -40,18 +40,21 @@ public class ImageBean implements Comparable<ImageBean>, Parcelable {
 
     public ImageBean(final String displayName, final Uri fileUri) {
         this.displayName = displayName;
+        lastModified = 0;
         filePathToImage = fileUri.toString();
         contentPathToImage = "";
     }
 
-    public ImageBean(final String displayName, final Uri fileUri, final Uri contentUri) {
+    public ImageBean(final String displayName, final long lastModified, final Uri fileUri, final Uri contentUri) {
         this.displayName = displayName;
+        this.lastModified = lastModified;
         filePathToImage = fileUri.toString();
         contentPathToImage = contentUri.toString();
     }
 
     private ImageBean(final Parcel in) {
         displayName = in.readString();
+        lastModified = in.readLong();
         filePathToImage = in.readString();
         contentPathToImage = in.readString();
         selected = Boolean.parseBoolean(in.readString());
@@ -101,6 +104,7 @@ public class ImageBean implements Comparable<ImageBean>, Parcelable {
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(displayName);
+        dest.writeLong(lastModified);
         dest.writeString(filePathToImage);
         dest.writeString(contentPathToImage);
         dest.writeString(Boolean.toString(selected));
@@ -113,6 +117,10 @@ public class ImageBean implements Comparable<ImageBean>, Parcelable {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    long getLastModified() {
+        return lastModified;
     }
 
     public Uri getFileUri() {
@@ -141,11 +149,6 @@ public class ImageBean implements Comparable<ImageBean>, Parcelable {
 
     public void setInitialForCompare(final boolean initialForCompare) {
         this.initialForCompare = initialForCompare;
-    }
-
-    @Override
-    public int compareTo(final ImageBean o) {
-        return StringUtils.compare(displayName, o.displayName, true);
     }
 
     @Override
