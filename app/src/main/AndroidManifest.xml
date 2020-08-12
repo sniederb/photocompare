@@ -7,6 +7,7 @@
 
     <application
         android:allowBackup="true"
+        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -22,10 +23,10 @@
         </activity>
         <activity
             android:name=".ui.listimages.ListImagesInFolderActivity"
-            android:parentActivityName=".ui.listfolders.ListAllImageFoldersActivity"></activity>
+            android:parentActivityName=".ui.listfolders.ListAllImageFoldersActivity" />
         <activity
             android:name=".ui.compareimages.CompareImagesActivity"
-            android:parentActivityName=".ui.listimages.ListImagesInFolderActivity"></activity>
+            android:parentActivityName=".ui.listimages.ListImagesInFolderActivity" />
         <activity
             android:name=".ui.imageselection.SelectedImagesActivity"
             android:parentActivityName=".ui.compareimages.CompareImagesActivity" />
