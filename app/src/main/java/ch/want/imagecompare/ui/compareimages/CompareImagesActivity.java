@@ -107,7 +107,7 @@ public class CompareImagesActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.showSelection:
-                new ShowSelectedImagesTransition(this, currentImageFolder, photoViewMediator).execute();
+                new ShowSelectedImagesTransition(this, currentImageFolder, sortNewToOld, photoViewMediator).execute();
                 return true;
             case R.id.checkboxStyleDark:
                 final boolean isNowDarkMode = photoViewMediator.toggleCheckboxStyleDark();

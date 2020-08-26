@@ -16,12 +16,14 @@ class ShowSelectedImagesTransition {
     private final Context context;
     private final ArrayList<ImageBean> galleryImageList;
     private final String currentImageFolder;
+    private final boolean sortNewestFirst;
     private final int topImageIndex;
     private final int bottomImageIndex;
 
-    ShowSelectedImagesTransition(final Context context, final String currentImageFolder, final PhotoViewMediator photoViewMediator) {
+    ShowSelectedImagesTransition(final Context context, final String currentImageFolder, final boolean sortNewestFirst, final PhotoViewMediator photoViewMediator) {
         this.context = context;
         this.currentImageFolder = currentImageFolder;
+        this.sortNewestFirst = sortNewestFirst;
         galleryImageList = photoViewMediator.getGalleryImageList();
         topImageIndex = photoViewMediator.getTopIndex();
         bottomImageIndex = photoViewMediator.getBottomIndex();
@@ -30,6 +32,7 @@ class ShowSelectedImagesTransition {
     void execute() {
         final Intent intent = new Intent(context, SelectedImagesActivity.class)//
                 .putExtra(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder)//
+                .putExtra(BundleKeys.KEY_SORT_NEWEST_FIRST, sortNewestFirst)//
                 .putParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)))//
                 .putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, topImageIndex)//
                 .putExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, bottomImageIndex);

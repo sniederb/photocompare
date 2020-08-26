@@ -64,7 +64,6 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
             sortNewToOld = savedInstanceState.getBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, true);
             selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
         }
-        galleryImageList.clear();
         loadImagesForCurrentImageFolder();
         if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
             ImageBean.copySelectedState(selectedBeansFromState, galleryImageList);
@@ -111,6 +110,7 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
     }
 
     private void loadImagesForCurrentImageFolder() {
+        galleryImageList.clear();
         galleryImageList.addAll(new FileImageMediaQuery(getContentResolver(), currentImageFolder).execute());
         Collections.sort(galleryImageList, sortNewToOld ? ImageBeanComparators.byDateDesc() : ImageBeanComparators.byDateAsc());
     }
