@@ -9,21 +9,27 @@ public abstract class ImageMediaQuery extends ImageMediaStore {
 
     private final String selectionExpression;
     private final String[] selectionArgs;
+    private String orderBy = ORDER_BY_DATE_TAKEN_DESC;
 
-    protected ImageMediaQuery(final ContentResolver contentResolver) {
+    ImageMediaQuery(final ContentResolver contentResolver) {
         super(contentResolver);
         selectionExpression = null;
         selectionArgs = null;
     }
 
-    protected ImageMediaQuery(final ContentResolver contentResolver, final String selectionExpression, final String[] selectionArgs) {
+    ImageMediaQuery(final ContentResolver contentResolver, final String selectionExpression, final String[] selectionArgs) {
         super(contentResolver);
         this.selectionExpression = selectionExpression;
         this.selectionArgs = selectionArgs;
     }
 
+    public ImageMediaQuery setSortNewToOld(final boolean sortNewToOld) {
+        orderBy = sortNewToOld ? ORDER_BY_DATE_TAKEN_DESC : ORDER_BY_DATE_TAKEN_ASC;
+        return this;
+    }
+
     public void execute() {
-        final Cursor cursor = contentResolver.query(MEDIA_CONTENT_URI, PROJECTION, selectionExpression, selectionArgs, ORDER_BY);
+        final Cursor cursor = contentResolver.query(MEDIA_CONTENT_URI, PROJECTION, selectionExpression, selectionArgs, orderBy);
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 final String bucketPath = cursor.getString(0);

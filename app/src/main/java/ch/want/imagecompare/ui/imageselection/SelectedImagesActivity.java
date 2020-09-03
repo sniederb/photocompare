@@ -12,7 +12,6 @@ import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Optional;
 
 import androidx.annotation.NonNull;
@@ -23,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
-import ch.want.imagecompare.data.ImageBeanComparators;
 import ch.want.imagecompare.domain.FileImageMediaQuery;
 import ch.want.imagecompare.domain.PhotoViewMediator;
 
@@ -80,8 +78,7 @@ public class SelectedImagesActivity extends AppCompatActivity {
 
     private void loadImagesForCurrentImageFolder() {
         galleryImageList.clear();
-        galleryImageList.addAll(new FileImageMediaQuery(getContentResolver(), currentImageFolder).execute());
-        Collections.sort(galleryImageList, sortNewToOld ? ImageBeanComparators.byDateDesc() : ImageBeanComparators.byDateAsc());
+        galleryImageList.addAll(new FileImageMediaQuery(getContentResolver(), currentImageFolder, sortNewToOld).execute());
     }
 
     private void initToolbar() {

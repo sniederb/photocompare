@@ -9,7 +9,6 @@ import android.widget.ImageButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +18,6 @@ import androidx.appcompat.widget.Toolbar;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
-import ch.want.imagecompare.data.ImageBeanComparators;
 import ch.want.imagecompare.domain.FileImageMediaQuery;
 import ch.want.imagecompare.domain.PhotoViewMediator;
 
@@ -72,8 +70,7 @@ public class CompareImagesActivity extends AppCompatActivity {
             topImageIndex = savedInstanceState.getInt(BundleKeys.KEY_TOPIMAGE_INDEX);
             bottomIndex = savedInstanceState.getInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         }
-        final List<ImageBean> allImageBeans = new FileImageMediaQuery(getContentResolver(), currentImageFolder).execute();
-        Collections.sort(allImageBeans, sortNewToOld ? ImageBeanComparators.byDateDesc() : ImageBeanComparators.byDateAsc());
+        final List<ImageBean> allImageBeans = new FileImageMediaQuery(getContentResolver(), currentImageFolder, sortNewToOld).execute();
         if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
             ImageBean.copySelectedState(selectedBeansFromState, allImageBeans);
         }

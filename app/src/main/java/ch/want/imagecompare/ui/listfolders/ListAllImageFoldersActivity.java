@@ -11,6 +11,8 @@ import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,7 +26,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
-import ch.want.imagecompare.data.ImageBeanComparators;
 import ch.want.imagecompare.domain.FolderImageMediaQuery;
 import ch.want.imagecompare.domain.PermissionChecker;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
@@ -94,7 +95,7 @@ public class ListAllImageFoldersActivity extends AppCompatActivity implements Sw
         for (final Map.Entry<String, Uri> entry : imageBuckets.entrySet()) {
             buckets.add(new ImageBean(entry.getKey(), entry.getValue()));
         }
-        Collections.sort(buckets, ImageBeanComparators.byImageName());
+        Collections.sort(buckets, (a, b) -> StringUtils.compare(a.getDisplayName(), b.getDisplayName(), true));
         return buckets;
     }
 

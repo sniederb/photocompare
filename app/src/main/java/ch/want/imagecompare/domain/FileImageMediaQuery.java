@@ -14,11 +14,13 @@ public class FileImageMediaQuery {
 
     private final ContentResolver contentResolver;
     private final String bucketPath;
+    private final boolean sortNewToOld;
     private final List<ImageBean> galleryImageList = new ArrayList<>();
 
-    public FileImageMediaQuery(final ContentResolver contentResolver, final String bucketPath) {
+    public FileImageMediaQuery(final ContentResolver contentResolver, final String bucketPath, final boolean sortNewToOld) {
         this.contentResolver = contentResolver;
         this.bucketPath = bucketPath;
+        this.sortNewToOld = sortNewToOld;
     }
 
     public List<ImageBean> execute() {
@@ -31,7 +33,9 @@ public class FileImageMediaQuery {
                     galleryImageList.add(new ImageBean(file.getName(), file.lastModified(), Uri.fromFile(file), imageContentUri));
                 }
             }
-        }.execute();
+        }//
+                .setSortNewToOld(sortNewToOld)//
+                .execute();
         return galleryImageList;
     }
 }

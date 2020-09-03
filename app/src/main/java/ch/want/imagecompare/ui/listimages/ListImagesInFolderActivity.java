@@ -10,7 +10,6 @@ import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Optional;
 
 import androidx.annotation.NonNull;
@@ -21,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
-import ch.want.imagecompare.data.ImageBeanComparators;
 import ch.want.imagecompare.domain.FileImageMediaQuery;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 
@@ -99,6 +97,7 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
             case R.id.sortNewToOld:
                 sortNewToOld = !sortNewToOld;
                 item.setChecked(sortNewToOld);
+                loadImagesForCurrentImageFolder();
                 notifyAdapterDataSetChanged();
                 return true;
         }
@@ -111,8 +110,7 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
 
     private void loadImagesForCurrentImageFolder() {
         galleryImageList.clear();
-        galleryImageList.addAll(new FileImageMediaQuery(getContentResolver(), currentImageFolder).execute());
-        Collections.sort(galleryImageList, sortNewToOld ? ImageBeanComparators.byDateDesc() : ImageBeanComparators.byDateAsc());
+        galleryImageList.addAll(new FileImageMediaQuery(getContentResolver(), currentImageFolder, sortNewToOld).execute());
     }
 
     private void initRecyclerImageView() {
@@ -127,7 +125,7 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
         Optional.ofNullable(findViewById(R.id.imageThumbnails))//
                 .map(view -> (RecyclerView) view)//
                 .map(view -> (ImageBeanListRecyclerViewAdapter<?>) view.getAdapter())//
-                .ifPresent(ImageBeanListRecyclerViewAdapter::toggleSort);
+                .ifPresent(adapter -> adapter.notifyDataSetSortChanged());
     }
 
     private void showAlertLosingSelection() {

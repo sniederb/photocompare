@@ -20,7 +20,8 @@ public class ImageMediaStore {
      * <p>_ID: The internal image media identifier</p>
      */
     static final String[] PROJECTION = {MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID};
-    static final String ORDER_BY = MediaStore.Images.Media.DATE_TAKEN + " DESC";
+    static final String ORDER_BY_DATE_TAKEN_ASC = MediaStore.Images.ImageColumns.DATE_TAKEN + ", " + MediaStore.Images.ImageColumns.DATE_ADDED;
+    static final String ORDER_BY_DATE_TAKEN_DESC = MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC, " + MediaStore.Images.ImageColumns.DATE_ADDED + " DESC";
     final ContentResolver contentResolver;
 
     public ImageMediaStore(final ContentResolver contentResolver) {

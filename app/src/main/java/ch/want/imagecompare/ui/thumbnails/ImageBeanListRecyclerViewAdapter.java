@@ -9,14 +9,12 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
-import ch.want.imagecompare.data.ImageBeanComparators;
 
 /**
  * A RecyclerView only creates minimum number of Views needed to fill the screen. And it works by reusing the old/created Views.
@@ -106,6 +104,7 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
     }
 
     protected void postBind(final ImageView imageView, final ImageBean imageAndTitle) {
+        // overridden in subclasses
     }
 
     protected abstract View.OnClickListener createClickHandler(ImageBean imageAndTitle);
@@ -128,9 +127,8 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
         return sortNewestFirst;
     }
 
-    public void toggleSort() {
+    public void notifyDataSetSortChanged() {
         sortNewestFirst = !sortNewestFirst;
-        Collections.sort(galleryImageList, sortNewestFirst ? ImageBeanComparators.byDateDesc() : ImageBeanComparators.byDateAsc());
         notifyDataSetChanged();
     }
 }
