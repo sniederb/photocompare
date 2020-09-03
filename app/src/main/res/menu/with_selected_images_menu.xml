@@ -6,21 +6,25 @@
         android:id="@+id/removeUnselected"
         android:icon="@drawable/ic_refresh_black_24dp"
         android:title="@string/remove_from_selection"
+        app:iconTint="?android:attr/textColorPrimary"
         app:showAsAction="never" />
     <item
         android:id="@+id/invertSelection"
         android:icon="@drawable/ic_shuffle_black_24dp"
         android:title="@string/invert_selection"
+        app:iconTint="?android:attr/textColorPrimary"
         app:showAsAction="never" />
     <item
         android:id="@+id/deleteUnselected"
         android:icon="@drawable/ic_delete_sweep_black_24dp"
         android:title="@string/delete_unselected"
+        app:iconTint="?android:attr/textColorPrimary"
         app:showAsAction="never" />
     <item
         android:id="@+id/deleteSelected"
         android:icon="@drawable/ic_delete_black_24dp"
         android:title="@string/delete_selected"
+        app:iconTint="?android:attr/textColorPrimary"
         app:showAsAction="never" />
 
 

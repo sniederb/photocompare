@@ -1,5 +1,6 @@
 package ch.want.imagecompare.ui.listfolders;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -26,6 +27,6 @@ class OpenFolderClickHandler implements View.OnClickListener {
         final Context context = v.getContext();
         final Intent intent = new Intent(context, ListImagesInFolderActivity.class);
         intent.putExtra(BundleKeys.KEY_IMAGE_FOLDER, imageDirectory.getAbsolutePath());
-        TransitionHandler.switchToActivity(context, intent);
+        TransitionHandler.switchToActivity((Activity) context, intent);
     }
 }

@@ -1,5 +1,6 @@
 package ch.want.imagecompare.ui.listimages;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -40,7 +41,7 @@ class OpenCompareClickHandler implements View.OnClickListener {
         } else {
             intent.putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, listIndex);
         }
-        TransitionHandler.switchToActivity(context, intent);
+        TransitionHandler.switchToActivity((Activity) context, intent);
     }
 
     private Integer getSecondarySelection() {

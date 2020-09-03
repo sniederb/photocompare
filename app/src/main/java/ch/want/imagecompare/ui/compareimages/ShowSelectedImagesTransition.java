@@ -1,6 +1,6 @@
 package ch.want.imagecompare.ui.compareimages;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 
 import java.util.ArrayList;
@@ -13,14 +13,14 @@ import ch.want.imagecompare.ui.imageselection.SelectedImagesActivity;
 
 class ShowSelectedImagesTransition {
 
-    private final Context context;
+    private final Activity context;
     private final ArrayList<ImageBean> galleryImageList;
     private final String currentImageFolder;
     private final boolean sortNewestFirst;
     private final int topImageIndex;
     private final int bottomImageIndex;
 
-    ShowSelectedImagesTransition(final Context context, final String currentImageFolder, final boolean sortNewestFirst, final PhotoViewMediator photoViewMediator) {
+    ShowSelectedImagesTransition(final Activity context, final String currentImageFolder, final boolean sortNewestFirst, final PhotoViewMediator photoViewMediator) {
         this.context = context;
         this.currentImageFolder = currentImageFolder;
         this.sortNewestFirst = sortNewestFirst;

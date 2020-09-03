@@ -22,6 +22,19 @@ public class ImageBeanComparatorsTest {
     }
 
     @Test
+    public void testByImageNameShouldWorkWithNullName() {
+        // arrange
+        final List<ImageBean> imageBeans = new ArrayList<>();
+        final Uri uri = Uri.parse("ftp://ftp.is.co.za/rfc/rfc1808.txt");
+        imageBeans.add(new ImageBean("foobar", uri));
+        imageBeans.add(new ImageBean(null, uri));
+        // act
+        Collections.sort(imageBeans, ImageBeanComparators.byImageName());
+        // assert
+        Assert.assertEquals("001.jpg", imageBeans.get(0).getDisplayName());
+    }
+
+    @Test
     public void testByDateAsc() {
         final List<ImageBean> imageBeans = createImageBeans();
         Collections.sort(imageBeans, ImageBeanComparators.byDateAsc());
