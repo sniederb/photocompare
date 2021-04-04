@@ -3,15 +3,16 @@ package ch.want.imagecompare.ui.compareimages;
 import android.content.Intent;
 import android.net.Uri;
 
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
@@ -29,56 +30,59 @@ import static org.hamcrest.core.IsNot.not;
 
 @RunWith(AndroidJUnit4.class)
 public class CompareImagesActivityTest {
-    private static final boolean START_IN_TOUCH_MODE = false;
-    private static final boolean START_ACTIVITY_AUTOMATICALLY = false;
-    @Rule
-    public final ActivityTestRule<CompareImagesActivity> mActivityRule = new ActivityTestRule<>(CompareImagesActivity.class, START_IN_TOUCH_MODE, START_ACTIVITY_AUTOMATICALLY);
 
     @Test
     public void onCreate() {
-        final Intent i = new Intent();
-        i.putExtra(BundleKeys.KEY_IMAGE_FOLDER, "/storage/emulated/0/Download");
-        i.putParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION, buildSelectedImageBeanList());
-        i.putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, 0);
-        mActivityRule.launchActivity(i);
+        actAndAssert(Assert::assertNotNull);
     }
 
     @Test
     public void clickImageSelection() {
-        onCreate();
-        onView(allOf(withId(R.id.selectImageCheckbox), withParent(withId(R.id.upperImage)))).perform(click());
+        actAndAssert(activity -> onView(allOf(withId(R.id.selectImageCheckbox), withParent(withId(R.id.upperImage)))).perform(click()));
     }
 
     @Test
     public void clickMenuDarkCheckboxes() {
-        onCreate();
-        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
-        // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
-        // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
-        onView(withText("Dark checkboxes")).perform(click());
+        actAndAssert(activity -> {
+            openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
+            // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
+            // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
+            onView(withText("Dark checkboxes")).perform(click());
+        });
     }
 
     @Test
     public void clickMenuShowExif() {
-        onCreate();
-        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
-        // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
-        // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
-        onView(withText("Show EXIF")).perform(click());
+        actAndAssert(activity -> {
+            openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
+            // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
+            // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
+            onView(withText("Show EXIF")).perform(click());
+        });
     }
 
     @Test
     public void onToggleZoomPanSync() {
-        onCreate();
-        onView(withId(R.id.toggleZoomPanSync)).check(matches(isChecked()));
-        onView(withId(R.id.toggleZoomPanSync)).perform(click());
-        onView(withId(R.id.toggleZoomPanSync)).check(matches(not(isChecked())));
+        actAndAssert(activity -> {
+            onView(withId(R.id.toggleZoomPanSync)).check(matches(isChecked()));
+            onView(withId(R.id.toggleZoomPanSync)).perform(click());
+            onView(withId(R.id.toggleZoomPanSync)).check(matches(not(isChecked())));
+        });
     }
 
     @Test
     public void onResetMatrixClick() {
-        onCreate();
-        onView(withId(R.id.resetMatrix)).perform(click());
+        actAndAssert(activity -> onView(withId(R.id.resetMatrix)).perform(click()));
+    }
+
+    private static void actAndAssert(final ActivityScenario.ActivityAction<CompareImagesActivity> action) {
+        final Intent intent = new Intent(ApplicationProvider.getApplicationContext(), CompareImagesActivity.class);
+        intent.putExtra(BundleKeys.KEY_IMAGE_FOLDER, "/storage/emulated/0/Download");
+        intent.putParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION, buildSelectedImageBeanList());
+        intent.putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, 0);
+        try (final ActivityScenario<CompareImagesActivity> scenario = ActivityScenario.launch(intent)) {
+            scenario.onActivity(action);
+        }
     }
 
     private static ArrayList<ImageBean> buildSelectedImageBeanList() {
