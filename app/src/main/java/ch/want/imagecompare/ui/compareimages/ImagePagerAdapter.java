@@ -1,6 +1,7 @@
 package ch.want.imagecompare.ui.compareimages;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -33,6 +34,14 @@ class ImagePagerAdapter extends PagerAdapter {
     private final ArrayList<ImageBean> galleryImageList;
     private final ConcurrentMap<Integer, SubsamplingScaleImageView> highResPositions = new ConcurrentHashMap<>();
     private Integer futureHighResIndex;
+
+    /**
+     * This fixes https://github.com/sniederb/photocompare/issues/6
+     */
+    static {
+        // default is Bitmap.Config.RGB_565
+        SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.ARGB_8888);
+    }
 
     ImagePagerAdapter(final ArrayList<ImageBean> galleryImageList) {
         this.galleryImageList = galleryImageList;
