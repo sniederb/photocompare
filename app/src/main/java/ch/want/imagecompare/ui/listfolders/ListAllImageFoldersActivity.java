@@ -1,11 +1,14 @@
 package ch.want.imagecompare.ui.listfolders;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
@@ -20,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,12 +35,17 @@ import ch.want.imagecompare.domain.PermissionChecker;
 import ch.want.imagecompare.domain.PhotoComparePreferences;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 
+import static android.os.Build.VERSION.SDK_INT;
+
 /**
  * You do not have to assign a layout to these elements. If you do not define a layout, the activity or fragment contains a single ListView
  * by default
  */
 public class ListAllImageFoldersActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
+    /**
+     * Random permission code which will be returned by to {@link #onRequestPermissionsResult(int, String[], int[])}
+     */
     private static final int PERMISSION_REQUEST_STORAGE = 999;
     private final Map<String, Uri> imageBuckets = new HashMap<>();
     private PermissionChecker permissionChecker;
@@ -82,6 +91,19 @@ public class ListAllImageFoldersActivity extends AppCompatActivity implements Sw
             updateLayoutFromImageBuckets();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if ((requestCode == PERMISSION_REQUEST_STORAGE) && (SDK_INT >= Build.VERSION_CODES.R)) {
+            if (permissionChecker.hasPermissions()) {
+                initImageBuckets();
+                updateLayoutFromImageBuckets();
+            } else {
+                Toast.makeText(this, "Cannot show and manage images without storage access.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void updateLayoutFromImageBuckets() {

@@ -29,7 +29,10 @@ public class PermissionChecker {
     }
 
     public boolean hasPermissions() {
-        return hasWritePermission() && hasReadPermission();
+        if (SDK_INT >= Build.VERSION_CODES.R) {
+            return Environment.isExternalStorageManager();
+        }
+        return ContextCompat.checkSelfPermission(activity.getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
     public void askNicely() {
@@ -38,17 +41,6 @@ public class PermissionChecker {
         } else {
             requestPermissions();
         }
-    }
-
-    private boolean hasWritePermission() {
-        if (SDK_INT >= Build.VERSION_CODES.R) {
-            return Environment.isExternalStorageManager();
-        }
-        return ContextCompat.checkSelfPermission(activity.getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private boolean hasReadPermission() {
-        return ContextCompat.checkSelfPermission(activity.getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
     private boolean shouldExplanationBeShownToUser() {
@@ -63,15 +55,15 @@ public class PermissionChecker {
                 final Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                 intent.addCategory("android.intent.category.DEFAULT");
                 intent.setData(Uri.parse(String.format("package:%s", activity.getApplicationContext().getPackageName())));
-                activity.startActivityForResult(intent, 2296);
+                activity.startActivityForResult(intent, permissionCheckCode);
             } catch (final Exception e) {
                 final Intent intent = new Intent();
                 intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                activity.startActivityForResult(intent, 2296);
+                activity.startActivityForResult(intent, permissionCheckCode);
             }
         } else {
-            //below android 11
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, permissionCheckCode);
+            // below android 11, note that WRITE_EXTERNAL_STORAGE implies READ_EXTERNAL_STORAGE
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, permissionCheckCode);
         }
     }
 

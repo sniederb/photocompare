@@ -1,9 +1,7 @@
 package ch.want.imagecompare.ui.imageselection;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +23,7 @@ import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.domain.FileImageMediaQuery;
+import ch.want.imagecompare.domain.PhotoComparePreferences;
 import ch.want.imagecompare.domain.PhotoViewMediator;
 
 public class SelectedImagesActivity extends AppCompatActivity {
@@ -69,16 +68,11 @@ public class SelectedImagesActivity extends AppCompatActivity {
             topImageIndexForParentActivity = savedInstanceState.getInt(BundleKeys.KEY_TOPIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
             bottomImageIndexForParentActivity = savedInstanceState.getInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         }
-        setSortNewToOldFromSharedPrefs();
+        sortNewToOld = new PhotoComparePreferences(this).isSortNewestFirst();
         loadImagesForCurrentImageFolder();
         if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
             ImageBean.copySelectedState(selectedBeansFromState, galleryImageList);
         }
-    }
-
-    private void setSortNewToOldFromSharedPrefs() {
-        final SharedPreferences preferences = getPreferences(Activity.MODE_PRIVATE);
-        sortNewToOld = preferences.getBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, true);
     }
 
     private void loadImagesForCurrentImageFolder() {
