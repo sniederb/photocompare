@@ -1,7 +1,9 @@
 package ch.want.imagecompare.ui.imageselection;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,7 +50,6 @@ public class SelectedImagesActivity extends AppCompatActivity {
     public void onSaveInstanceState(@NonNull final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder);
-        savedInstanceState.putBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, sortNewToOld);
         savedInstanceState.putParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)));
         savedInstanceState.putInt(BundleKeys.KEY_TOPIMAGE_INDEX, topImageIndexForParentActivity);
         savedInstanceState.putInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, bottomImageIndexForParentActivity);
@@ -59,21 +60,25 @@ public class SelectedImagesActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             final Intent intent = getIntent();
             currentImageFolder = intent.getStringExtra(BundleKeys.KEY_IMAGE_FOLDER);
-            sortNewToOld = intent.getBooleanExtra(BundleKeys.KEY_SORT_NEWEST_FIRST, true);
             selectedBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndexForParentActivity = intent.getIntExtra(BundleKeys.KEY_TOPIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
             bottomImageIndexForParentActivity = intent.getIntExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         } else {
             currentImageFolder = savedInstanceState.getString(BundleKeys.KEY_IMAGE_FOLDER);
-            sortNewToOld = savedInstanceState.getBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, true);
             selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndexForParentActivity = savedInstanceState.getInt(BundleKeys.KEY_TOPIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
             bottomImageIndexForParentActivity = savedInstanceState.getInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         }
+        setSortNewToOldFromSharedPrefs();
         loadImagesForCurrentImageFolder();
         if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
             ImageBean.copySelectedState(selectedBeansFromState, galleryImageList);
         }
+    }
+
+    private void setSortNewToOldFromSharedPrefs() {
+        final SharedPreferences preferences = getPreferences(Activity.MODE_PRIVATE);
+        sortNewToOld = preferences.getBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, true);
     }
 
     private void loadImagesForCurrentImageFolder() {
@@ -131,7 +136,7 @@ public class SelectedImagesActivity extends AppCompatActivity {
                         .execute();
                 return true;
             case android.R.id.home:
-                new BackToCompareImagesTransition(this, currentImageFolder, sortNewToOld, galleryImageList, topImageIndexForParentActivity, bottomImageIndexForParentActivity)//
+                new BackToCompareImagesTransition(this, currentImageFolder, galleryImageList, topImageIndexForParentActivity, bottomImageIndexForParentActivity)//
                         .execute();
                 return true;
             default:

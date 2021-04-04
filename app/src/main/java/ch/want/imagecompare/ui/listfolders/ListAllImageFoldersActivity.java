@@ -28,6 +28,7 @@ import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.domain.FolderImageMediaQuery;
 import ch.want.imagecompare.domain.PermissionChecker;
+import ch.want.imagecompare.domain.PhotoComparePreferences;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 
 /**
@@ -69,7 +70,8 @@ public class ListAllImageFoldersActivity extends AppCompatActivity implements Sw
         if (!permissionChecker.hasPermissions()) {
             permissionChecker.askNicely();
         } else {
-            imageBuckets.putAll(new FolderImageMediaQuery(getContentResolver()).execute());
+            final boolean sortNewToOld = new PhotoComparePreferences(this).isSortNewestFirst();
+            imageBuckets.putAll(new FolderImageMediaQuery(getContentResolver(), sortNewToOld).execute());
         }
     }
 

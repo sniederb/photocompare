@@ -19,6 +19,7 @@ import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.domain.FileImageMediaQuery;
+import ch.want.imagecompare.domain.PhotoComparePreferences;
 import ch.want.imagecompare.domain.PhotoViewMediator;
 
 /**
@@ -42,7 +43,7 @@ public class CompareImagesActivity extends AppCompatActivity {
     }
 
     private PhotoViewMediator buildPhotoViewMediator() {
-        final PhotoViewMediator mediator = new PhotoViewMediator(new ImageDetailViewImpl(findViewById(R.id.upperImage)), new ImageDetailViewImpl(findViewById(R.id.bottomImage)));
+        final PhotoViewMediator mediator = new PhotoViewMediator(new ImageDetailViewImpl(findViewById(R.id.upperImage)), new ImageDetailViewImpl(findViewById(R.id.bottomImage)), this);
         syncToggle = findViewById(R.id.toggleZoomPanSync);
         syncToggle.setOnCheckedChangeListener((buttonView, isChecked) -> mediator.setSyncZoomAndPan(isChecked));
         syncToggle.setChecked(false);
@@ -59,17 +60,16 @@ public class CompareImagesActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             final Intent intent = getIntent();
             currentImageFolder = intent.getStringExtra(BundleKeys.KEY_IMAGE_FOLDER);
-            sortNewToOld = intent.getBooleanExtra(BundleKeys.KEY_SORT_NEWEST_FIRST, true);
             selectedBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndex = intent.getIntExtra(BundleKeys.KEY_TOPIMAGE_INDEX, 0);
             bottomIndex = intent.getIntExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         } else {
             currentImageFolder = savedInstanceState.getString(BundleKeys.KEY_IMAGE_FOLDER);
-            sortNewToOld = savedInstanceState.getBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, true);
             selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndex = savedInstanceState.getInt(BundleKeys.KEY_TOPIMAGE_INDEX);
             bottomIndex = savedInstanceState.getInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         }
+        sortNewToOld = new PhotoComparePreferences(this).isSortNewestFirst();
         final List<ImageBean> allImageBeans = new FileImageMediaQuery(getContentResolver(), currentImageFolder, sortNewToOld).execute();
         if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
             ImageBean.copySelectedState(selectedBeansFromState, allImageBeans);
@@ -94,7 +94,6 @@ public class CompareImagesActivity extends AppCompatActivity {
     public void onSaveInstanceState(@NonNull final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder);
-        savedInstanceState.putBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, sortNewToOld);
         savedInstanceState.putInt(BundleKeys.KEY_TOPIMAGE_INDEX, photoViewMediator.getTopIndex());
         savedInstanceState.putInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, photoViewMediator.getBottomIndex());
         savedInstanceState.putParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(photoViewMediator.getGalleryImageList())));
@@ -104,18 +103,20 @@ public class CompareImagesActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.showSelection:
-                new ShowSelectedImagesTransition(this, currentImageFolder, sortNewToOld, photoViewMediator).execute();
+                new ShowSelectedImagesTransition(this, currentImageFolder, photoViewMediator).execute();
                 return true;
             case R.id.checkboxStyleDark:
                 final boolean isNowDarkMode = photoViewMediator.toggleCheckboxStyleDark();
                 item.setChecked(isNowDarkMode);
+                new PhotoComparePreferences(this).setCheckboxStyleDark(isNowDarkMode);
                 return true;
             case R.id.showExifDetails:
                 final boolean isNowShowingExif = photoViewMediator.toggleExifDisplay();
                 item.setChecked(isNowShowingExif);
+                new PhotoComparePreferences(this).setShowExifDetails(isNowShowingExif);
                 return true;
             case android.R.id.home:
-                new BackToImageListTransition(this, currentImageFolder, sortNewToOld, photoViewMediator.getGalleryImageList()).execute();
+                new BackToImageListTransition(this, currentImageFolder, photoViewMediator.getGalleryImageList()).execute();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

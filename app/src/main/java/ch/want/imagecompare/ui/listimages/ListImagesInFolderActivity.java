@@ -21,6 +21,7 @@ import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.domain.FileImageMediaQuery;
+import ch.want.imagecompare.domain.PhotoComparePreferences;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 
 public class ListImagesInFolderActivity extends AppCompatActivity {
@@ -55,13 +56,12 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             final Intent intent = getIntent();
             currentImageFolder = intent.getStringExtra(BundleKeys.KEY_IMAGE_FOLDER);
-            sortNewToOld = intent.getBooleanExtra(BundleKeys.KEY_SORT_NEWEST_FIRST, true);
             selectedBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION);
         } else {
             currentImageFolder = savedInstanceState.getString(BundleKeys.KEY_IMAGE_FOLDER);
-            sortNewToOld = savedInstanceState.getBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, true);
             selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
         }
+        sortNewToOld = new PhotoComparePreferences(this).isSortNewestFirst();
         loadImagesForCurrentImageFolder();
         if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
             ImageBean.copySelectedState(selectedBeansFromState, galleryImageList);
@@ -81,7 +81,6 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
     public void onSaveInstanceState(@NonNull final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder);
-        savedInstanceState.putBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, sortNewToOld);
         savedInstanceState.putParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)));
     }
 
@@ -97,6 +96,7 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
             case R.id.sortNewToOld:
                 sortNewToOld = !sortNewToOld;
                 item.setChecked(sortNewToOld);
+                new PhotoComparePreferences(this).setSortNewestFirst(sortNewToOld);
                 loadImagesForCurrentImageFolder();
                 notifyAdapterDataSetChanged();
                 return true;
@@ -125,7 +125,7 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
         Optional.ofNullable(findViewById(R.id.imageThumbnails))//
                 .map(view -> (RecyclerView) view)//
                 .map(view -> (ImageBeanListRecyclerViewAdapter<?>) view.getAdapter())//
-                .ifPresent(adapter -> adapter.notifyDataSetSortChanged());
+                .ifPresent(ImageBeanListRecyclerViewAdapter::notifyDataSetSortChanged);
     }
 
     private void showAlertLosingSelection() {

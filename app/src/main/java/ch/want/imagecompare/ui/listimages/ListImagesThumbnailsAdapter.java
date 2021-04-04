@@ -52,7 +52,7 @@ class ListImagesThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<Singl
 
     @Override
     protected View.OnClickListener createClickHandler(final List<ImageBean> galleryImageList, final int selectedIndex) {
-        return new OpenCompareClickHandler(currentImageFolder, getSortNewestFirst(), galleryImageList, selectedIndex);
+        return new OpenCompareClickHandler(currentImageFolder, galleryImageList, selectedIndex);
     }
 
     @Override

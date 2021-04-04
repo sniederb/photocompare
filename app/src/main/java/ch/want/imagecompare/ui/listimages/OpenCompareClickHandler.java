@@ -17,12 +17,10 @@ class OpenCompareClickHandler implements View.OnClickListener {
 
     private final ArrayList<ImageBean> galleryImageList;
     private final String imageFolder;
-    private final boolean sortNewestFirst;
     private final int listIndex;
 
-    OpenCompareClickHandler(final String imageFolder, final boolean sortNewestFirst, final List<ImageBean> galleryImageList, final int i) {
+    OpenCompareClickHandler(final String imageFolder, final List<ImageBean> galleryImageList, final int i) {
         this.imageFolder = imageFolder;
-        this.sortNewestFirst = sortNewestFirst;
         this.galleryImageList = new ArrayList<>(galleryImageList);
         listIndex = i;
     }
@@ -32,7 +30,6 @@ class OpenCompareClickHandler implements View.OnClickListener {
         final Context context = v.getContext();
         final Intent intent = new Intent(context, CompareImagesActivity.class)//
                 .putExtra(BundleKeys.KEY_IMAGE_FOLDER, imageFolder)//
-                .putExtra(BundleKeys.KEY_SORT_NEWEST_FIRST, sortNewestFirst)//
                 .putParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)));
         final Integer secondarySelection = getSecondarySelection();
         if (secondarySelection != null) {

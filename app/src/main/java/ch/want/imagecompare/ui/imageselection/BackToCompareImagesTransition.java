@@ -17,14 +17,12 @@ class BackToCompareImagesTransition {
     private final ArrayList<ImageBean> galleryImageList;
     private final Activity sourceActivity;
     private final String currentImageFolder;
-    private final boolean sortNewestFirst;
     private final int topImageIndex;
     private final int bottomImageIndex;
 
-    BackToCompareImagesTransition(final Activity sourceActivity, final String currentImageFolder, final boolean sortNewestFirst, final ArrayList<ImageBean> galleryImageList, final int topImageIndex, final int bottomImageIndex) {
+    BackToCompareImagesTransition(final Activity sourceActivity, final String currentImageFolder, final ArrayList<ImageBean> galleryImageList, final int topImageIndex, final int bottomImageIndex) {
         this.sourceActivity = sourceActivity;
         this.currentImageFolder = currentImageFolder;
-        this.sortNewestFirst = sortNewestFirst;
         this.galleryImageList = galleryImageList;
         this.topImageIndex = topImageIndex;
         this.bottomImageIndex = bottomImageIndex;
@@ -34,7 +32,6 @@ class BackToCompareImagesTransition {
         final Intent upIntent = sourceActivity.getParentActivityIntent();
         assert upIntent != null;
         upIntent.putExtra(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder)//
-                .putExtra(BundleKeys.KEY_SORT_NEWEST_FIRST, sortNewestFirst)//
                 .putParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)))//
                 .putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, topImageIndex).putExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, bottomImageIndex);
         NavUtils.navigateUpTo(sourceActivity, upIntent);

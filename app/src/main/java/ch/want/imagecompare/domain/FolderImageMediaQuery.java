@@ -10,10 +10,12 @@ import java.util.Map;
 public class FolderImageMediaQuery {
 
     private final ContentResolver contentResolver;
+    private final boolean sortNewToOld;
     private final Map<String, Uri> targetFolderMap = new HashMap<>();
 
-    public FolderImageMediaQuery(final ContentResolver contentResolver) {
+    public FolderImageMediaQuery(final ContentResolver contentResolver, final boolean sortNewToOld) {
         this.contentResolver = contentResolver;
+        this.sortNewToOld = sortNewToOld;
     }
 
     public Map<String, Uri> execute() {
@@ -28,7 +30,9 @@ public class FolderImageMediaQuery {
                     }
                 }
             }
-        }.execute();
+        }//
+                .setSortNewToOld(sortNewToOld)//
+                .execute();
         return targetFolderMap;
     }
 }

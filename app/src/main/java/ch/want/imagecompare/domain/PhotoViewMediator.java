@@ -1,5 +1,6 @@
 package ch.want.imagecompare.domain;
 
+import android.app.Activity;
 import android.graphics.PointF;
 
 import java.util.ArrayList;
@@ -33,13 +34,16 @@ public class PhotoViewMediator {
     private boolean checkboxesDarkMode = true;
     private boolean showExifDetails = true;
 
-    public PhotoViewMediator(final ImageDetailView topView, final ImageDetailView bottomView) {
+    public PhotoViewMediator(final ImageDetailView topView, final ImageDetailView bottomView, final Activity activity) {
         this.topView = topView;
         this.topView.setImageList(galleryImageList);
         this.topView.setCrossImageEventHandler(new CrossViewEventHandler(this));
         this.bottomView = bottomView;
         this.bottomView.setImageList(galleryImageList);
         this.bottomView.setCrossImageEventHandler(new CrossViewEventHandler(this));
+        final PhotoComparePreferences photoComparePreferences = new PhotoComparePreferences(activity);
+        checkboxesDarkMode = photoComparePreferences.isCheckboxStyleDark();
+        showExifDetails = photoComparePreferences.isShowExifDetails();
     }
 
     private boolean isSyncZoomAndPan() {
@@ -114,7 +118,7 @@ public class PhotoViewMediator {
         return candidate != prohibitIndex;
     }
 
-    int getNextValidImageIndex(final ImageDetailView forTargetView, final int invalidIndex) {
+    private int getNextValidImageIndex(final ImageDetailView forTargetView, final int invalidIndex) {
         final int lastValidIndex = forTargetView == topView ? topViewIndex : bottomViewIndex;
         // did user navigate to the right?
         final boolean searchUpwards = (invalidIndex > lastValidIndex ||
