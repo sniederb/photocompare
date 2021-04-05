@@ -13,13 +13,13 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
-    compileSdkVersion 30
+    compileSdkVersion 29
     defaultConfig {
         applicationId "ch.want.imagecompare"
         minSdkVersion 24
-        targetSdkVersion 30
-        versionCode 29
-        versionName '1.0.29'
+        targetSdkVersion 29
+        versionCode 31
+        versionName '1.0.31'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.config
     }

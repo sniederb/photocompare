@@ -3,10 +3,14 @@
     package="ch.want.imagecompare">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--
+    Your APK or Android App Bundle requests the 'android.permission.MANAGE_EXTERNAL_STORAGE' permission, which Google Play doesn't support yet.
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    -->
 
     <application
         android:allowBackup="true"
