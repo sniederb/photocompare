@@ -2,14 +2,22 @@ package ch.want.imagecompare.ui.listfolders;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 
+import ch.want.imagecompare.ui.AbstractImageLayoutSizeParams;
 import ch.want.imagecompare.ui.thumbnails.ImageLayoutSizeParams;
 
-class ImageLayoutSizeParamsForImageAndTitle implements ImageLayoutSizeParams {
+class ImageLayoutSizeParamsForImageAndTitle extends AbstractImageLayoutSizeParams implements ImageLayoutSizeParams {
     private static final int IMAGES_PER_ROW_PORTRAIT = 2;
     private static final int IMAGES_PER_ROW_LANDSCAPE = 3;
+    /**
+     * from res/layout/activity_list_all_image_folders.xml -> RecyclerView -> paddingLeft/Right
+     */
+    private static final int PADDING_IN_DP = 2 * 18;
+    /**
+     * reduce image size to allow for text underneath (see res/layout/view_image_and_title.xml)
+     */
+    private static final int IMAGE_MARGIN_IN_DP = 30;
+
     private final int viewSizeInPixel;
     private final int imageSizeInPixel;
 
@@ -19,15 +27,8 @@ class ImageLayoutSizeParamsForImageAndTitle implements ImageLayoutSizeParams {
      * @param resources
      */
     ImageLayoutSizeParamsForImageAndTitle(final Resources resources) {
-        final DisplayMetrics metrics = resources.getDisplayMetrics();
-        // from res/layout/activity_list_all_image_folders.xml -> RecyclerView -> padding
-        final int paddingInDp = 2 * 18;
-        final int paddingInPixel = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, paddingInDp, metrics);
-        viewSizeInPixel = (metrics.widthPixels - paddingInPixel) / getImagesPerRow(resources.getConfiguration());
-        // reduce image size to allow for text underneath (see res/layout/view_image_and_title.xml)
-        final int imageMarginInDp = 30;
-        final int imageMarginInPixel = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, imageMarginInDp, metrics);
-        imageSizeInPixel = viewSizeInPixel - imageMarginInPixel;
+        viewSizeInPixel = getColumnWidthInPixel(PADDING_IN_DP, getImagesPerRow(resources.getConfiguration()), resources);
+        imageSizeInPixel = getImageSizeInPixel(IMAGE_MARGIN_IN_DP, viewSizeInPixel, resources);
     }
 
     private static int getImagesPerRow(final Configuration configuration) {

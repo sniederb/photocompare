@@ -1,3 +1,9 @@
+# Automated test cases
+
+Run on any device, but make sure:
+
+* There are at least 4 images in the `Downloads` folder
+
 # Manual test cases
 
 This document describes a series of tests to perform manually, as the implementation of automated
