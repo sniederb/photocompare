@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import ch.want.imagecompare.TestSettings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,7 +36,7 @@ public class ImageBeanTest {
         // arrange
         final ArrayList<ImageBean> images = buildImageBeanList();
         final ArrayList<ImageBean> selectedImages = new ArrayList<>();
-        selectedImages.add(new ImageBean("J0091158.jpg", Uri.parse("file:///storage/emulated/0/Download/EOS77D/J0091158.JPG")));
+        selectedImages.add(new ImageBean("J0091158.jpg", TestSettings.getUri("J0091158.JPG", "EOS77D")));
         // act
         ImageBean.copySelectedState(selectedImages, images);
         // assert
@@ -46,9 +47,9 @@ public class ImageBeanTest {
 
     private static ArrayList<ImageBean> buildImageBeanList() {
         final ArrayList<ImageBean> beans = new ArrayList<>();
-        beans.add(new ImageBean("J0091157.jpg", Uri.parse("file:///storage/emulated/0/Download/EOS77D/J0091157.JPG")));
-        beans.add(new ImageBean("J0091158.jpg", Uri.parse("file:///storage/emulated/0/Download/EOS77D/J0091158.JPG")));
-        beans.add(new ImageBean("J0091159.jpg", Uri.parse("file:///storage/emulated/0/Download/EOS77D/J0091159.JPG")));
+        beans.add(new ImageBean("J0091157.jpg", TestSettings.getUri("J0091157.JPG", "EOS77D")));
+        beans.add(new ImageBean("J0091158.jpg", TestSettings.getUri("J0091158.JPG", "EOS77D")));
+        beans.add(new ImageBean("J0091159.jpg", TestSettings.getUri("J0091159.JPG", "EOS77D")));
         return beans;
     }
 }

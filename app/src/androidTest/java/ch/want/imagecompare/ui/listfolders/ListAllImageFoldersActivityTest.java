@@ -6,11 +6,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import ch.want.imagecompare.R;
-import ch.want.imagecompare.ui.compareimages.CompareImagesActivity;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -19,14 +19,16 @@ public class ListAllImageFoldersActivityTest {
 
     @Test
     public void onCreate() {
-        actAndAssert(Assert::assertNotNull);
+        final ActivityScenario<ListAllImageFoldersActivity> scenario = launchActivity();
+        Assert.assertEquals(Lifecycle.State.RESUMED, scenario.getState());
     }
 
     @Test
     public void onClickFolder() {
         // arrange
-        actAndAssert(testee -> {
-            final RecyclerView recyclerView = testee.findViewById(R.id.folderThumbnails);
+        final ActivityScenario<ListAllImageFoldersActivity> scenario = launchActivity();
+        scenario.onActivity(activity -> {
+            final RecyclerView recyclerView = activity.findViewById(R.id.folderThumbnails);
             assertNotNull("Recycler view", recyclerView);
             final RecyclerView.ViewHolder viewHolderFirstItem = recyclerView.findViewHolderForAdapterPosition(0);
             assertNotNull("ViewHolder for first item", viewHolderFirstItem);
@@ -36,9 +38,7 @@ public class ListAllImageFoldersActivityTest {
         });
     }
 
-    private static void actAndAssert(final ActivityScenario.ActivityAction<CompareImagesActivity> action) {
-        try (final ActivityScenario<CompareImagesActivity> scenario = ActivityScenario.launch(CompareImagesActivity.class)) {
-            scenario.onActivity(action);
-        }
+    private static ActivityScenario<ListAllImageFoldersActivity> launchActivity() {
+        return ActivityScenario.launch(ListAllImageFoldersActivity.class);
     }
 }

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import ch.want.imagecompare.TestSettings;
 import ch.want.imagecompare.data.Dimension;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.ui.compareimages.CompareImagesActivity;
@@ -20,26 +21,6 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 public class PhotoViewMediatorTest {
-
-    @Test
-    public void getNextValidImageIndex_limitToLowerIndex() {
-        // arrange
-        final ArrayList<ImageBean> images = buildImageBeans(5);
-        final PanAndZoomState topPanAndZoomState = new PanAndZoomState(1.2f, new PointF(0, 1));
-        final PanAndZoomState bottomPanAndZoomState = new PanAndZoomState(1.1f, new PointF(1, 2));
-        final ImageDetailViewStub topView = new ImageDetailViewStub(topPanAndZoomState);
-        final ImageDetailViewStub bottomView = new ImageDetailViewStub(bottomPanAndZoomState);
-        // act
-        try (final ActivityScenario<CompareImagesActivity> scenario = ActivityScenario.launch(CompareImagesActivity.class)) {
-            scenario.onActivity(activity -> {
-                final PhotoViewMediator testee = new PhotoViewMediator(topView, bottomView, activity);
-                testee.initGalleryImageList(images, 0, 1);
-//                final int nextBottomViewIndex = testee.getNextValidImageIndex(bottomView, 0);
-//                // assert
-//                assertEquals(1, nextBottomViewIndex);
-            });
-        }
-    }
 
     @Test
     public void onPageSelected_limitToLowerIndex() {
@@ -65,7 +46,7 @@ public class PhotoViewMediatorTest {
      * This test ensures that when panning in sync on images of different sizes, both images reach the edges simultaneously.
      */
     @Test
-    public void testOnPanOrZoomChangedWithPanningForDifferentImagesSizes() {
+    public void onPanOrZoomChangedWithPanningForDifferentImagesSizes() {
         final ImageDetailView topView = new ImageDetailViewStub(new PanAndZoomState(2f, new PointF(1500, 1400)), new Dimension(4032, 3024));
         final ImageDetailView bottomView = new ImageDetailViewStub(new PanAndZoomState(1.34f, new PointF(2506, 3008)), new Dimension(6016, 4512));
         try (final ActivityScenario<CompareImagesActivity> scenario = ActivityScenario.launch(CompareImagesActivity.class)) {
@@ -92,7 +73,7 @@ public class PhotoViewMediatorTest {
      * calculated offsets are consistent.
      */
     @Test
-    public void testOnPanOrZoomChangedWithPanningAfterUnsyncForDifferentImagesSizes() {
+    public void onPanOrZoomChangedWithPanningAfterUnsyncForDifferentImagesSizes() {
         final ImageDetailView topView = new ImageDetailViewStub(new PanAndZoomState(2f, new PointF(1500, 1400)), new Dimension(4032, 3024));
         final ImageDetailView bottomView = new ImageDetailViewStub(new PanAndZoomState(1.34f, new PointF(2238, 2088)), new Dimension(6016, 4512));
         try (final ActivityScenario<CompareImagesActivity> scenario = ActivityScenario.launch(CompareImagesActivity.class)) {
@@ -118,7 +99,7 @@ public class PhotoViewMediatorTest {
     private static ArrayList<ImageBean> buildImageBeans(final int size) {
         final ArrayList<ImageBean> images = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            images.add(new ImageBean("image_" + i + ".jpg", Uri.parse("/storage/emulated/0/Download/image_" + i + ".jpg")));
+            images.add(new ImageBean("image_" + i + ".jpg", TestSettings.getUri("image_" + i + ".jpg", null)));
         }
         return images;
     }
