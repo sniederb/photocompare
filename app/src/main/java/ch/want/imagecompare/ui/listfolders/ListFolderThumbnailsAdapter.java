@@ -13,7 +13,7 @@ import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 import ch.want.imagecompare.ui.thumbnails.ImageLayoutSizeParams;
 
 /**
- * Connects RecyclerView with the view attributes for {@link ListAllImageFoldersActivity, and provides a {@link OpenFolderClickHandler}
+ * Connects RecyclerView with the view attributes for {@link SelectImagePoolActivity , and provides a {@link OpenFolderClickHandler}
  * for each thumbnail
  */
 class ListFolderThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<SingleFolderViewHolder> {

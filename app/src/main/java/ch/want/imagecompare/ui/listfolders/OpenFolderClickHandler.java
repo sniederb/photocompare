@@ -9,10 +9,10 @@ import java.io.File;
 
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.ui.TransitionHandler;
-import ch.want.imagecompare.ui.listimages.ListImagesInFolderActivity;
+import ch.want.imagecompare.ui.listimages.ListImagesActivity;
 
 /**
- * Handle click to open {@link ListImagesInFolderActivity}
+ * Handle click to open {@link ListImagesActivity} specifically with a folder selection.
  */
 class OpenFolderClickHandler implements View.OnClickListener {
 
@@ -25,7 +25,7 @@ class OpenFolderClickHandler implements View.OnClickListener {
     @Override
     public void onClick(final View v) {
         final Context context = v.getContext();
-        final Intent intent = new Intent(context, ListImagesInFolderActivity.class);
+        final Intent intent = new Intent(context, ListImagesActivity.class);
         intent.putExtra(BundleKeys.KEY_IMAGE_FOLDER, imageDirectory.getAbsolutePath());
         TransitionHandler.switchToActivity((Activity) context, intent);
     }

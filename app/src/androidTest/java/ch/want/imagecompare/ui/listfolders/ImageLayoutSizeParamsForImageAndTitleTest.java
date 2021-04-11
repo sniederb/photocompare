@@ -22,7 +22,7 @@ public class ImageLayoutSizeParamsForImageAndTitleTest {
     public void getViewSizeInPixel() {
         // arrange
         final Resources resources = getTestDeviceResources();
-        assumeThat(resources.getDisplayMetrics().widthPixels, is(WIDTH_PIXELS_NEXUS5));
+        assumeThat("Test runs on Nexus 5", resources.getDisplayMetrics().widthPixels, is(WIDTH_PIXELS_NEXUS5));
         final ImageLayoutSizeParamsForImageAndTitle testee = new ImageLayoutSizeParamsForImageAndTitle(resources);
         // act
         final int viewSize = testee.getViewSizeInPixel();
@@ -34,7 +34,7 @@ public class ImageLayoutSizeParamsForImageAndTitleTest {
     public void getImageSizeInPixel() {
         // arrange
         final Resources resources = getTestDeviceResources();
-        assumeThat(resources.getDisplayMetrics().widthPixels, is(WIDTH_PIXELS_NEXUS5));
+        assumeThat("Test runs on Nexus 5", resources.getDisplayMetrics().widthPixels, is(WIDTH_PIXELS_NEXUS5));
         final ImageLayoutSizeParamsForImageAndTitle testee = new ImageLayoutSizeParamsForImageAndTitle(resources);
         // act
         final int imageSize = testee.getImageSizeInPixel();

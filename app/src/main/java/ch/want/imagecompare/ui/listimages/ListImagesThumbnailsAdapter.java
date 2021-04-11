@@ -9,20 +9,21 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
+import ch.want.imagecompare.domain.FileImageMediaResolver;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 import ch.want.imagecompare.ui.thumbnails.ImageLayoutSizeParams;
 
 /**
- * Connects RecyclerView with the view attributes for {@link ListImagesInFolderActivity, and provides a {@link OpenCompareClickHandler}
+ * Connects RecyclerView with the view attributes for {@link ListImagesActivity , and provides a {@link OpenCompareClickHandler}
  * for each thumbnail
  */
 class ListImagesThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<SingleImageViewHolder> {
 
-    private final String currentImageFolder;
+    private final FileImageMediaResolver mediaResolver;
 
-    ListImagesThumbnailsAdapter(final String currentImageFolder, final boolean sortNewestFirst, final List<ImageBean> imageList) {
-        super(imageList, sortNewestFirst);
-        this.currentImageFolder = currentImageFolder;
+    ListImagesThumbnailsAdapter(final FileImageMediaResolver mediaResolver, final List<ImageBean> imageList) {
+        super(imageList, mediaResolver.isSortNewToOld());
+        this.mediaResolver = mediaResolver;
     }
 
     @Override
@@ -52,7 +53,7 @@ class ListImagesThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<Singl
 
     @Override
     protected View.OnClickListener createClickHandler(final List<ImageBean> galleryImageList, final int selectedIndex) {
-        return new OpenCompareClickHandler(currentImageFolder, galleryImageList, selectedIndex);
+        return new OpenCompareClickHandler(mediaResolver, galleryImageList, selectedIndex);
     }
 
     @Override

@@ -3,8 +3,10 @@
     <string name="app_name_with_version">Photo Compare - %s</string>
     <string name="permissions_title">Need storage permission</string>
     <string name="permissions_explanation">This app is useless without the permission to read your images, and to cache bitmaps on the internal storage.</string>
-    <string name="action_select_folder">Select folder</string>
-    <string name="action_select_image">Select image</string>
+    <string name="action_select_imagepool">Select folder or image date</string>
+    <string name="title_date_select">Select by date</string>
+    <string name="hint_date_select">Images taken on …</string>
+    <string name="action_select_image">Select image(s) to start compare</string>
     <string name="action_compare_images">Compare</string>
     <string name="action_nav_right">Navigate right</string>
     <string name="action_nav_left">Navigate left</string>
@@ -14,6 +16,7 @@
     <string name="show_selection">Show selection</string>
     <string name="checkbox_dark">Dark checkboxes</string>
     <string name="show_newest_first">Show newest first</string>
+    <string name="use_filenames_for_sort">Sort using filenames</string>
     <string name="show_exif">Show EXIF</string>
     <string name="selected_image_content">Selected image</string>
     <string name="current_selection">Image selection</string>
@@ -22,13 +25,14 @@
     <string name="delete_unselected">Delete all others</string>
     <string name="delete_selected">Delete selected images</string>
     <string name="delete_confirmation_title">Confirm image delete</string>
-    <string name="delete_confirmation">This action will delete %1$d file(s) in the folder %2$s.</string>
+    <string name="delete_confirmation_folder">This action will delete %1$d file(s) in the folder %2$s.</string>
+    <string name="delete_confirmation_date">This action will delete %1$d file(s) taken on %2$s.</string>
 
     <string name="shareselected_largetx_confirmation">Attempting to share %1$d file(s), which is rather a lot and might cause Android to crash this app. Do you still want to try?</string>
     <string name="shareselected_largetx_confirmation_title">Sharing a lot of images!</string>
     <string name="share_images_intent">Share images to …</string>
     <string name="navigation_will_lose_selection_title">Discard selection?</string>
-    <string name="navigation_will_lose_selection">Image selection for the current folder will be lost. Do you want to proceed to folder selection?</string>
+    <string name="navigation_will_lose_selection">Image selection for the current group will be lost. Do you want to proceed to folder selection?</string>
 
     <string name="channel_filedelete_name">File deletes</string>
     <string name="channel_filedelete_description">Show progress of deleting unwanted files</string>

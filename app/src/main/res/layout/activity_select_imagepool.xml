@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:screenOrientation="sensor"
-    tools:context="ch.want.imagecompare.ui.listfolders.ListAllImageFoldersActivity">
+    tools:context="ch.want.imagecompare.ui.listfolders.SelectImagePoolActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:elevation="1dp"
-        app:title="@string/action_select_folder" />
+        app:title="@string/action_select_imagepool" />
 
     <LinearLayout
         android:id="@+id/preventSwipeLayoutToUseFullHeightLayout"
@@ -38,6 +38,47 @@
                 android:paddingLeft="18dp"
                 android:paddingRight="18dp" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/selectByDateTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:text="@string/title_date_select" />
+
+    <LinearLayout
+        android:id="@+id/selectByDateValueAndButtonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/selectByDateValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="48dp"
+            android:layout_weight="1"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:hint="@string/hint_date_select"
+            android:inputType="date" />
+
+        <ImageButton
+            android:id="@+id/applyDateSelection"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@null"
+            android:src="@drawable/ic_baseline_play_arrow_24" />
+
     </LinearLayout>
 
     <TextView

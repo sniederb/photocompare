@@ -18,7 +18,7 @@ import androidx.appcompat.widget.Toolbar;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
-import ch.want.imagecompare.domain.FileImageMediaQuery;
+import ch.want.imagecompare.domain.FileImageMediaResolver;
 import ch.want.imagecompare.domain.PhotoComparePreferences;
 import ch.want.imagecompare.domain.PhotoViewMediator;
 
@@ -28,8 +28,7 @@ import ch.want.imagecompare.domain.PhotoViewMediator;
  */
 public class CompareImagesActivity extends AppCompatActivity {
 
-    private String currentImageFolder;
-    private boolean sortNewToOld = true;
+    private FileImageMediaResolver mediaResolver;
     private PhotoViewMediator photoViewMediator;
     private SwitchMaterial syncToggle;
 
@@ -59,18 +58,16 @@ public class CompareImagesActivity extends AppCompatActivity {
         final ArrayList<ImageBean> selectedBeansFromState;
         if (savedInstanceState == null) {
             final Intent intent = getIntent();
-            currentImageFolder = intent.getStringExtra(BundleKeys.KEY_IMAGE_FOLDER);
             selectedBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndex = intent.getIntExtra(BundleKeys.KEY_TOPIMAGE_INDEX, 0);
             bottomIndex = intent.getIntExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         } else {
-            currentImageFolder = savedInstanceState.getString(BundleKeys.KEY_IMAGE_FOLDER);
             selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndex = savedInstanceState.getInt(BundleKeys.KEY_TOPIMAGE_INDEX);
             bottomIndex = savedInstanceState.getInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         }
-        sortNewToOld = new PhotoComparePreferences(this).isSortNewestFirst();
-        final List<ImageBean> allImageBeans = new FileImageMediaQuery(getContentResolver(), currentImageFolder, sortNewToOld).execute();
+        mediaResolver = FileImageMediaResolver.create(this, savedInstanceState);
+        final List<ImageBean> allImageBeans = mediaResolver.execute();
         if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
             ImageBean.copySelectedState(selectedBeansFromState, allImageBeans);
         }
@@ -93,7 +90,7 @@ public class CompareImagesActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(@NonNull final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putString(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder);
+        mediaResolver.saveInstanceState(savedInstanceState);
         savedInstanceState.putInt(BundleKeys.KEY_TOPIMAGE_INDEX, photoViewMediator.getTopIndex());
         savedInstanceState.putInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, photoViewMediator.getBottomIndex());
         savedInstanceState.putParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(photoViewMediator.getGalleryImageList())));
@@ -103,7 +100,7 @@ public class CompareImagesActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.showSelection:
-                new ShowSelectedImagesTransition(this, currentImageFolder, photoViewMediator).execute();
+                new ShowSelectedImagesTransition(this, mediaResolver, photoViewMediator).execute();
                 return true;
             case R.id.checkboxStyleDark:
                 final boolean isNowDarkMode = photoViewMediator.toggleCheckboxStyleDark();
@@ -116,7 +113,7 @@ public class CompareImagesActivity extends AppCompatActivity {
                 new PhotoComparePreferences(this).setShowExifDetails(isNowShowingExif);
                 return true;
             case android.R.id.home:
-                new BackToImageListTransition(this, currentImageFolder, photoViewMediator.getGalleryImageList()).execute();
+                new BackToImageListTransition(this, mediaResolver, photoViewMediator.getGalleryImageList()).execute();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -24,11 +24,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(AndroidJUnit4.class)
-public class ListImagesInFolderActivityTest {
+public class ListImagesActivityTest {
 
     @Test
     public void onCreate() {
-        final ActivityScenario<ListImagesInFolderActivity> scenario = launchActivity();
+        final ActivityScenario<ListImagesActivity> scenario = launchActivity();
         Assert.assertEquals(Lifecycle.State.RESUMED, scenario.getState());
     }
 
@@ -44,7 +44,7 @@ public class ListImagesInFolderActivityTest {
     @Test
     public void onClickSingleImage() {
         // arrange
-        final ActivityScenario<ListImagesInFolderActivity> scenario = launchActivity();
+        final ActivityScenario<ListImagesActivity> scenario = launchActivity();
         scenario.onActivity(activity -> {
             final RecyclerView recyclerView = activity.findViewById(R.id.imageThumbnails);
             assertNotNull("Recycler view", recyclerView);
@@ -59,7 +59,7 @@ public class ListImagesInFolderActivityTest {
     @Test
     public void onLongClickImage() {
         // arrange
-        final ActivityScenario<ListImagesInFolderActivity> scenario = launchActivity();
+        final ActivityScenario<ListImagesActivity> scenario = launchActivity();
         scenario.onActivity(activity -> {
             final RecyclerView recyclerView = activity.findViewById(R.id.imageThumbnails);
             assertNotNull("Recycler view", recyclerView);
@@ -71,8 +71,8 @@ public class ListImagesInFolderActivityTest {
         });
     }
 
-    private static ActivityScenario<ListImagesInFolderActivity> launchActivity() {
-        final Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ListImagesInFolderActivity.class);
+    private static ActivityScenario<ListImagesActivity> launchActivity() {
+        final Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ListImagesActivity.class);
         intent.putExtra(BundleKeys.KEY_IMAGE_FOLDER, TestSettings.DOWNLOAD_FOLDER);
         return ActivityScenario.launch(intent);
     }

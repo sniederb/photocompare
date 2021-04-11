@@ -22,6 +22,15 @@ public class PhotoComparePreferences {
         return preferences.getBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, true);
     }
 
+    public PhotoComparePreferences setFilenamesForSort(final boolean newValue) {
+        setBoolean(BundleKeys.KEY_FILENAMES_FOR_SORT, newValue);
+        return this;
+    }
+
+    boolean isFilenamesForSort() {
+        return preferences.getBoolean(BundleKeys.KEY_FILENAMES_FOR_SORT, false);
+    }
+
     public PhotoComparePreferences setShowExifDetails(final boolean newValue) {
         setBoolean(BundleKeys.KEY_SHOW_EXIF_DETAILS, newValue);
         return this;
@@ -42,7 +51,7 @@ public class PhotoComparePreferences {
 
     private void setBoolean(final String key, final boolean newValue) {
         final SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(BundleKeys.KEY_SORT_NEWEST_FIRST, newValue);
+        editor.putBoolean(key, newValue);
         editor.apply();
     }
 }

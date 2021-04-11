@@ -7,19 +7,19 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FolderImageMediaQuery {
+public class FolderImageMediaResolver {
 
     private final ContentResolver contentResolver;
     private final boolean sortNewToOld;
     private final Map<String, Uri> targetFolderMap = new HashMap<>();
 
-    public FolderImageMediaQuery(final ContentResolver contentResolver, final boolean sortNewToOld) {
+    public FolderImageMediaResolver(final ContentResolver contentResolver, final boolean sortNewToOld) {
         this.contentResolver = contentResolver;
         this.sortNewToOld = sortNewToOld;
     }
 
     public Map<String, Uri> execute() {
-        new ImageMediaQuery(contentResolver) {
+        new ImageMediaQueryStore(contentResolver) {
 
             @Override
             public void doWithCursor(final String bucketPath, final String imageFilePath, final Uri imageContentUri) {

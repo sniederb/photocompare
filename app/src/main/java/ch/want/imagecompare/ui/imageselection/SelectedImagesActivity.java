@@ -22,15 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
-import ch.want.imagecompare.domain.FileImageMediaQuery;
-import ch.want.imagecompare.domain.PhotoComparePreferences;
+import ch.want.imagecompare.domain.FileImageMediaResolver;
 import ch.want.imagecompare.domain.PhotoViewMediator;
 
 public class SelectedImagesActivity extends AppCompatActivity {
 
     private ListSelectionThumbnailsAdapter adapter;
-    private String currentImageFolder;
-    private boolean sortNewToOld = true;
+    private FileImageMediaResolver mediaResolver;
     private final ArrayList<ImageBean> galleryImageList = new ArrayList<>();
     private int topImageIndexForParentActivity;
     private int bottomImageIndexForParentActivity;
@@ -48,27 +46,25 @@ public class SelectedImagesActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(@NonNull final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putString(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder);
         savedInstanceState.putParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)));
         savedInstanceState.putInt(BundleKeys.KEY_TOPIMAGE_INDEX, topImageIndexForParentActivity);
         savedInstanceState.putInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, bottomImageIndexForParentActivity);
+        mediaResolver.saveInstanceState(savedInstanceState);
     }
 
     private void initInitialState(final Bundle savedInstanceState) {
         final ArrayList<ImageBean> selectedBeansFromState;
         if (savedInstanceState == null) {
             final Intent intent = getIntent();
-            currentImageFolder = intent.getStringExtra(BundleKeys.KEY_IMAGE_FOLDER);
             selectedBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndexForParentActivity = intent.getIntExtra(BundleKeys.KEY_TOPIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
             bottomImageIndexForParentActivity = intent.getIntExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         } else {
-            currentImageFolder = savedInstanceState.getString(BundleKeys.KEY_IMAGE_FOLDER);
             selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
             topImageIndexForParentActivity = savedInstanceState.getInt(BundleKeys.KEY_TOPIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
             bottomImageIndexForParentActivity = savedInstanceState.getInt(BundleKeys.KEY_BOTTOMIMAGE_INDEX, PhotoViewMediator.NO_VALID_IMAGE_INDEX);
         }
-        sortNewToOld = new PhotoComparePreferences(this).isSortNewestFirst();
+        mediaResolver = FileImageMediaResolver.create(this, savedInstanceState);
         loadImagesForCurrentImageFolder();
         if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
             ImageBean.copySelectedState(selectedBeansFromState, galleryImageList);
@@ -77,7 +73,7 @@ public class SelectedImagesActivity extends AppCompatActivity {
 
     private void loadImagesForCurrentImageFolder() {
         galleryImageList.clear();
-        galleryImageList.addAll(new FileImageMediaQuery(getContentResolver(), currentImageFolder, sortNewToOld).execute());
+        galleryImageList.addAll(mediaResolver.execute());
     }
 
     private void initToolbar() {
@@ -117,7 +113,7 @@ public class SelectedImagesActivity extends AppCompatActivity {
                 adapter.notifySelectionChanged();
                 return true;
             case R.id.deleteUnselected:
-                new DeleteUnselectedHandler(this, galleryImageList)//
+                new DeleteUnselectedHandler(this, mediaResolver, galleryImageList)//
                         .execute();
                 return true;
             case R.id.invertSelection:
@@ -126,11 +122,11 @@ public class SelectedImagesActivity extends AppCompatActivity {
                 adapter.notifySelectionChanged();
                 return true;
             case R.id.deleteSelected:
-                new DeleteSelectedHandler(this, galleryImageList)//
+                new DeleteSelectedHandler(this, mediaResolver, galleryImageList)//
                         .execute();
                 return true;
             case android.R.id.home:
-                new BackToCompareImagesTransition(this, currentImageFolder, galleryImageList, topImageIndexForParentActivity, bottomImageIndexForParentActivity)//
+                new BackToCompareImagesTransition(this, mediaResolver, galleryImageList, topImageIndexForParentActivity, bottomImageIndexForParentActivity)//
                         .execute();
                 return true;
             default:

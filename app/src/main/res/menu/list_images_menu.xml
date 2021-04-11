@@ -8,4 +8,11 @@
         android:checkable="true"
         android:checked="true"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/sortFilenames"
+        android:title="@string/use_filenames_for_sort"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never" />
+
 </menu>

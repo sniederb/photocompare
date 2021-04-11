@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -12,40 +13,48 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NavUtils;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
+import ch.want.imagecompare.domain.FileImageMediaResolver;
 import ch.want.imagecompare.domain.ImageMediaStore;
 import ch.want.imagecompare.ui.NotificationFacade;
 import ch.want.imagecompare.ui.NotificationWithProgress;
 import ch.want.imagecompare.ui.ProgressCallback;
-import ch.want.imagecompare.ui.listfolders.ListAllImageFoldersActivity;
+import ch.want.imagecompare.ui.listfolders.SelectImagePoolActivity;
 
 abstract class AbstractDeleteFilesHandler {
 
     private final SelectedImagesActivity sourceActivity;
     protected final ArrayList<ImageBean> galleryImageList;
+    private final FileImageMediaResolver mediaResolver;
 
-    AbstractDeleteFilesHandler(final SelectedImagesActivity selectedImagesActivity, final ArrayList<ImageBean> galleryImageList) {
+    AbstractDeleteFilesHandler(final SelectedImagesActivity selectedImagesActivity, final FileImageMediaResolver mediaResolver, final ArrayList<ImageBean> galleryImageList) {
         sourceActivity = selectedImagesActivity;
         this.galleryImageList = galleryImageList;
+        this.mediaResolver = mediaResolver;
     }
 
     void execute() {
         final List<ImageBean> obsoleteImages = getObsoleteImages();
         if (!obsoleteImages.isEmpty()) {
-            final File firstImage = obsoleteImages.get(0).getImageFile();
-            showDeleteConfirmationDialog(obsoleteImages, firstImage.getParentFile().getName());
+            showDeleteConfirmationDialog(obsoleteImages);
         }
     }
 
     protected abstract List<ImageBean> getObsoleteImages();
 
-    private void showDeleteConfirmationDialog(final List<ImageBean> obsoleteImages, final String folderName) {
+    private void showDeleteConfirmationDialog(final List<ImageBean> obsoleteImages) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(sourceActivity);
         builder.setPositiveButton(android.R.string.ok, (dialog, id) -> {
             startDeletingObsoleteFiles(obsoleteImages);
             navigateToFolderSelection();
         });
         builder.setNegativeButton(android.R.string.cancel, null);
-        final String message = String.format(sourceActivity.getString(R.string.delete_confirmation), obsoleteImages.size(), folderName);
+        final String message;
+        if (mediaResolver.getImageDate() != null) {
+            final DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(sourceActivity.getApplicationContext());
+            message = String.format(sourceActivity.getString(R.string.delete_confirmation_date), obsoleteImages.size(), dateFormat.format(mediaResolver.getImageDate()));
+        } else {
+            message = String.format(sourceActivity.getString(R.string.delete_confirmation_folder), obsoleteImages.size(), mediaResolver.getImageFolder());
+        }
         builder.setMessage(message);
         builder.setTitle(R.string.delete_confirmation_title);
         builder.show();
@@ -59,7 +68,7 @@ abstract class AbstractDeleteFilesHandler {
     }
 
     private void navigateToFolderSelection() {
-        final Intent intent = new Intent(sourceActivity, ListAllImageFoldersActivity.class);
+        final Intent intent = new Intent(sourceActivity, SelectImagePoolActivity.class);
         NavUtils.navigateUpTo(sourceActivity, intent);
     }
 

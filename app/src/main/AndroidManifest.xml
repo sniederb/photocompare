@@ -22,18 +22,18 @@
         android:launchMode="singleTop"
         android:theme="@style/AppTheme"
         android:configChanges="keyboardHidden|orientation|screenSize">
-        <activity android:name=".ui.listfolders.ListAllImageFoldersActivity">
+        <activity android:name=".ui.listfolders.SelectImagePoolActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.listimages.ListImagesInFolderActivity"
-            android:parentActivityName=".ui.listfolders.ListAllImageFoldersActivity" />
+            android:name=".ui.listimages.ListImagesActivity"
+            android:parentActivityName=".ui.listfolders.SelectImagePoolActivity" />
         <activity
             android:name=".ui.compareimages.CompareImagesActivity"
-            android:parentActivityName=".ui.listimages.ListImagesInFolderActivity" />
+            android:parentActivityName=".ui.listimages.ListImagesActivity" />
         <activity
             android:name=".ui.imageselection.SelectedImagesActivity"
             android:parentActivityName=".ui.compareimages.CompareImagesActivity" />

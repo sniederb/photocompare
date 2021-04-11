@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:screenOrientation="sensor"
-    tools:context="ch.want.imagecompare.ui.listimages.ListImagesInFolderActivity">
+    tools:context="ch.want.imagecompare.ui.listimages.ListImagesActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/my_toolbar"

@@ -77,7 +77,6 @@ public class SelectedImagesActivityTest {
     public void removeSelectedAction() {
         launchActivity();
         // act
-        //Espresso.openContextualActionModeOverflowMenu();
         openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
         onView(withText("Delete selected images")).perform(click());
     }

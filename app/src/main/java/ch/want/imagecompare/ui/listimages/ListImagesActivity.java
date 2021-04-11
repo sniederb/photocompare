@@ -20,14 +20,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
-import ch.want.imagecompare.domain.FileImageMediaQuery;
+import ch.want.imagecompare.domain.FileImageMediaResolver;
 import ch.want.imagecompare.domain.PhotoComparePreferences;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 
-public class ListImagesInFolderActivity extends AppCompatActivity {
+public class ListImagesActivity extends AppCompatActivity {
 
-    private String currentImageFolder;
-    private boolean sortNewToOld = true;
+    private FileImageMediaResolver mediaResolver;
+
     private final ArrayList<ImageBean> galleryImageList = new ArrayList<>();
 
     @Override
@@ -41,7 +41,8 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.list_images_menu, menu);
-        menu.findItem(R.id.sortNewToOld).setChecked(sortNewToOld);
+        menu.findItem(R.id.sortNewToOld).setChecked(mediaResolver.isSortNewToOld());
+        menu.findItem(R.id.sortFilenames).setChecked(mediaResolver.useFilenamesForSort());
         return true;
     }
 
@@ -55,13 +56,11 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
         final ArrayList<ImageBean> selectedBeansFromState;
         if (savedInstanceState == null) {
             final Intent intent = getIntent();
-            currentImageFolder = intent.getStringExtra(BundleKeys.KEY_IMAGE_FOLDER);
             selectedBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION);
         } else {
-            currentImageFolder = savedInstanceState.getString(BundleKeys.KEY_IMAGE_FOLDER);
             selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
         }
-        sortNewToOld = new PhotoComparePreferences(this).isSortNewestFirst();
+        mediaResolver = FileImageMediaResolver.create(this, savedInstanceState);
         loadImagesForCurrentImageFolder();
         if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
             ImageBean.copySelectedState(selectedBeansFromState, galleryImageList);
@@ -80,8 +79,8 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(@NonNull final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putString(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder);
         savedInstanceState.putParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)));
+        mediaResolver.saveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -92,11 +91,19 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
                     showAlertLosingSelection();
                     return true;
                 }
-                break;
+                new BackToPoolSelectionTransition(this, mediaResolver).execute();
+                return true;
             case R.id.sortNewToOld:
-                sortNewToOld = !sortNewToOld;
-                item.setChecked(sortNewToOld);
-                new PhotoComparePreferences(this).setSortNewestFirst(sortNewToOld);
+                mediaResolver.setSortNewToOld(!mediaResolver.isSortNewToOld());
+                item.setChecked(mediaResolver.isSortNewToOld());
+                new PhotoComparePreferences(this).setSortNewestFirst(mediaResolver.isSortNewToOld());
+                loadImagesForCurrentImageFolder();
+                notifyAdapterDataSetChanged();
+                return true;
+            case R.id.sortFilenames:
+                mediaResolver.setFilenamesForSort(!mediaResolver.useFilenamesForSort());
+                item.setChecked(mediaResolver.useFilenamesForSort());
+                new PhotoComparePreferences(this).setFilenamesForSort(mediaResolver.useFilenamesForSort());
                 loadImagesForCurrentImageFolder();
                 notifyAdapterDataSetChanged();
                 return true;
@@ -110,11 +117,11 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
 
     private void loadImagesForCurrentImageFolder() {
         galleryImageList.clear();
-        galleryImageList.addAll(new FileImageMediaQuery(getContentResolver(), currentImageFolder, sortNewToOld).execute());
+        galleryImageList.addAll(mediaResolver.execute());
     }
 
     private void initRecyclerImageView() {
-        final ImageBeanListRecyclerViewAdapter<SingleImageViewHolder> adapter = new ListImagesThumbnailsAdapter(currentImageFolder, sortNewToOld, galleryImageList);
+        final ImageBeanListRecyclerViewAdapter<SingleImageViewHolder> adapter = new ListImagesThumbnailsAdapter(mediaResolver, galleryImageList);
         final RecyclerView recyclerView = findViewById(R.id.imageThumbnails);
         final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this, FlexDirection.ROW, FlexWrap.WRAP);
         recyclerView.setLayoutManager(layoutManager);
@@ -130,7 +137,10 @@ public class ListImagesInFolderActivity extends AppCompatActivity {
 
     private void showAlertLosingSelection() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setPositiveButton(android.R.string.ok, (dialog, id) -> ListImagesInFolderActivity.super.onBackPressed());
+        builder.setPositiveButton(android.R.string.ok, (dialog, id) -> {
+            galleryImageList.clear();
+            onBackPressed();
+        });
         builder.setNegativeButton(android.R.string.cancel, null);
         builder.setMessage(R.string.navigation_will_lose_selection).setTitle(R.string.navigation_will_lose_selection_title);
         builder.show();

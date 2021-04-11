@@ -8,23 +8,24 @@ import java.util.ArrayList;
 import androidx.core.app.NavUtils;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.data.ImageBean;
+import ch.want.imagecompare.domain.FileImageMediaResolver;
 
 class BackToImageListTransition {
 
     private final Activity sourceActivity;
-    private final String currentImageFolder;
+    private final FileImageMediaResolver mediaResolver;
     private final ArrayList<ImageBean> galleryImageList;
 
-    BackToImageListTransition(final Activity sourceActivity, final String currentImageFolder, final ArrayList<ImageBean> galleryImageList) {
+    BackToImageListTransition(final Activity sourceActivity, final FileImageMediaResolver mediaResolver, final ArrayList<ImageBean> galleryImageList) {
         this.sourceActivity = sourceActivity;
-        this.currentImageFolder = currentImageFolder;
+        this.mediaResolver = mediaResolver;
         this.galleryImageList = galleryImageList;
     }
 
     void execute() {
         final Intent upIntent = sourceActivity.getParentActivityIntent();
         assert upIntent != null;
-        upIntent.putExtra(BundleKeys.KEY_IMAGE_FOLDER, currentImageFolder);
+        mediaResolver.putToIntent(upIntent);
         upIntent.putParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)));
         NavUtils.navigateUpTo(sourceActivity, upIntent);
     }

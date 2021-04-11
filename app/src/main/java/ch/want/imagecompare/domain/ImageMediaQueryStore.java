@@ -5,25 +5,25 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-public abstract class ImageMediaQuery extends ImageMediaStore {
+public abstract class ImageMediaQueryStore extends ImageMediaStore {
 
     private final String selectionExpression;
     private final String[] selectionArgs;
     private String orderBy = ORDER_BY_DATE_TAKEN_DESC;
 
-    ImageMediaQuery(final ContentResolver contentResolver) {
+    ImageMediaQueryStore(final ContentResolver contentResolver) {
         super(contentResolver);
         selectionExpression = null;
         selectionArgs = null;
     }
 
-    ImageMediaQuery(final ContentResolver contentResolver, final String selectionExpression, final String[] selectionArgs) {
+    ImageMediaQueryStore(final ContentResolver contentResolver, final String selectionExpression, final String[] selectionArgs) {
         super(contentResolver);
         this.selectionExpression = selectionExpression;
         this.selectionArgs = selectionArgs;
     }
 
-    public ImageMediaQuery setSortNewToOld(final boolean sortNewToOld) {
+    ImageMediaQueryStore setSortNewToOld(final boolean sortNewToOld) {
         orderBy = sortNewToOld ? ORDER_BY_DATE_TAKEN_DESC : ORDER_BY_DATE_TAKEN_ASC;
         return this;
     }
