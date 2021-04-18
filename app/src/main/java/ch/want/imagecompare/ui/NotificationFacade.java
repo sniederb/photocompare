@@ -25,7 +25,8 @@ public class NotificationFacade {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)//
                 .setProgress(0, 0, true);
         final NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        return new NotificationWithProgress(notificationManager, builder, RND.nextInt());
+        return new NotificationWithProgress(notificationManager, builder, RND.nextInt())//
+                .withLocalBroadCast(context);
     }
 
     private static void ensureChannelIsRegistered(final Context context) {

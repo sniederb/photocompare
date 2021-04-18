@@ -1,7 +1,10 @@
 package ch.want.imagecompare.ui.listfolders;
 
 import android.app.DatePickerDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -31,6 +34,7 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import ch.want.imagecompare.BundleKeys;
@@ -55,6 +59,7 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
     private PermissionChecker permissionChecker;
     private DateFormat dateFormat;
     private final Calendar cal = Calendar.getInstance();
+    private BroadcastReceiver filesDeletedBroadcastReceiver;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -67,6 +72,19 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
         final Toolbar toolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
         setAppNameAndVersion();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initBroadcastReceiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(filesDeletedBroadcastReceiver, new IntentFilter(BundleKeys.FILE_DELETE_COMPLETE));
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(filesDeletedBroadcastReceiver);
+        super.onPause();
     }
 
     private void initContentViews() {
@@ -175,6 +193,17 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
             txtView.setText(getString(R.string.app_name_with_version, version));
         } catch (final PackageManager.NameNotFoundException e) {
             Log.w("setAppNameAndVersion", "App name and version are not displayed: " + e.getMessage());
+        }
+    }
+
+    private void initBroadcastReceiver() {
+        if (filesDeletedBroadcastReceiver == null) {
+            filesDeletedBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(final Context context, final Intent intent) {
+                    onRefresh();
+                }
+            };
         }
     }
 

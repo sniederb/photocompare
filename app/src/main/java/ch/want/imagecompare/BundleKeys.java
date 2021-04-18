@@ -18,5 +18,9 @@ public class BundleKeys {
      * Note that shared preferences are shared only per package-name, by default.
      */
     public static final String SHARED_PREFERENCES = "ch.want.imagecompare.shared_preferences";
+    /**
+     * Intent name for local broadcast
+     */
+    public static final String FILE_DELETE_COMPLETE = "ch.want.imagecompare.file_delete_complete";
 }
 
