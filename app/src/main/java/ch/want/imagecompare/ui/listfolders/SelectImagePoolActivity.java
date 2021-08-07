@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -113,7 +111,6 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
             final DatePickerDialog dialog = new DatePickerDialog(SelectImagePoolActivity.this,//
                     new DateSetListener(dateTextControl, cal, dateFormat),//
                     year, month, day);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.show();
         });
         final ImageButton applyDateSelectionButton = findViewById(R.id.applyDateSelection);
