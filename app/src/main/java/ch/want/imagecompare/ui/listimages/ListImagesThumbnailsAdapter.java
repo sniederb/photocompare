@@ -14,7 +14,7 @@ import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 import ch.want.imagecompare.ui.thumbnails.ImageLayoutSizeParams;
 
 /**
- * Connects RecyclerView with the view attributes for {@link ListImagesActivity , and provides a {@link OpenCompareClickHandler}
+ * Connects RecyclerView with the view attributes for {@link ListImagesActivity}, and provides a {@link OpenCompareClickHandler}
  * for each thumbnail
  */
 class ListImagesThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<SingleImageViewHolder> {
@@ -22,7 +22,7 @@ class ListImagesThumbnailsAdapter extends ImageBeanListRecyclerViewAdapter<Singl
     private final FileImageMediaResolver mediaResolver;
 
     ListImagesThumbnailsAdapter(final FileImageMediaResolver mediaResolver, final List<ImageBean> imageList) {
-        super(imageList, mediaResolver.isSortNewToOld());
+        super(imageList);
         this.mediaResolver = mediaResolver;
     }
 

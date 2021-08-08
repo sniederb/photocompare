@@ -12,7 +12,6 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -111,13 +110,12 @@ public class FileImageMediaResolver {
         }
     }
 
-    public Intent putToIntent(final Intent intent) {
+    public void putToIntent(final Intent intent) {
         if (imageDate != null) {
             intent.putExtra(BundleKeys.KEY_IMAGE_DATE, imageDate.getTime());
         } else {
             intent.putExtra(BundleKeys.KEY_IMAGE_FOLDER, bucketPath);
         }
-        return intent;
     }
 
     private String getSelectExpression() {
@@ -142,7 +140,7 @@ public class FileImageMediaResolver {
      * from the camera to the phone. For such cases, sorting by filename is much more reliable.
      */
     private void sortByFilename(final List<ImageBean> galleryImageList) {
-        Collections.sort(galleryImageList, sortNewToOld ? ImageBeanComparators.byDateDesc() : ImageBeanComparators.byDateAsc());
+        galleryImageList.sort(sortNewToOld ? ImageBeanComparators.byDateDesc() : ImageBeanComparators.byDateAsc());
     }
 
     static class ImageBeanComparators {

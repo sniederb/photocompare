@@ -10,7 +10,9 @@ import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -24,6 +26,10 @@ import ch.want.imagecompare.domain.FileImageMediaResolver;
 import ch.want.imagecompare.domain.PhotoComparePreferences;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 
+/**
+ * List images. The layout is basically defined by subclass of {@link ch.want.imagecompare.ui.thumbnails.ImageLayoutSizeParams},
+ * used in {@link ImageBeanListRecyclerViewAdapter}
+ */
 public class ListImagesActivity extends AppCompatActivity {
 
     private FileImageMediaResolver mediaResolver;
@@ -61,10 +67,8 @@ public class ListImagesActivity extends AppCompatActivity {
             selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
         }
         mediaResolver = FileImageMediaResolver.create(this, savedInstanceState);
-        loadImagesForCurrentImageFolder();
-        if (selectedBeansFromState != null && !selectedBeansFromState.isEmpty()) {
-            ImageBean.copySelectedState(selectedBeansFromState, galleryImageList);
-        }
+        // Async loader for images. For large folders, running this on the UI thread might lead to an ANR.
+        Executors.newSingleThreadExecutor().execute(() -> loadImagesForCurrentImageFolder(selectedBeansFromState));
     }
 
     @Override
@@ -97,15 +101,15 @@ public class ListImagesActivity extends AppCompatActivity {
                 mediaResolver.setSortNewToOld(!mediaResolver.isSortNewToOld());
                 item.setChecked(mediaResolver.isSortNewToOld());
                 new PhotoComparePreferences(this).setSortNewestFirst(mediaResolver.isSortNewToOld());
+                // sort is done by the media query, so need to reload the entire set!
                 loadImagesForCurrentImageFolder();
-                notifyAdapterDataSetChanged();
                 return true;
             case R.id.sortFilenames:
                 mediaResolver.setFilenamesForSort(!mediaResolver.useFilenamesForSort());
                 item.setChecked(mediaResolver.useFilenamesForSort());
                 new PhotoComparePreferences(this).setFilenamesForSort(mediaResolver.useFilenamesForSort());
+                // sort is done by the media query, so need to reload the entire set!
                 loadImagesForCurrentImageFolder();
-                notifyAdapterDataSetChanged();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -116,8 +120,16 @@ public class ListImagesActivity extends AppCompatActivity {
     }
 
     private void loadImagesForCurrentImageFolder() {
+        loadImagesForCurrentImageFolder(ImageBean.getSelectedImageBeans(galleryImageList));
+    }
+
+    private void loadImagesForCurrentImageFolder(final List<ImageBean> currentSelection) {
         galleryImageList.clear();
         galleryImageList.addAll(mediaResolver.execute());
+        if (currentSelection != null && !currentSelection.isEmpty()) {
+            ImageBean.copySelectedState(currentSelection, galleryImageList);
+        }
+        notifyAdapterDataSetChanged();
     }
 
     private void initRecyclerImageView() {
@@ -129,10 +141,10 @@ public class ListImagesActivity extends AppCompatActivity {
     }
 
     private void notifyAdapterDataSetChanged() {
-        Optional.ofNullable(findViewById(R.id.imageThumbnails))//
+        runOnUiThread(() -> Optional.ofNullable(findViewById(R.id.imageThumbnails))//
                 .map(view -> (RecyclerView) view)//
                 .map(view -> (ImageBeanListRecyclerViewAdapter<?>) view.getAdapter())//
-                .ifPresent(ImageBeanListRecyclerViewAdapter::notifyDataSetSortChanged);
+                .ifPresent(ImageBeanListRecyclerViewAdapter::notifyDataSetChanged));
     }
 
     private void showAlertLosingSelection() {

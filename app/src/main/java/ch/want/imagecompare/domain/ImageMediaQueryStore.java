@@ -45,9 +45,12 @@ public abstract class ImageMediaQueryStore extends ImageMediaStore {
     }
 
     /**
-     * @param bucketPath      Column MediaStore.Images.Media.BUCKET_DISPLAY_NAME
-     * @param imageFilePath   Column MediaStore.Images.Media.DATA
-     * @param imageContentUri
+     * @param bucketPath      Column MediaStore.Images.Media.BUCKET_DISPLAY_NAME, a string like "Camera" which is the directory name of
+     *                        where an image or video is in
+     * @param imageFilePath   Column MediaStore.Images.Media.DATA, Path to the file on disk, eg.
+     *                        {@code /storage/emulated/0/Download/J0144366.JPG}
+     * @param imageContentUri Something like {@code content://media/external/images/media/52}, where '52' will refer to the media ID
+     *                        of the image
      */
     public abstract void doWithCursor(String bucketPath, String imageFilePath, Uri imageContentUri);
 }

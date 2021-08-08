@@ -11,7 +11,7 @@ public class ImageMediaStore {
 
     /**
      * {@code content://media/external/images/media, Store public data on the shared external storage.}
-     * Note that MediaStore.Images.Media.INTERNAL_CONTENT_URI referes to data +private to the app+
+     * Note that MediaStore.Images.Media.INTERNAL_CONTENT_URI refers to data +private to the app+
      * {@code content://media/internal/images/media, Store private data on the device memory.}
      */
     static final Uri MEDIA_CONTENT_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;

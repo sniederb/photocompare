@@ -22,17 +22,15 @@ import ch.want.imagecompare.data.ImageBean;
  * visible View and added there. But since the View is currently bound with old data {@link #onBindViewHolder(RecyclerView.ViewHolder, int)}
  * is called again to ensure that the View is bound with only the correct data before it is rendered.
  * <p>
- * Similarly you'll notice that {@link #onCreateViewHolder(ViewGroup, int)} is only called the exact minimum number of Views it needs.
+ * Similarly you'll notice that {@link #onCreateViewHolder(ViewGroup, int)} is only called for the exact minimum number of Views it needs.
  *
  * @param <T>
  */
 public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.ViewHolder & ThumbnailViewHolder> extends RecyclerView.Adapter<T> {
     protected final List<ImageBean> galleryImageList;
-    private boolean sortNewestFirst;
 
-    protected ImageBeanListRecyclerViewAdapter(final List<ImageBean> imageList, final boolean sortNewestFirst) {
+    protected ImageBeanListRecyclerViewAdapter(final List<ImageBean> imageList) {
         galleryImageList = imageList;
-        this.sortNewestFirst = sortNewestFirst;
     }
 
     public ImageBean getImageAndTitleBean(final int i) {
@@ -121,14 +119,5 @@ public abstract class ImageBeanListRecyclerViewAdapter<T extends RecyclerView.Vi
     @Override
     public int getItemCount() {
         return galleryImageList == null ? 0 : galleryImageList.size();
-    }
-
-    protected boolean getSortNewestFirst() {
-        return sortNewestFirst;
-    }
-
-    public void notifyDataSetSortChanged() {
-        sortNewestFirst = !sortNewestFirst;
-        notifyDataSetChanged();
     }
 }
