@@ -40,6 +40,7 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 
+    <!-- Horizontal bar -->
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -61,23 +62,26 @@
 
         <EditText
             android:id="@+id/selectByDateValue"
-            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="48dp"
+            android:layout_marginBottom="24dp"
+            android:layout_width="0dp"
             android:layout_weight="1"
+            tools:ignore="NestedWeights"
             android:clickable="false"
             android:cursorVisible="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:hint="@string/hint_date_select"
-            android:inputType="date" />
+            android:inputType="date"
+            android:autofillHints="Current date" />
 
         <ImageButton
             android:id="@+id/applyDateSelection"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="@null"
-            android:src="@drawable/ic_baseline_play_arrow_24" />
+            android:src="@drawable/ic_baseline_play_arrow_24"
+            android:contentDescription="@string/submit_date_selection" />
 
     </LinearLayout>
 
@@ -88,5 +92,5 @@
         android:layout_gravity="start"
         android:paddingStart="6dp"
         android:paddingEnd="6dp"
-        android:textSize="10sp" />
+        android:textSize="11sp" />
 </LinearLayout>

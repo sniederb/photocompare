@@ -27,7 +27,7 @@ public class ImageLayoutSizeParamsForImageOnlyTest {
         // act
         final int viewSize = testee.getViewSizeInPixel();
         // assert
-        assertEquals(328, viewSize);
+        assertEquals(327, viewSize);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class ImageLayoutSizeParamsForImageOnlyTest {
         // act
         final int imageSize = testee.getImageSizeInPixel();
         // assert
-        assertEquals(297, imageSize);
+        assertEquals(295, imageSize);
     }
 
     private static Resources getTestDeviceResources() {

@@ -38,6 +38,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="6dp"
         android:src="@drawable/ic_baseline_share_24"
-        app:backgroundTint="@color/colorPrimary" />
+        app:backgroundTint="@color/colorPrimary"
+        android:contentDescription="@string/share_images" />
 
 </FrameLayout>

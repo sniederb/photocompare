@@ -124,12 +124,14 @@ public class ListImagesActivity extends AppCompatActivity {
     }
 
     private void loadImagesForCurrentImageFolder(final List<ImageBean> currentSelection) {
+        setToolbarTitleToLoading();
         galleryImageList.clear();
         galleryImageList.addAll(mediaResolver.execute());
         if (currentSelection != null && !currentSelection.isEmpty()) {
             ImageBean.copySelectedState(currentSelection, galleryImageList);
         }
         notifyAdapterDataSetChanged();
+        setToolbarTitleToReady();
     }
 
     private void initRecyclerImageView() {
@@ -138,6 +140,20 @@ public class ListImagesActivity extends AppCompatActivity {
         final FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this, FlexDirection.ROW, FlexWrap.WRAP);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+    }
+
+    private void setToolbarTitleToLoading() {
+        runOnUiThread(() -> {
+            final Toolbar toolbar = findViewById(R.id.my_toolbar);
+            toolbar.setTitle(R.string.action_loading_images);
+        });
+    }
+
+    private void setToolbarTitleToReady() {
+        runOnUiThread(() -> {
+            final Toolbar toolbar = findViewById(R.id.my_toolbar);
+            toolbar.setTitle(R.string.action_select_image);
+        });
     }
 
     private void notifyAdapterDataSetChanged() {

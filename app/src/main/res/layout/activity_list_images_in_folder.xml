@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:elevation="1dp"
-        app:title="@string/action_select_image" />
+        app:title="@string/action_loading_images" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/imageThumbnails"

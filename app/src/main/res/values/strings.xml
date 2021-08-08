@@ -6,6 +6,7 @@
     <string name="action_select_imagepool">Select folder or image date</string>
     <string name="title_date_select">Select by date</string>
     <string name="hint_date_select">Images taken on …</string>
+    <string name="action_loading_images">Loading images …</string>
     <string name="action_select_image">Select image(s) to start compare</string>
     <string name="action_compare_images">Compare</string>
     <string name="action_nav_right">Navigate right</string>
@@ -37,4 +38,6 @@
     <string name="channel_filedelete_name">File deletes</string>
     <string name="channel_filedelete_description">Show progress of deleting unwanted files</string>
     <string name="channel_filedelete_title">Deleting unwanted images</string>
+    <string name="submit_date_selection">Submit date selection</string>
+    <string name="share_images">Share images</string>
 </resources>

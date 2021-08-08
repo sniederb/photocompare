@@ -16,27 +16,45 @@ import android.util.TypedValue;
  */
 public abstract class AbstractImageLayoutSizeParams {
 
-    protected static int getColumnWidthInPixel(final int padding, final int columnCount, final Resources resources) {
-        final DisplayMetrics metrics = resources.getDisplayMetrics();
-        final int paddingInPixel = (int) dipToPixel(padding, resources);
-        return (getWidthPixels(metrics) - paddingInPixel) / columnCount;
+    /**
+     * For a given {@code columnCount} and overall {@code paddingInDip} (in DIP), this method calculates the column width
+     * in pixel.
+     */
+    protected static int getColumnWidthInPixel(final int paddingInDip, final int columnCount, final Resources resources) {
+        return getColumnWidthInPixel(paddingInDip, columnCount, resources.getDisplayMetrics());
     }
 
-    protected static int getImageSizeInPixel(final int padding, final int columnWidth, final Resources resources) {
-        final int imageMarginInPixel = (int) dipToPixel(padding, resources);
-        return columnWidth - imageMarginInPixel;
+    static int getColumnWidthInPixel(final int paddingInDip, final int columnCount, final DisplayMetrics metrics) {
+        final int paddingInPixel = marginInDipToPixel(paddingInDip, metrics);
+        return (getWidthPixels(metrics) - (2 * paddingInPixel)) / columnCount;
     }
 
-    private static float dipToPixel(final int dimensionInDip, final Resources resources) {
-        return dimensionInDip * resources.getDisplayMetrics().density;
+    /**
+     * For a given {@code columnWidthInPixel}, probably calculated with {@link #getColumnWidthInPixel(int, int, Resources)}, this method
+     * returns the image (=content) width in pixel given a {@code paddingInDip}.
+     */
+    protected static int getImageSizeInPixel(final int paddingInDip, final int columnWidthInPixel, final Resources resources) {
+        return getImageSizeInPixel(paddingInDip, columnWidthInPixel, resources.getDisplayMetrics());
+    }
+
+    static int getImageSizeInPixel(final int paddingInDip, final int columnWidthInPixel, final DisplayMetrics metrics) {
+        final int imageMarginInPixel = marginInDipToPixel(paddingInDip, metrics);
+        return columnWidthInPixel - (2 * imageMarginInPixel);
+    }
+
+    /**
+     * The margin calculated here is virtual, the actual margin is defined in the layout and will be applied by Android.
+     * If this calculation errs towards a lower value, the layout will break because there's not enough space. If this
+     * calculation errs towards a higher value, there will be a bit too much margin, but the column layout will still be intact.
+     */
+    private static int marginInDipToPixel(final int dimensionInDip, final DisplayMetrics metrics) {
+        return (int) Math.ceil(dimensionInDip * metrics.density);
     }
 
     /**
      * Experience shows that when changing display size (eg. to 'smaller'), the device width is not reflected precisely.
      * Thus a 720px width display becomes width=564dp with a density of 1.275 (564dp x 1.275 = 719.1px). This
      * method doesn't simply use {@link DisplayMetrics#widthPixels}, but rather calculates via DPs.
-     *
-     * @return
      */
     private static int getWidthPixels(final DisplayMetrics metrics) {
         final int widthDp = (int) (metrics.widthPixels / metrics.density);

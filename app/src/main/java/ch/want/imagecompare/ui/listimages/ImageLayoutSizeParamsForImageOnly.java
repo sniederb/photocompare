@@ -12,12 +12,12 @@ class ImageLayoutSizeParamsForImageOnly extends AbstractImageLayoutSizeParams im
     /**
      * from res/layout/activity_list_images_in_folder.xml -> RecyclerView -> paddingLeft/Right
      */
-    private static final int PADDING_IN_DP = 2 * 18;
+    private static final int PADDING_IN_DP = 18;
     /**
      * reduce image size slightly to allow for proper display. The LinearLayout has a 6dp padding,
      * defined in res/layout/view_image_only.xml
      */
-    private static final int IMAGE_MARGIN_IN_DP = 2 * 6;
+    private static final int IMAGE_MARGIN_IN_DP = 6;
 
     private final int viewSizeInPixel;
     private final int imageSizeInPixel;
