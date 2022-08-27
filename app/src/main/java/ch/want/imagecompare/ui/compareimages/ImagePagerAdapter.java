@@ -2,9 +2,12 @@ package ch.want.imagecompare.ui.compareimages;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import androidx.viewpager.widget.PagerAdapter;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -15,7 +18,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import androidx.viewpager.widget.PagerAdapter;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.domain.CrossViewEventHandler;
 
@@ -27,6 +29,8 @@ import ch.want.imagecompare.domain.CrossViewEventHandler;
 class ImagePagerAdapter extends PagerAdapter {
 
     private static final int ID_OFFSET = 100000;
+    // limit zoom by minimum DPI. default is 160
+    private static final int MINIMUM_DPI = 64;
     private CrossViewEventHandler matrixChangeListener;
     private ZoomPanRestoreHandler zoomPanHandler;
     private final ImageViewListener imageViewListener = new ImageViewListener();
@@ -35,12 +39,14 @@ class ImagePagerAdapter extends PagerAdapter {
     private final ConcurrentMap<Integer, SubsamplingScaleImageView> highResPositions = new ConcurrentHashMap<>();
     private Integer futureHighResIndex;
 
-    /**
-     * This fixes https://github.com/sniederb/photocompare/issues/6
-     */
     static {
+        // This fixes https://github.com/sniederb/photocompare/issues/6.
         // default is Bitmap.Config.RGB_565
-        SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.ARGB_8888);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.HARDWARE);
+        } else {
+            SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.ARGB_8888);
+        }
     }
 
     ImagePagerAdapter(final ArrayList<ImageBean> galleryImageList) {
@@ -122,6 +128,7 @@ class ImagePagerAdapter extends PagerAdapter {
         // beware that we can't set a tag on PhotoView, as that will break Glide
         // "You must not call setTag() on a view Glide is targeting"
         photoView.setId(getPhotoViewId(position));
+        photoView.setMinimumDpi(MINIMUM_DPI);
         return photoView;
     }
 

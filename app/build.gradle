@@ -18,8 +18,8 @@ android {
         applicationId "ch.want.imagecompare"
         minSdkVersion 24
         targetSdkVersion 32
-        versionCode 36
-        versionName '1.0.36'
+        versionCode 38
+        versionName '1.0.38'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
         signingConfig signingConfigs.config
