@@ -1,29 +1,35 @@
 package ch.want.imagecompare.ui.imageselection;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexWrap;
-import com.google.android.flexbox.FlexboxLayoutManager;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
-import java.util.Optional;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.ArrayList;
+import java.util.Optional;
+
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.domain.FileImageMediaResolver;
 import ch.want.imagecompare.domain.PhotoViewMediator;
+import ch.want.imagecompare.ui.listfolders.SelectImagePoolActivity;
 
 public class SelectedImagesActivity extends AppCompatActivity {
 
@@ -132,5 +138,21 @@ public class SelectedImagesActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AbstractDeleteFilesHandler.IMAGE_DELETED_ACTIONCODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                final Intent intent = new Intent(this, SelectImagePoolActivity.class);
+                NavUtils.navigateUpTo(this, intent);
+            } else {
+                View view = findViewById(android.R.id.content);
+                Snackbar.make(view, R.string.nothing_deleted, Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null)
+                        .show();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -1,16 +1,17 @@
 package ch.want.imagecompare.ui;
 
+import static org.junit.Assert.assertEquals;
+
 import android.util.DisplayMetrics;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import static org.junit.Assert.assertEquals;
-
 @RunWith(AndroidJUnit4.class)
 public class AbstractImageLayoutSizeParamsTest {
+
     @Test
     public void getColumnWidthInPixel() {
         // arrange

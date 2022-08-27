@@ -1,16 +1,24 @@
 package ch.want.imagecompare.ui.imageselection;
 
+import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
+import android.content.IntentSender;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.MediaStore;
+import android.util.Log;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.NavUtils;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.domain.FileImageMediaResolver;
@@ -18,10 +26,10 @@ import ch.want.imagecompare.domain.ImageMediaStore;
 import ch.want.imagecompare.ui.NotificationFacade;
 import ch.want.imagecompare.ui.NotificationWithProgress;
 import ch.want.imagecompare.ui.ProgressCallback;
-import ch.want.imagecompare.ui.listfolders.SelectImagePoolActivity;
 
 abstract class AbstractDeleteFilesHandler {
 
+    public static final int IMAGE_DELETED_ACTIONCODE = 43018;
     private final SelectedImagesActivity sourceActivity;
     protected final ArrayList<ImageBean> galleryImageList;
     private final FileImageMediaResolver mediaResolver;
@@ -44,8 +52,7 @@ abstract class AbstractDeleteFilesHandler {
     private void showDeleteConfirmationDialog(final List<ImageBean> obsoleteImages) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(sourceActivity);
         builder.setPositiveButton(android.R.string.ok, (dialog, id) -> {
-            startDeletingObsoleteFiles(obsoleteImages);
-            navigateToFolderSelection();
+            deleteObsoleteFiles(obsoleteImages);
         });
         builder.setNegativeButton(android.R.string.cancel, null);
         final String message;
@@ -60,16 +67,35 @@ abstract class AbstractDeleteFilesHandler {
         builder.show();
     }
 
+    private void deleteObsoleteFiles(final List<ImageBean> obsoleteImages) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            startTrashRequest(obsoleteImages);
+        } else {
+            startDeletingObsoleteFiles(obsoleteImages);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    private void startTrashRequest(final List<ImageBean> obsoleteImages) {
+        List<Uri> urisToModify = obsoleteImages.stream()
+                .map(ImageBean::getContentUri)
+                .collect(Collectors.toList());
+        // Note: PendingIntents are designed that they can be launched from other applications, i.e. it isn't clear who should receive the result.
+        // That's why startActivityForResult() is meaningless for PendingIntent.
+        PendingIntent editPendingIntent = MediaStore.createTrashRequest(sourceActivity.getApplicationContext().getContentResolver(), urisToModify, true);
+        try {
+            sourceActivity.startIntentSenderForResult(editPendingIntent.getIntentSender(), IMAGE_DELETED_ACTIONCODE, null, 0, 0, 0);
+        } catch (IntentSender.SendIntentException ex) {
+            Log.w("startDeletingObsoleteFiles", "Failed to start trash request intent due to " + ex.getMessage());
+        }
+    }
+
     private void startDeletingObsoleteFiles(final List<ImageBean> obsoleteImages) {
         final NotificationWithProgress notificationWithProgress = NotificationFacade.createNotification(sourceActivity);
         Executors.newSingleThreadExecutor().execute(//
                 new DeleteFilesRunnable(obsoleteImages, sourceActivity, galleryImageList, notificationWithProgress)//
         );
-    }
-
-    private void navigateToFolderSelection() {
-        final Intent intent = new Intent(sourceActivity, SelectImagePoolActivity.class);
-        NavUtils.navigateUpTo(sourceActivity, intent);
+        sourceActivity.onActivityResult(IMAGE_DELETED_ACTIONCODE, Activity.RESULT_OK, null);
     }
 
     private static class DeleteFilesRunnable implements Runnable {

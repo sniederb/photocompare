@@ -1,5 +1,5 @@
 <!-- The metrics of this view will be redefined in ImageBeanListRecyclerViewAdapter.onCreateViewHolder
-     When changing padding here, be sure to update ImageBeanListRecyclerViewAdapter.ImageLayoutSizeParams -->
+     When changing padding here, be sure to update ImageLayoutSizeParamsForImageOnly -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="160dp"

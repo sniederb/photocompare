@@ -1,22 +1,27 @@
 package ch.want.imagecompare.ui.listfolders;
 
-import android.content.Context;
-import android.content.res.Resources;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeThat;
+
+import android.Manifest;
+import android.content.Context;
+import android.content.res.Resources;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.rule.GrantPermissionRule;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class ImageLayoutSizeParamsForImageAndTitleTest {
 
     private static final int WIDTH_PIXELS_NEXUS5 = 1080;
+    @Rule
+    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
 
     @Test
     public void getViewSizeInPixel() {
@@ -27,7 +32,7 @@ public class ImageLayoutSizeParamsForImageAndTitleTest {
         // act
         final int viewSize = testee.getViewSizeInPixel();
         // assert
-        assertEquals(491, viewSize);
+        assertEquals(489, viewSize);
     }
 
     @Test
@@ -39,7 +44,7 @@ public class ImageLayoutSizeParamsForImageAndTitleTest {
         // act
         final int imageSize = testee.getImageSizeInPixel();
         // assert
-        assertEquals(411, imageSize);
+        assertEquals(405, imageSize);
     }
 
     private static Resources getTestDeviceResources() {

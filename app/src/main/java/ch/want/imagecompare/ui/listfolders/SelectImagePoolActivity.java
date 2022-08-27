@@ -8,12 +8,22 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
@@ -29,18 +39,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.domain.FolderImageMediaResolver;
+import ch.want.imagecompare.domain.LegacyPermissionChecker;
 import ch.want.imagecompare.domain.PermissionChecker;
 import ch.want.imagecompare.domain.PhotoComparePreferences;
+import ch.want.imagecompare.domain.ScopedPermissionChecker;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 
 /**
@@ -63,7 +69,11 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dateFormat = android.text.format.DateFormat.getMediumDateFormat(getApplicationContext());
-        permissionChecker = new PermissionChecker(this, PERMISSION_REQUEST_STORAGE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            permissionChecker = new ScopedPermissionChecker(this, PERMISSION_REQUEST_STORAGE);
+        } else {
+            permissionChecker = new LegacyPermissionChecker(this, PERMISSION_REQUEST_STORAGE);
+        }
         initContentViews();
         initDateSelection(savedInstanceState);
         onRefresh();
@@ -77,6 +87,9 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
         super.onResume();
         initBroadcastReceiver();
         LocalBroadcastManager.getInstance(this).registerReceiver(filesDeletedBroadcastReceiver, new IntentFilter(BundleKeys.FILE_DELETE_COMPLETE));
+        if (imageBuckets.isEmpty() && permissionChecker.hasPermissions()) {
+            onRefresh();
+        }
     }
 
     @Override
@@ -151,19 +164,19 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
-    // TODO: uncomment once targetSdkVersion==30
-//    @Override
-//    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if ((requestCode == PERMISSION_REQUEST_STORAGE) && (SDK_INT >= Build.VERSION_CODES.R)) {
-//            if (permissionChecker.hasPermissions()) {
-//                initImageBuckets();
-//                updateLayoutFromImageBuckets();
-//            } else {
-//                Toast.makeText(this, "Cannot show and manage images without storage access.", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if ((requestCode == PERMISSION_REQUEST_STORAGE) && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
+            if (permissionChecker.hasPermissions()) {
+                initImageBuckets();
+                updateLayoutFromImageBuckets();
+            } else {
+                Toast.makeText(this, "Cannot show and manage images without storage access.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     private void updateLayoutFromImageBuckets() {
         final ImageBeanListRecyclerViewAdapter<SingleFolderViewHolder> adapter = new ListFolderThumbnailsAdapter(getImageFolders());

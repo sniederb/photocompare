@@ -28,6 +28,7 @@
     <string name="delete_confirmation_title">Confirm image delete</string>
     <string name="delete_confirmation_folder">This action will delete %1$d file(s) in the folder %2$s.</string>
     <string name="delete_confirmation_date">This action will delete %1$d file(s) taken on %2$s.</string>
+    <string name="nothing_deleted">Delete was cancelled</string>
 
     <string name="shareselected_largetx_confirmation">Attempting to share %1$d file(s), which is rather a lot and might cause Android to crash this app. Do you still want to try?</string>
     <string name="shareselected_largetx_confirmation_title">Sharing a lot of images!</string>

@@ -4,12 +4,14 @@ import android.content.res.Resources;
 import android.view.View;
 import android.widget.CheckBox;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
+import ch.want.imagecompare.ui.ImageLayoutSizeParamsForImageOnly;
 import ch.want.imagecompare.ui.thumbnails.ImageBeanListRecyclerViewAdapter;
 import ch.want.imagecompare.ui.thumbnails.ImageLayoutSizeParams;
 

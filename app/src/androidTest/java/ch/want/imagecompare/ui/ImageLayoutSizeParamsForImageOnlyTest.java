@@ -1,17 +1,17 @@
-package ch.want.imagecompare.ui.listimages;
-
-import android.content.Context;
-import android.content.res.Resources;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+package ch.want.imagecompare.ui;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeThat;
+
+import android.content.Context;
+import android.content.res.Resources;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class ImageLayoutSizeParamsForImageOnlyTest {
@@ -27,7 +27,7 @@ public class ImageLayoutSizeParamsForImageOnlyTest {
         // act
         final int viewSize = testee.getViewSizeInPixel();
         // assert
-        assertEquals(327, viewSize);
+        assertEquals(326, viewSize);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class ImageLayoutSizeParamsForImageOnlyTest {
         // act
         final int imageSize = testee.getImageSizeInPixel();
         // assert
-        assertEquals(295, imageSize);
+        assertEquals(292, imageSize);
     }
 
     private static Resources getTestDeviceResources() {

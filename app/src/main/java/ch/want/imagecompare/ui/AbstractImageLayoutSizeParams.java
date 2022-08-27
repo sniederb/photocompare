@@ -10,7 +10,7 @@ import android.util.TypedValue;
  * <pre>value * metrics.density</pre>
  * <ol>
  *     <li>ImageBeanListRecyclerViewAdapter creates a RecyclerView</li>
- *     <li>The ViewHolder varies, eg. it might be view_image_only.xml</li>
+ *     <li>The ViewHolder varies, e.g. it might be view_image_only.xml</li>
  *     <li>ImageBeanListRecyclerViewAdapter#adjustViewBasedOnScreenWidth adjusts the dimensions of the ViewHolder</li>
  * </ol>
  */

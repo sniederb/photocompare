@@ -1,12 +1,11 @@
-package ch.want.imagecompare.ui.listimages;
+package ch.want.imagecompare.ui;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
 
-import ch.want.imagecompare.ui.AbstractImageLayoutSizeParams;
 import ch.want.imagecompare.ui.thumbnails.ImageLayoutSizeParams;
 
-class ImageLayoutSizeParamsForImageOnly extends AbstractImageLayoutSizeParams implements ImageLayoutSizeParams {
+public class ImageLayoutSizeParamsForImageOnly extends AbstractImageLayoutSizeParams implements ImageLayoutSizeParams {
     private static final int IMAGES_PER_ROW_PORTRAIT = 3;
     private static final int IMAGES_PER_ROW_LANDSCAPE = 5;
     /**
@@ -22,7 +21,7 @@ class ImageLayoutSizeParamsForImageOnly extends AbstractImageLayoutSizeParams im
     private final int viewSizeInPixel;
     private final int imageSizeInPixel;
 
-    ImageLayoutSizeParamsForImageOnly(final Resources resources) {
+    public ImageLayoutSizeParamsForImageOnly(final Resources resources) {
         viewSizeInPixel = getColumnWidthInPixel(PADDING_IN_DP, getImagesPerRow(resources.getConfiguration()), resources);
         imageSizeInPixel = getImageSizeInPixel(IMAGE_MARGIN_IN_DP, viewSizeInPixel, resources);
     }

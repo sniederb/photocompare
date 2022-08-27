@@ -1,11 +1,14 @@
 package ch.want.imagecompare.ui.listimages;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.junit.Assert.assertNotNull;
+
+import android.Manifest;
 import android.content.Intent;
 import android.view.View;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,18 +16,22 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.GrantPermissionRule;
+
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.TestSettings;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(AndroidJUnit4.class)
 public class ListImagesActivityTest {
+
+    @Rule
+    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
 
     @Test
     public void onCreate() {
