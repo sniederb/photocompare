@@ -42,7 +42,9 @@ abstract class AbstractDeleteFilesHandler {
 
     void execute() {
         final List<ImageBean> obsoleteImages = getObsoleteImages();
-        if (!obsoleteImages.isEmpty()) {
+        if (obsoleteImages.isEmpty()) {
+            showNothingToDeleteDialog();
+        } else {
             showDeleteConfirmationDialog(obsoleteImages);
         }
     }
@@ -67,6 +69,15 @@ abstract class AbstractDeleteFilesHandler {
         builder.show();
     }
 
+    private void showNothingToDeleteDialog() {
+        new AlertDialog.Builder(sourceActivity)
+                .setPositiveButton(android.R.string.ok, (dialog, id) -> {
+                })
+                .setMessage(R.string.nothing_to_delete)
+                .setTitle(R.string.nothing_to_delete_title)
+                .show();
+    }
+
     private void deleteObsoleteFiles(final List<ImageBean> obsoleteImages) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             startTrashRequest(obsoleteImages);
@@ -82,11 +93,11 @@ abstract class AbstractDeleteFilesHandler {
                 .collect(Collectors.toList());
         // Note: PendingIntents are designed that they can be launched from other applications, i.e. it isn't clear who should receive the result.
         // That's why startActivityForResult() is meaningless for PendingIntent.
-        PendingIntent editPendingIntent = MediaStore.createTrashRequest(sourceActivity.getApplicationContext().getContentResolver(), urisToModify, true);
+        PendingIntent editPendingIntent = MediaStore.createDeleteRequest(sourceActivity.getApplicationContext().getContentResolver(), urisToModify);
         try {
             sourceActivity.startIntentSenderForResult(editPendingIntent.getIntentSender(), IMAGE_DELETED_ACTIONCODE, null, 0, 0, 0);
         } catch (IntentSender.SendIntentException ex) {
-            Log.w("startDeletingObsoleteFiles", "Failed to start trash request intent due to " + ex.getMessage());
+            Log.w("startTrashRequest", "Failed to start delete request intent due to " + ex.getMessage());
         }
     }
 
