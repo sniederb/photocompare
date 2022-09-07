@@ -6,6 +6,8 @@ devices's `Downloads` folder:
 * IMG_5218.JPG, IMG_5219.JPG and IMG_5220.JPG were taken April 19th, 2019
 * IMG_6685.JPG, IMG_6686.JPG and IMG_6687.JPG were taken April 23rd, 2019
 
+After adding images, do a **reboot** to force a media scan.
+
 # Manual test cases
 
 This document describes a series of tests to perform manually, as the implementation of automated

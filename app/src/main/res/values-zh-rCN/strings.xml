@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_compare_images">比较</string>
+    <string name="action_loading_images">加载图像 …</string>
+    <string name="action_nav_left">向左导航</string>
+    <string name="action_nav_right">向右导航</string>
+    <string name="action_select_image">选择图像</string>
+    <string name="action_select_imagepool">选择文件夹或图像的日期</string>
+    <string name="app_name">照片比较</string>
+    <string name="app_name_with_version">照片比较 - %s</string>
+    <string name="channel_filedelete_description">显示删除不需要的文件的进度</string>
+    <string name="channel_filedelete_name">文件删除</string>
+    <string name="channel_filedelete_title">删除不需要的图像</string>
+    <string name="checkbox_dark">深色复选框</string>
+    <string name="confirm_selection">图像被添加到选择中</string>
+    <string name="current_selection">图像选择</string>
+    <string name="delete_confirmation_date">此操作将删除 %1$d 在 %2$s 采取的文件。</string>
+    <string name="delete_confirmation_folder">此操作将删除 %2$s 文件夹中的 %1$d 文件。</string>
+    <string name="delete_confirmation_title">确认图像删除</string>
+    <string name="delete_selected">删除选定的图像</string>
+    <string name="delete_unselected">删除所有其他</string>
+    <string name="hint_date_select">照片拍摄于…</string>
+    <string name="invert_selection">逆向选择</string>
+    <string name="navigation_will_lose_selection">当前文件夹的图像选择将丢失。是否要继续选择文件夹？</string>
+    <string name="navigation_will_lose_selection_title">丢弃选择？</string>
+    <string name="nothing_deleted">删除已取消</string>
+    <string name="nothing_to_delete">没有要删除的图像。</string>
+    <string name="nothing_to_delete_title">无需删除</string>
+    <string name="permissions_explanation">如果没有阅读图像和在内部存储中缓存位图的权限，此应用就毫无用处。</string>
+    <string name="permissions_title">需要存储权限</string>
+    <string name="remove_from_selection">刷新</string>
+    <string name="selected_image_content">选定的图像</string>
+    <string name="share_images">分享图片</string>
+    <string name="share_images_intent">共享图像...</string>
+    <string name="shareselected_largetx_confirmation">尝试共享%1$d文件（s），这是相当多，可能会导致Android崩溃这个应用程序。你还想试试吗？</string>
+    <string name="shareselected_largetx_confirmation_title">分享大量的图像！</string>
+    <string name="show_exif">显示EXIF</string>
+    <string name="show_newest_first">首先显示最新</string>
+    <string name="show_selection">显示选择</string>
+    <string name="submit_date_selection">提交日期选择</string>
+    <string name="sync_state">同步放大和平移</string>
+    <string name="title_date_select">按日期选择</string>
+    <string name="use_filenames_for_sort">使用文件名排序</string>
+</resources>

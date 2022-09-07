@@ -18,6 +18,7 @@ import ch.want.imagecompare.R;
 @RequiresApi(api = Build.VERSION_CODES.R)
 public class ScopedPermissionChecker implements PermissionChecker {
 
+    private final String readPermission;
     private final Activity activity;
     private final int permissionCheckCode;
     private boolean alreadyAskedBefore;
@@ -25,13 +26,13 @@ public class ScopedPermissionChecker implements PermissionChecker {
     public ScopedPermissionChecker(final Activity activity, final int permissionCheckCode) {
         this.activity = activity;
         this.permissionCheckCode = permissionCheckCode;
-        alreadyAskedBefore = false;
+        this.alreadyAskedBefore = false;
+        this.readPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? Manifest.permission.READ_MEDIA_IMAGES : Manifest.permission.READ_EXTERNAL_STORAGE;
     }
 
     @Override
     public boolean hasPermissions() {
-        // with Build.VERSION_CODES.TIRAMISU, switch this to READ_MEDIA_IMAGES
-        return ContextCompat.checkSelfPermission(activity.getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(activity.getApplicationContext(), readPermission) == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
@@ -44,13 +45,12 @@ public class ScopedPermissionChecker implements PermissionChecker {
     }
 
     private boolean shouldExplanationBeShownToUser() {
-        // with Build.VERSION_CODES.TIRAMISU, switch this to READ_MEDIA_IMAGES
-        return ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+        return ActivityCompat.shouldShowRequestPermissionRationale(activity, readPermission);
     }
 
     private void requestPermissions() {
         alreadyAskedBefore = true;
-        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, permissionCheckCode);
+        ActivityCompat.requestPermissions(activity, new String[]{readPermission}, permissionCheckCode);
     }
 
     private void showExplanation() {

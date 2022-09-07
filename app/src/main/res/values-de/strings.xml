@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Photo Compare</string>
+    <string name="app_name_with_version">Photo Compare - %s</string>
+    <string name="action_compare_images">Vergleichen</string>
+    <string name="show_selection">Auswahl anzeigen …</string>
+    <string name="show_exif">EXIF anzeigen</string>
+    <string name="invert_selection">Auswahl invertieren</string>
+    <string name="remove_from_selection">Aktualisieren</string>
+    <string name="permissions_explanation">Diese Anwendung funktioniert nur mit der Berechtigung um Bilder zu lesen.</string>
+    <string name="action_select_imagepool">Wähle Ordner oder Bilddatum</string>
+    <string name="title_date_select">Wähle anhand Bilddatum</string>
+    <string name="hint_date_select">Bilder erstellt am …</string>
+    <string name="action_loading_images">Lade Bilder …</string>
+    <string name="action_select_image">Bild(er) wählen um zu starten</string>
+    <string name="action_nav_right">Nach rechts</string>
+    <string name="action_nav_left">Nach links</string>
+    <string name="sync_state">Ansicht synchronisieren</string>
+    <string name="permissions_title">" Zugriff auf Bilder"</string>
+    <string name="confirm_selection">Bild wurde zur Auswahl hinzugefügt</string>
+    <string name="checkbox_dark">Dunkle Checkbox</string>
+    <string name="show_newest_first">Neuste zuerst anzeigen</string>
+    <string name="use_filenames_for_sort">Sortierung anhand Dateinamen</string>
+    <string name="selected_image_content">Ausgewähltes Bild</string>
+    <string name="current_selection">Aktuelle Auswahl</string>
+    <string name="delete_unselected">All anderen löschen</string>
+    <string name="delete_selected">Auswahl löschen</string>
+    <string name="delete_confirmation_title">Löschen bestätigen</string>
+    <string name="delete_confirmation_folder">Diese Aktion wird %1$d Bild(er) im Ordner %2$s löschen.</string>
+    <string name="delete_confirmation_date">Diese Aktion wird %1$d Bild(er), aufgenommen am %2$s, löschen.</string>
+    <string name="nothing_to_delete_title">Nichts zum Löschen</string>
+    <string name="nothing_to_delete">Es gibt keine Bilder zum Löschen.</string>
+    <string name="nothing_deleted">Löschen wurde abgebrochen</string>
+    <string name="shareselected_largetx_confirmation">Sie versuchen %1$d Bild(er) zu teilen, was etwas viel ist. Falls Sie fortfahren kann es sein dass die Anwendung von Android gestoppt wuird. Wollen Sie fortfahren?</string>
+    <string name="shareselected_largetx_confirmation_title">Viele Bilder zum Teilen!</string>
+    <string name="share_images_intent">Bilder teilen mit ...</string>
+    <string name="navigation_will_lose_selection_title">Auswahl verwerfen?</string>
+    <string name="navigation_will_lose_selection">Die aktuelle Auswahlwird  verloren gehen. Möchten Sie mit der Auswahl eines neuen Ordners fortfahren?</string>
+    <string name="channel_filedelete_name">Bilder löschen</string>
+    <string name="channel_filedelete_description">Verlauf anzeigen</string>
+    <string name="channel_filedelete_title">Nicht mehr benötigte Bilder werden gelöscht</string>
+    <string name="share_images">Bilder teilen</string>
+    <string name="submit_date_selection">Datumswahl anwenden</string>
+</resources>

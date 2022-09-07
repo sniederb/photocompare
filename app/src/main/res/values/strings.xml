@@ -14,7 +14,7 @@
 
     <string name="sync_state">Sync zoom and pan</string>
     <string name="confirm_selection">Image was added to selection</string>
-    <string name="show_selection">Show selection</string>
+    <string name="show_selection">Show selection …</string>
     <string name="checkbox_dark">Dark checkboxes</string>
     <string name="show_newest_first">Show newest first</string>
     <string name="use_filenames_for_sort">Sort using filenames</string>
