@@ -44,6 +44,8 @@ public class PhotoViewMediator {
         final PhotoComparePreferences photoComparePreferences = new PhotoComparePreferences(activity);
         checkboxesDarkMode = photoComparePreferences.isCheckboxStyleDark();
         showExifDetails = photoComparePreferences.isShowExifDetails();
+        applyExifDisplay(showExifDetails);
+        applyCheckboxStyleDark(checkboxesDarkMode);
     }
 
     private boolean isSyncZoomAndPan() {
@@ -71,18 +73,34 @@ public class PhotoViewMediator {
         syncZoomAndPan = true;
     }
 
+    public boolean isCheckboxesDarkMode() {
+        return checkboxesDarkMode;
+    }
+
     public boolean toggleCheckboxStyleDark() {
         checkboxesDarkMode = !checkboxesDarkMode;
-        topView.setCheckboxStyleDark(checkboxesDarkMode);
-        bottomView.setCheckboxStyleDark(checkboxesDarkMode);
+        applyCheckboxStyleDark(checkboxesDarkMode);
         return checkboxesDarkMode;
+    }
+
+    private void applyCheckboxStyleDark(boolean b) {
+        topView.setCheckboxStyleDark(b);
+        bottomView.setCheckboxStyleDark(b);
+    }
+
+    public boolean isExifDisplay() {
+        return showExifDetails;
     }
 
     public boolean toggleExifDisplay() {
         showExifDetails = !showExifDetails;
-        topView.setShowExif(showExifDetails);
-        bottomView.setShowExif(showExifDetails);
+        applyExifDisplay(showExifDetails);
         return showExifDetails;
+    }
+
+    private void applyExifDisplay(boolean b) {
+        topView.setShowExif(b);
+        bottomView.setShowExif(b);
     }
 
     private void deriveInitialBottomIndex(final int bottomIndex) {

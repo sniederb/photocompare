@@ -1,6 +1,7 @@
 package ch.want.imagecompare.domain;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.PointF;
 
 import org.junit.Assert;
@@ -17,7 +18,7 @@ public class PhotoViewMediatorUnitTest {
     public void testOnPanOrZoomChangedWithHappyCase() {
         final ImageDetailView topView = createImageDetailView(new PanAndZoomState(6.5f, new FakePointF(320, 240)), new Dimension(4000, 3000));
         final ImageDetailView bottomView = createImageDetailView(new PanAndZoomState(1.8f, new FakePointF(600, 480)), new Dimension(4000, 3000));
-        final PhotoViewMediator testee = new PhotoViewMediator(topView, bottomView, Mockito.mock(Activity.class));
+        final PhotoViewMediator testee = new PhotoViewMediator(topView, bottomView, createMockActivity());
         trainTesteeInternalOffset(testee, topView);
         Mockito.when(topView.getPanAndZoomState()).thenReturn(new PanAndZoomState(3.0f, new FakePointF(300, 220)));
         // act
@@ -35,7 +36,7 @@ public class PhotoViewMediatorUnitTest {
     public void testOnPanOrZoomChangedWithUnknowCenter() {
         final ImageDetailView topView = createImageDetailView(new PanAndZoomState(1f, null), new Dimension(4000, 3000));
         final ImageDetailView bottomView = createImageDetailView(new PanAndZoomState(1f, new FakePointF(12, 34)), new Dimension(4000, 3000));
-        final PhotoViewMediator testee = new PhotoViewMediator(topView, bottomView, Mockito.mock(Activity.class));
+        final PhotoViewMediator testee = new PhotoViewMediator(topView, bottomView, createMockActivity());
         testee.setSyncZoomAndPan(false);
         // act
         testee.onPanOrZoomChanged(topView);
@@ -53,7 +54,7 @@ public class PhotoViewMediatorUnitTest {
     public void testOnPanOrZoomChangedWithZoomingForDifferentImagesSizes() {
         final ImageDetailView topView = createImageDetailView(new PanAndZoomState(2f, new FakePointF(2016, 1512)), new Dimension(4032, 3024));
         final ImageDetailView bottomView = createImageDetailView(new PanAndZoomState(1f, new FakePointF(3008, 2506)), new Dimension(6016, 4512));
-        final PhotoViewMediator testee = new PhotoViewMediator(topView, bottomView, Mockito.mock(Activity.class));
+        final PhotoViewMediator testee = new PhotoViewMediator(topView, bottomView, createMockActivity());
         testee.setSyncZoomAndPan(true);
         // act
         testee.onPanOrZoomChanged(topView);
@@ -70,6 +71,14 @@ public class PhotoViewMediatorUnitTest {
         Mockito.when(imageView.getPanAndZoomState()).thenReturn(panAndZoomState);
         Mockito.when(imageView.getSourceDimension()).thenReturn(dimension);
         return imageView;
+    }
+
+    private Activity createMockActivity() {
+        SharedPreferences sharedPrefs = Mockito.mock(SharedPreferences.class);
+        Mockito.when(sharedPrefs.getBoolean(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(false);
+        Activity activity = Mockito.mock(Activity.class);
+        Mockito.when(activity.getSharedPreferences(Mockito.anyString(), Mockito.anyInt())).thenReturn(sharedPrefs);
+        return activity;
     }
 
     /**

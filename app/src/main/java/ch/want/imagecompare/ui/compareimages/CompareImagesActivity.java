@@ -85,6 +85,10 @@ public class CompareImagesActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.compare_image_menu, menu);
+        MenuItem checkBox = menu.findItem(R.id.checkboxStyleDark);
+        checkBox.setChecked(photoViewMediator.isCheckboxesDarkMode());
+        checkBox = menu.findItem(R.id.showExifDetails);
+        checkBox.setChecked(photoViewMediator.isExifDisplay());
         return true;
     }
 

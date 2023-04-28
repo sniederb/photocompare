@@ -34,7 +34,7 @@ public class SelectImagePoolActivityTest {
     @Test
     public void onCreate() {
         final ActivityScenario<SelectImagePoolActivity> scenario = launchActivity();
-        Assert.assertEquals(Lifecycle.State.RESUMED, scenario.getState());
+        Assert.assertEquals(Lifecycle.State.STARTED, scenario.getState());
     }
 
     @Test

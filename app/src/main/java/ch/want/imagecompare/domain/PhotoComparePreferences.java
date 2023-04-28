@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 
 import ch.want.imagecompare.BundleKeys;
 
+/**
+ * User settings backed by {@link SharedPreferences}
+ */
 public class PhotoComparePreferences {
 
     private final SharedPreferences preferences;

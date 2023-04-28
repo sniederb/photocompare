@@ -35,9 +35,10 @@ import ch.want.imagecompare.data.ImageBean;
 
 @RunWith(AndroidJUnit4.class)
 public class CompareImagesActivityTest {
-
-    @Rule
-    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
+// FIXME: rules depending on SDK version?
+@Rule
+public GrantPermissionRule permissionRule = GrantPermissionRule.grant(
+        Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.ACCESS_MEDIA_LOCATION);
 
     @Test
     public void onCreate() {
