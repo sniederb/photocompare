@@ -2,7 +2,6 @@ package ch.want.imagecompare.domain;
 
 import static org.junit.Assert.assertEquals;
 
-import android.Manifest;
 import android.graphics.PointF;
 import android.net.Uri;
 
@@ -27,7 +26,7 @@ import ch.want.imagecompare.ui.compareimages.PanAndZoomState;
 public class PhotoViewMediatorTest {
 
     @Rule
-    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
+    public GrantPermissionRule permissionRule = TestSettings.permissionRule();
 
     @Test
     public void onPageSelected_limitToLowerIndex() {

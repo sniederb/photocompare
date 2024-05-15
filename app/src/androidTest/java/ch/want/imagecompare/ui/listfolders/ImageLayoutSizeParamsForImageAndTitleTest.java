@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeThat;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.res.Resources;
 
@@ -16,12 +15,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import ch.want.imagecompare.TestSettings;
+
 @RunWith(AndroidJUnit4.class)
 public class ImageLayoutSizeParamsForImageAndTitleTest {
 
     private static final int WIDTH_PIXELS_NEXUS5 = 1080;
     @Rule
-    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
+    public GrantPermissionRule permissionRule = TestSettings.permissionRule();
 
     @Test
     public void getViewSizeInPixel() {

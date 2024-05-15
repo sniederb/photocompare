@@ -11,6 +11,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -38,6 +41,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
@@ -76,6 +80,7 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
         }
         initContentViews();
         initDateSelection(savedInstanceState);
+        initMediaAccessManagement();
         onRefresh();
         final Toolbar toolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
@@ -102,6 +107,18 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
         setContentView(R.layout.activity_select_imagepool);
         final SwipeRefreshLayout swipeLayout = findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
+    }
+
+    private void initMediaAccessManagement() {
+        if (permissionChecker.supportsReselect()) {
+            final Button updateMediaAccessButton = findViewById(R.id.updateMediaAccess);
+            if ((updateMediaAccessButton != null) && !updateMediaAccessButton.hasOnClickListeners()) {
+                updateMediaAccessButton.setOnClickListener(v -> permissionChecker.askNicely(true));
+            }
+        } else {
+            Optional.ofNullable((View) findViewById(R.id.manageMediaAccess))
+                    .ifPresent(manageMediaAccessView -> ((ViewGroup) manageMediaAccessView.getParent()).removeView(manageMediaAccessView));
+        }
     }
 
     private void initDateSelection(final Bundle savedInstanceState) {
@@ -149,7 +166,7 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
     private void initImageBuckets() {
         imageBuckets.clear();
         if (!permissionChecker.hasPermissions()) {
-            permissionChecker.askNicely();
+            permissionChecker.askNicely(false);
         } else {
             final boolean sortNewToOld = new PhotoComparePreferences(this).isSortNewestFirst();
             imageBuckets.putAll(new FolderImageMediaResolver(getContentResolver(), sortNewToOld).execute());
@@ -158,9 +175,10 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
 
     @Override
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
-        if ((requestCode == PERMISSION_REQUEST_STORAGE) && (grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+        if (requestCode == PERMISSION_REQUEST_STORAGE) {
             initImageBuckets();
             updateLayoutFromImageBuckets();
+            initMediaAccessManagement();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
@@ -172,6 +190,7 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
             if (permissionChecker.hasPermissions()) {
                 initImageBuckets();
                 updateLayoutFromImageBuckets();
+                initMediaAccessManagement();
             } else {
                 Toast.makeText(this, "Cannot show and manage images without storage access.", Toast.LENGTH_SHORT).show();
             }

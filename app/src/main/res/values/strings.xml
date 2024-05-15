@@ -43,4 +43,6 @@
     <string name="channel_filedelete_title">Deleting unwanted images</string>
     <string name="submit_date_selection">Submit date selection</string>
     <string name="share_images">Share images</string>
+    <string name="update_media_access">Manage</string>
+    <string name="media_access_disclaimer">You\'ve granted selective access to your media. This can be changed here.</string>
 </resources>

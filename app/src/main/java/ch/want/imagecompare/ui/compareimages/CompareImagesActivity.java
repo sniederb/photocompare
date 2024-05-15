@@ -118,7 +118,7 @@ public class CompareImagesActivity extends AppCompatActivity {
                 new PhotoComparePreferences(this).setShowExifDetails(isNowShowingExif);
                 return true;
             case android.R.id.home:
-                new BackToImageListTransition(this, mediaResolver, photoViewMediator.getGalleryImageList()).execute();
+                new BackToImageListTransition(this, mediaResolver, photoViewMediator).execute();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

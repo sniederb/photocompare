@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ch.want.imagecompare">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
@@ -10,6 +9,8 @@
         android:maxSdkVersion="29" />
     <!-- App needs to access images or photos that other apps created. -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- Handle user-selection introduced in API 34 -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <!-- App needs to access unredacted Exif metadata from photos -->
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
 

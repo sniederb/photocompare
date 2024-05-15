@@ -3,8 +3,6 @@ package ch.want.imagecompare.ui.compareimages;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import android.Manifest;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.viewpager.widget.ViewPager;
@@ -14,11 +12,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import ch.want.imagecompare.TestSettings;
+
 @RunWith(AndroidJUnit4.class)
 public class ZoomPanRestoreHandlerTest {
 
     @Rule
-    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
+    public GrantPermissionRule permissionRule = TestSettings.permissionRule();
     private PanAndZoomState stateAppliedByTestee;
 
     @Before

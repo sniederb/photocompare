@@ -1,8 +1,11 @@
 package ch.want.imagecompare;
 
+import android.Manifest;
 import android.net.Uri;
+import android.os.Build;
 
 import androidx.annotation.Nullable;
+import androidx.test.rule.GrantPermissionRule;
 
 public class TestSettings {
 
@@ -10,6 +13,13 @@ public class TestSettings {
     public static final String SELECTED_IMAGE_1 = "J0091157.JPG";
 
     private TestSettings() {
+    }
+
+    public static GrantPermissionRule permissionRule() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return GrantPermissionRule.grant(Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.ACCESS_MEDIA_LOCATION);
+        }
+        return GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     public static Uri getUri(final String filename, @Nullable final String downloadSubfolder) {

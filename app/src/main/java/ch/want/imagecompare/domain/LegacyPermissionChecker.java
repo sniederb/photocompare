@@ -28,7 +28,15 @@ public class LegacyPermissionChecker implements PermissionChecker {
     }
 
     @Override
-    public void askNicely() {
+    public boolean supportsReselect() {
+        return false;
+    }
+
+    @Override
+    public void askNicely(boolean forceCheck) {
+        if (forceCheck) {
+            alreadyAskedBefore = false;
+        }
         if (alreadyAskedBefore && shouldExplanationBeShownToUser()) {
             showExplanation();
         } else {

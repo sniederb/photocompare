@@ -3,9 +3,10 @@ package ch.want.imagecompare.ui.imageselection;
 import android.app.Activity;
 import android.content.Intent;
 
+import androidx.core.app.NavUtils;
+
 import java.util.ArrayList;
 
-import androidx.core.app.NavUtils;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.data.ImageBean;
 import ch.want.imagecompare.domain.FileImageMediaResolver;
@@ -33,7 +34,8 @@ class BackToCompareImagesTransition {
         final Intent upIntent = sourceActivity.getParentActivityIntent();
         assert upIntent != null;
         upIntent.putParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION, new ArrayList<>(ImageBean.getSelectedImageBeans(galleryImageList)))//
-                .putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, topImageIndex).putExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, bottomImageIndex);
+                .putExtra(BundleKeys.KEY_TOPIMAGE_INDEX, topImageIndex) //
+                .putExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, bottomImageIndex);
         mediaResolver.putToIntent(upIntent);
         NavUtils.navigateUpTo(sourceActivity, upIntent);
     }

@@ -4,5 +4,7 @@ public interface PermissionChecker {
 
     boolean hasPermissions();
 
-    void askNicely();
+    void askNicely(boolean forceCheck);
+
+    boolean supportsReselect();
 }

@@ -41,4 +41,6 @@
     <string name="sync_state">同步放大和平移</string>
     <string name="title_date_select">按日期选择</string>
     <string name="use_filenames_for_sort">使用文件名排序</string>
+    <string name="update_media_access">管理</string>
+    <string name="media_access_disclaimer">您已授予对您的媒体的访问权限。 这可以在这里更改。</string>
 </resources>

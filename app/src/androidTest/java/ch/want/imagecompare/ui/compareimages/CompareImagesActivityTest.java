@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.core.IsNot.not;
 
-import android.Manifest;
 import android.content.Intent;
 
 import androidx.lifecycle.Lifecycle;
@@ -35,10 +34,9 @@ import ch.want.imagecompare.data.ImageBean;
 
 @RunWith(AndroidJUnit4.class)
 public class CompareImagesActivityTest {
-// FIXME: rules depending on SDK version?
-@Rule
-public GrantPermissionRule permissionRule = GrantPermissionRule.grant(
-        Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.ACCESS_MEDIA_LOCATION);
+
+    @Rule
+    public GrantPermissionRule permissionRule = TestSettings.permissionRule();
 
     @Test
     public void onCreate() {

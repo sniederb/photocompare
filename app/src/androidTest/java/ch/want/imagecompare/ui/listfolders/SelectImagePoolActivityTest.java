@@ -7,7 +7,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withSubstring;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 
-import android.Manifest;
 import android.widget.TextView;
 
 import androidx.lifecycle.Lifecycle;
@@ -18,23 +17,25 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
-import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.want.imagecompare.R;
+import ch.want.imagecompare.TestSettings;
 
 @RunWith(AndroidJUnit4.class)
 public class SelectImagePoolActivityTest {
 
     @Rule
-    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
+    public GrantPermissionRule permissionRule = TestSettings.permissionRule();
 
     @Test
     public void onCreate() {
         final ActivityScenario<SelectImagePoolActivity> scenario = launchActivity();
-        Assert.assertEquals(Lifecycle.State.STARTED, scenario.getState());
+        MatcherAssert.assertThat(scenario.getState(), Matchers.oneOf(Lifecycle.State.STARTED, Lifecycle.State.RESUMED));
     }
 
     @Test

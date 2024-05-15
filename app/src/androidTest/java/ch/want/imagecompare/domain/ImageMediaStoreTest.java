@@ -1,6 +1,5 @@
 package ch.want.imagecompare.domain;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -39,7 +38,7 @@ public class ImageMediaStoreTest {
             MediaStore.Images.Media.DATE_MODIFIED};
 
     @Rule
-    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
+    public GrantPermissionRule permissionRule = TestSettings.permissionRule();
 
     @Test
     public void contentResolverQuery() {

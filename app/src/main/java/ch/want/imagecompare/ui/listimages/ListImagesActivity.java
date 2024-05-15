@@ -5,6 +5,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -14,11 +20,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
 import ch.want.imagecompare.BundleKeys;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.ImageBean;
@@ -60,15 +61,25 @@ public class ListImagesActivity extends AppCompatActivity {
 
     private void initInitialState(final Bundle savedInstanceState) {
         final ArrayList<ImageBean> selectedBeansFromState;
+        final int scrollToImageIndex;
         if (savedInstanceState == null) {
             final Intent intent = getIntent();
             selectedBeansFromState = intent.getParcelableArrayListExtra(BundleKeys.KEY_SELECTION_COLLECTION);
+            int lastComparedImageIndexTop = intent.getIntExtra(BundleKeys.KEY_TOPIMAGE_INDEX, -1);
+            int lastComparedImageIndexBottom = intent.getIntExtra(BundleKeys.KEY_BOTTOMIMAGE_INDEX, -1);
+
+            if (lastComparedImageIndexTop < lastComparedImageIndexBottom) {
+                scrollToImageIndex = lastComparedImageIndexTop < 0 ? lastComparedImageIndexBottom : lastComparedImageIndexTop;
+            } else {
+                scrollToImageIndex = lastComparedImageIndexBottom < 0 ? lastComparedImageIndexTop : lastComparedImageIndexBottom;
+            }
         } else {
             selectedBeansFromState = savedInstanceState.getParcelableArrayList(BundleKeys.KEY_SELECTION_COLLECTION);
+            scrollToImageIndex = -1;
         }
         mediaResolver = FileImageMediaResolver.create(this, savedInstanceState);
         // Async loader for images. For large folders, running this on the UI thread might lead to an ANR.
-        Executors.newSingleThreadExecutor().execute(() -> loadImagesForCurrentImageFolder(selectedBeansFromState));
+        Executors.newSingleThreadExecutor().execute(() -> loadImagesForCurrentImageFolder(selectedBeansFromState, scrollToImageIndex));
     }
 
     @Override
@@ -120,17 +131,17 @@ public class ListImagesActivity extends AppCompatActivity {
     }
 
     private void loadImagesForCurrentImageFolder() {
-        loadImagesForCurrentImageFolder(ImageBean.getSelectedImageBeans(galleryImageList));
+        loadImagesForCurrentImageFolder(ImageBean.getSelectedImageBeans(galleryImageList), -1);
     }
 
-    private void loadImagesForCurrentImageFolder(final List<ImageBean> currentSelection) {
+    private void loadImagesForCurrentImageFolder(final List<ImageBean> currentSelection, int scrollToIndex) {
         setToolbarTitleToLoading();
         galleryImageList.clear();
         galleryImageList.addAll(mediaResolver.execute());
         if (currentSelection != null && !currentSelection.isEmpty()) {
             ImageBean.copySelectedState(currentSelection, galleryImageList);
         }
-        notifyAdapterDataSetChanged();
+        notifyAdapterDataSetChanged(scrollToIndex);
         setToolbarTitleToReady();
     }
 
@@ -156,11 +167,16 @@ public class ListImagesActivity extends AppCompatActivity {
         });
     }
 
-    private void notifyAdapterDataSetChanged() {
+    private void notifyAdapterDataSetChanged(int scrollToIndex) {
         runOnUiThread(() -> Optional.ofNullable(findViewById(R.id.imageThumbnails))//
                 .map(view -> (RecyclerView) view)//
-                .map(view -> (ImageBeanListRecyclerViewAdapter<?>) view.getAdapter())//
-                .ifPresent(ImageBeanListRecyclerViewAdapter::notifyDataSetChanged));
+                .ifPresent(view -> {
+                    ImageBeanListRecyclerViewAdapter<?> adapter = (ImageBeanListRecyclerViewAdapter<?>) view.getAdapter();
+                    Optional.ofNullable(adapter).ifPresent(ImageBeanListRecyclerViewAdapter::notifyDataSetChanged);
+                    if (scrollToIndex >= 0) {
+                        view.scrollToPosition(scrollToIndex);
+                    }
+                }));
     }
 
     private void showAlertLosingSelection() {

@@ -6,7 +6,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import android.Manifest;
 import android.content.Intent;
 
 import androidx.lifecycle.Lifecycle;
@@ -35,7 +34,7 @@ import ch.want.imagecompare.data.ImageBean;
 public class SelectedImagesActivityTest {
 
     @Rule
-    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
+    public GrantPermissionRule permissionRule = TestSettings.permissionRule();
 
     @Before
     public void stubAllExternalIntents() {

@@ -41,4 +41,6 @@
     <string name="channel_filedelete_title">Nicht mehr benötigte Bilder werden gelöscht</string>
     <string name="share_images">Bilder teilen</string>
     <string name="submit_date_selection">Datumswahl anwenden</string>
+    <string name="update_media_access">Anpassen</string>
+    <string name="media_access_disclaimer">Der selektive Zugriff auf die Medienbibliothek kann hier angepasst werden.</string>
 </resources>
