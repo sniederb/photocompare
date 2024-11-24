@@ -19,8 +19,8 @@ android {
         applicationId "ch.want.imagecompare"
         minSdkVersion 24
         targetSdkVersion 34
-        versionCode 42
-        versionName '1.0.42'
+        versionCode 45
+        versionName '1.0.45'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
         signingConfig signingConfigs.config
@@ -39,36 +39,34 @@ android {
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
-    productFlavors {
-    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
-    implementation 'com.google.android.material:material:1.13.0-alpha02'
+    implementation 'com.google.android.material:material:1.13.0-alpha08'
     //noinspection GradleDependency
     implementation('com.github.bumptech.glide:glide:4.16.0') {
         exclude group: "com.android.support"
     }
-    implementation 'androidx.fragment:fragment:1.7.1'
+    implementation 'androidx.fragment:fragment:1.8.5'
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
     implementation 'androidx.exifinterface:exifinterface:1.3.7'
-    implementation 'org.apache.commons:commons-lang3:3.14.0'
+    implementation 'org.apache.commons:commons-lang3:3.17.0'
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-core:5.12.0'
-    testImplementation 'org.hamcrest:hamcrest-library:2.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test:core:1.5.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'
-    androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'org.mockito:mockito-core:5.12.0'
-    androidTestUtil 'androidx.test:orchestrator:1.4.2'
+    testImplementation 'org.mockito:mockito-core:5.14.2'
+    testImplementation 'org.hamcrest:hamcrest-library:3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test:core:1.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.6.1'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
+    androidTestImplementation 'org.mockito:mockito-core:5.14.2'
+    androidTestUtil 'androidx.test:orchestrator:1.5.1'
 }

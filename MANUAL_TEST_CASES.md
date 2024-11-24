@@ -8,6 +8,9 @@ devices's `Downloads` folder:
 
 After adding images, do a **reboot** to force a media scan.
 
+(To change the system navigation style: Settings > Accessibility > System controls > System
+navigation > 3-button navigation)
+
 # Manual test cases
 
 This document describes a series of tests to perform manually, as the implementation of automated

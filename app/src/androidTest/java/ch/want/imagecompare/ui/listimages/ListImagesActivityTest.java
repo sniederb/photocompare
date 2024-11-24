@@ -34,47 +34,51 @@ public class ListImagesActivityTest {
 
     @Test
     public void onCreate() {
-        final ActivityScenario<ListImagesActivity> scenario = launchActivity();
-        Assert.assertEquals(Lifecycle.State.RESUMED, scenario.getState());
+        try (final ActivityScenario<ListImagesActivity> scenario = launchActivity()) {
+            Assert.assertEquals(Lifecycle.State.RESUMED, scenario.getState());
+        }
     }
 
     @Test
     public void clickSortCheckbox() {
-        launchActivity();
-        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
-        // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
-        // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
-        onView(withText("Show newest first")).perform(click());
+        try (final ActivityScenario<ListImagesActivity> scenario = launchActivity()) {
+            openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
+            // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
+            // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
+            onView(withText("Show newest first")).perform(click());
+        }
     }
 
     @Test
     public void onClickSingleImage() {
         // arrange
-        final ActivityScenario<ListImagesActivity> scenario = launchActivity();
-        scenario.onActivity(activity -> {
-            final RecyclerView recyclerView = activity.findViewById(R.id.imageThumbnails);
-            assertNotNull("Recycler view", recyclerView);
-            final RecyclerView.ViewHolder viewHolderFirstItem = recyclerView.findViewHolderForAdapterPosition(0);
-            assertNotNull("ViewHolder for first item", viewHolderFirstItem);
-            final View cardView = viewHolderFirstItem.itemView.findViewById(R.id.thumbnailCard);
-            // act
-            cardView.performClick();
-        });
+        try (final ActivityScenario<ListImagesActivity> scenario = launchActivity()) {
+            scenario.onActivity(activity -> {
+                final RecyclerView recyclerView = activity.findViewById(R.id.imageThumbnails);
+                assertNotNull("Recycler view", recyclerView);
+                final RecyclerView.ViewHolder viewHolderFirstItem = recyclerView.findViewHolderForAdapterPosition(0);
+                assertNotNull("ViewHolder for first item", viewHolderFirstItem);
+                final View cardView = viewHolderFirstItem.itemView.findViewById(R.id.thumbnailCard);
+                // act
+                cardView.performClick();
+            });
+        }
     }
 
     @Test
     public void onLongClickImage() {
         // arrange
-        final ActivityScenario<ListImagesActivity> scenario = launchActivity();
-        scenario.onActivity(activity -> {
-            final RecyclerView recyclerView = activity.findViewById(R.id.imageThumbnails);
-            assertNotNull("Recycler view", recyclerView);
-            final RecyclerView.ViewHolder viewHolderFirstItem = recyclerView.findViewHolderForAdapterPosition(0);
-            assertNotNull("ViewHolder for first item", viewHolderFirstItem);
-            final View cardView = viewHolderFirstItem.itemView.findViewById(R.id.thumbnailCard);
-            // act
-            cardView.performLongClick();
-        });
+        try (final ActivityScenario<ListImagesActivity> scenario = launchActivity()) {
+            scenario.onActivity(activity -> {
+                final RecyclerView recyclerView = activity.findViewById(R.id.imageThumbnails);
+                assertNotNull("Recycler view", recyclerView);
+                final RecyclerView.ViewHolder viewHolderFirstItem = recyclerView.findViewHolderForAdapterPosition(0);
+                assertNotNull("ViewHolder for first item", viewHolderFirstItem);
+                final View cardView = viewHolderFirstItem.itemView.findViewById(R.id.thumbnailCard);
+                // act
+                cardView.performLongClick();
+            });
+        }
     }
 
     private static ActivityScenario<ListImagesActivity> launchActivity() {

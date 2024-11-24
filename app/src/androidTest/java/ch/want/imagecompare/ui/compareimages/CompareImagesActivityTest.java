@@ -40,46 +40,52 @@ public class CompareImagesActivityTest {
 
     @Test
     public void onCreate() {
-        final ActivityScenario<CompareImagesActivity> scenario = launchActivity();
-        Assert.assertEquals(Lifecycle.State.RESUMED, scenario.getState());
+        try (final ActivityScenario<CompareImagesActivity> scenario = launchActivity()) {
+            Assert.assertEquals(Lifecycle.State.RESUMED, scenario.getState());
+        }
     }
 
     @Test
     public void clickImageSelection() {
-        launchActivity();
-        onView(allOf(withId(R.id.selectImageCheckbox), withParent(withId(R.id.upperImage)))).perform(click());
+        try (final ActivityScenario<CompareImagesActivity> scenario = launchActivity()) {
+            onView(allOf(withId(R.id.selectImageCheckbox), withParent(withId(R.id.upperImage)))).perform(click());
+        }
     }
 
     @Test
     public void clickMenuDarkCheckboxes() {
-        launchActivity();
-        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
-        // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
-        // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
-        onView(withText("Dark checkboxes")).perform(click());
+        try (final ActivityScenario<CompareImagesActivity> scenario = launchActivity()) {
+            openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
+            // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
+            // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
+            onView(withText("Dark checkboxes")).perform(click());
+        }
     }
 
     @Test
     public void clickMenuShowExif() {
-        launchActivity();
-        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
-        // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
-        // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
-        onView(withText("Show EXIF")).perform(click());
+        try (final ActivityScenario<CompareImagesActivity> scenario = launchActivity()) {
+            openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
+            // see https://stackoverflow.com/questions/24738028/espresso-nomatchingviewexception-when-using-withid-matcher/24743493#24743493
+            // Android renders the menu view WITHOUT IDs, so Espresso will not find a view withId()
+            onView(withText("Show EXIF")).perform(click());
+        }
     }
 
     @Test
     public void onToggleZoomPanSync() {
-        launchActivity();
-        onView(withId(R.id.toggleZoomPanSync)).check(matches(isChecked()));
-        onView(withId(R.id.toggleZoomPanSync)).perform(click());
-        onView(withId(R.id.toggleZoomPanSync)).check(matches(not(isChecked())));
+        try (final ActivityScenario<CompareImagesActivity> scenario = launchActivity()) {
+            onView(withId(R.id.toggleZoomPanSync)).check(matches(isChecked()));
+            onView(withId(R.id.toggleZoomPanSync)).perform(click());
+            onView(withId(R.id.toggleZoomPanSync)).check(matches(not(isChecked())));
+        }
     }
 
     @Test
     public void onResetMatrixClick() {
-        launchActivity();
-        onView(withId(R.id.resetMatrix)).perform(click());
+        try (final ActivityScenario<CompareImagesActivity> scenario = launchActivity()) {
+            onView(withId(R.id.resetMatrix)).perform(click());
+        }
     }
 
     private static ActivityScenario<CompareImagesActivity> launchActivity() {

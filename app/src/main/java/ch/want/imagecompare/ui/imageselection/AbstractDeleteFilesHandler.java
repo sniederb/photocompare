@@ -30,7 +30,7 @@ import ch.want.imagecompare.ui.ProgressCallback;
 abstract class AbstractDeleteFilesHandler {
 
     public static final int IMAGE_DELETED_ACTIONCODE = 43018;
-    private final SelectedImagesActivity sourceActivity;
+    protected final SelectedImagesActivity sourceActivity;
     protected final ArrayList<ImageBean> galleryImageList;
     private final FileImageMediaResolver mediaResolver;
 

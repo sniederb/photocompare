@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -176,9 +177,12 @@ public class SelectImagePoolActivity extends AppCompatActivity implements SwipeR
     @Override
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         if (requestCode == PERMISSION_REQUEST_STORAGE) {
-            initImageBuckets();
-            updateLayoutFromImageBuckets();
-            initMediaAccessManagement();
+            boolean granted = Arrays.stream(grantResults).anyMatch(r -> r == PackageManager.PERMISSION_GRANTED);
+            if (granted) {
+                initImageBuckets();
+                updateLayoutFromImageBuckets();
+                initMediaAccessManagement();
+            } // else: user will see an empty screen, and a notification on refresh
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }

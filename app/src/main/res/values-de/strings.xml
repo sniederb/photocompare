@@ -23,7 +23,7 @@
     <string name="use_filenames_for_sort">Sortierung anhand Dateinamen</string>
     <string name="selected_image_content">Ausgewähltes Bild</string>
     <string name="current_selection">Aktuelle Auswahl</string>
-    <string name="delete_unselected">All anderen löschen</string>
+    <string name="delete_unselected">Alle anderen löschen</string>
     <string name="delete_selected">Auswahl löschen</string>
     <string name="delete_confirmation_title">Löschen bestätigen</string>
     <string name="delete_confirmation_folder">Diese Aktion wird %1$d Bild(er) im Ordner %2$s löschen.</string>
@@ -43,4 +43,6 @@
     <string name="submit_date_selection">Datumswahl anwenden</string>
     <string name="update_media_access">Anpassen</string>
     <string name="media_access_disclaimer">Der selektive Zugriff auf die Medienbibliothek kann hier angepasst werden.</string>
+    <string name="delete_unselected_dcim_message">\"Alle anderen\" können nicht aus dem Kamera-Ordner gelöscht werden.</string>
+    <string name="delete_unselected_dcim_title">Aktion nicht unterstützt</string>
 </resources>
