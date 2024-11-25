@@ -43,6 +43,6 @@
     <string name="submit_date_selection">Datumswahl anwenden</string>
     <string name="update_media_access">Anpassen</string>
     <string name="media_access_disclaimer">Der selektive Zugriff auf die Medienbibliothek kann hier angepasst werden.</string>
-    <string name="delete_unselected_dcim_message">\"Alle anderen\" können nicht aus dem Kamera-Ordner gelöscht werden.</string>
+    <string name="delete_unselected_dcim_message">Dies scheint das Kamera-Verzeichnis zu sein, für welches \"Alle anderen löschen\" nicht erlaubt ist.</string>
     <string name="delete_unselected_dcim_title">Aktion nicht unterstützt</string>
 </resources>

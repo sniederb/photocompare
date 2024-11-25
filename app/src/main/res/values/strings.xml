@@ -45,6 +45,6 @@
     <string name="share_images">Share images</string>
     <string name="update_media_access">Manage</string>
     <string name="media_access_disclaimer">You\'ve granted selective access to your media. This can be changed here.</string>
-    <string name="delete_unselected_dcim_message">Cannot delete \"others\" from Camera folder</string>
+    <string name="delete_unselected_dcim_message">This folder seems to be the main camera folder, for which \"delete others\" is not allowed.</string>
     <string name="delete_unselected_dcim_title">Action not allowed</string>
 </resources>

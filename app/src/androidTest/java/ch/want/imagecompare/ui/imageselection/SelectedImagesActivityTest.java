@@ -82,7 +82,6 @@ public class SelectedImagesActivityTest {
     @Test
     public void removeUnselectedAction() {
         try (final ActivityScenario<SelectedImagesActivity> scenario = launchActivity()) {
-            //Espresso.openContextualActionModeOverflowMenu();
             openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
             onView(withText("Delete all others")).perform(click());
         }
@@ -91,10 +90,10 @@ public class SelectedImagesActivityTest {
     @Test
     public void removeUnselectedFromCameraAction() {
         try (final ActivityScenario<SelectedImagesActivity> scenario = launchActivity(imagesFromCamera(), TestSettings.CAMERA_FOLDER)) {
-            //Espresso.openContextualActionModeOverflowMenu();
             openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
             onView(withText("Delete all others")).perform(click());
-            onView(withText(CoreMatchers.containsString("Cannot delete"))).check(matches(ViewMatchers.isDisplayed()));
+            // This folder seems to be the main camera folder, for which "delete others" is not allowed.
+            onView(withText(CoreMatchers.containsString("not allowed"))).check(matches(ViewMatchers.isDisplayed()));
         }
     }
 
