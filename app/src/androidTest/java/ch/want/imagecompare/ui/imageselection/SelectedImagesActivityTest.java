@@ -92,8 +92,10 @@ public class SelectedImagesActivityTest {
         try (final ActivityScenario<SelectedImagesActivity> scenario = launchActivity(imagesFromCamera(), TestSettings.CAMERA_FOLDER)) {
             openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
             onView(withText("Delete all others")).perform(click());
+            // InstrumentationRegistry.getInstrumentation().waitForIdleSync();
             // This folder seems to be the main camera folder, for which "delete others" is not allowed.
-            onView(withText(CoreMatchers.containsString("not allowed"))).check(matches(ViewMatchers.isDisplayed()));
+            // Test will fail if the folder holds no images
+            onView(withText(CoreMatchers.containsString("is not allowed"))).check(matches(ViewMatchers.isDisplayed()));
         }
     }
 
