@@ -14,7 +14,7 @@ but actually refer to internal = private to the app, and external = public folde
 
 * Has two instances of the layout/view_image_details.xml, along with a widget.Switch to en-/disable sync between the two
 * Manages a list of selected images per folder (see "Data and file storage overview")
-** Image selection is NOT a cache, as it cannot be rebuilt from other information
+    * Image selection is NOT a cache, as it cannot be rebuilt from other information
 
 The main actions are
 * Handle image swiping with a ViewPager, disallowing the index currently in use on the other ViewPager
@@ -25,11 +25,11 @@ The main actions are
 The "pan and zoom listener" on a PhotoView is toggled in two cases:
 
 * During loading of a new image
-** Disabled when starting to load a new high-resolution image
-** Re-enabled once in the onApplyZoomPanMatrix() implementation of the `ImageDetailViewImpl`
+    * Disabled when starting to load a new high-resolution image
+    * Re-enabled once in the `onApplyZoomPanMatrix()` implementation of the `ImageDetailViewImpl`
 * When applying a display matrix
-** Disabled at the start of `PhotoViewMediator.copyPanAndZoom()`
-** Re-enabled in the finally block of above method
+    * Disabled at the start of `PhotoViewMediator.copyPanAndZoom()`
+    * Re-enabled in the finally block of above method
 
 #### Synchronizing pan and zoom
 
@@ -37,17 +37,18 @@ When a user changes pan/zoom on one of the images:
 
 1. The `SubsamplingScaleImageView` triggers the registered `StateChangedListener`; this will be a `ImageViewListener`
 2. The `ImageViewListener` notifies all registered `ImageViewEventListener`
-    a. The `CrossViewEventHandler` sync's pan/zoom to the other image. There will be 2 instances, one sync'ing top to bottom, and one bottom to top. 
-    b. The `ZoomPanRestoreHandler` remembers pan/zoom so those settings can be applied to the next image when swiping
+    1. The `CrossViewEventHandler` sync's pan/zoom to the other image. There will be 2 instances,
+       one sync'ing top to bottom, and one bottom to top.
+    2. The `PanAndZoomStateHolder` remembers pan/zoom so those settings can be applied to the next
+       image on load
 3. The `CrossViewEventHandler` calls `PhotoViewMediator.onPanOrZoomChanged()`
 4. The `PhotoViewMediator` checks if synchronization is currently active or not.
-    a. If not active, the `PhotoViewMediator` updates its internal offsets
-    b. If active, the `PhotoViewMediator` maps the pan/zoom to _the other_ `ImageDetailView`
-5. `ImageDetailView` receives a `setPanAndZoomState()` with the new settings
+    1. If not active, the `PhotoViewMediator` updates its internal offsets
+    2. If active, the `PhotoViewMediator` maps the pan/zoom to _the other_ `ImageDetailView`
 
 Relevant points to be aware of:
 
-* SubsamplingScaleImageView does **not** enfore maxScale when using setScaleAndCenter(), but does
+* SubsamplingScaleImageView does **not** enforce maxScale when using setScaleAndCenter(), but does
   so on user interaction
 
 ### SelectedImagesActivity
@@ -55,7 +56,6 @@ Relevant points to be aware of:
 The main actions are
 * Remove images from selection
 * Share images 
-
 
 ## Libraries
 

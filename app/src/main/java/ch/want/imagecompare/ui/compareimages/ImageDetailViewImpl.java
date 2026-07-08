@@ -2,9 +2,13 @@ package ch.want.imagecompare.ui.compareimages;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import androidx.exifinterface.media.ExifInterface;
+import androidx.viewpager.widget.ViewPager;
 
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
@@ -14,8 +18,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
 
-import androidx.exifinterface.media.ExifInterface;
-import androidx.viewpager.widget.ViewPager;
 import ch.want.imagecompare.R;
 import ch.want.imagecompare.data.Dimension;
 import ch.want.imagecompare.data.ImageBean;
@@ -36,7 +38,7 @@ public class ImageDetailViewImpl implements ImageDetailView {
 
     private static final int OFFSCREEN_PAGES_TO_KEEP = 1;
     private CrossViewEventHandler crossViewEventHandler;
-    private final ZoomPanRestoreHandler zoomPanMemorizer;
+    private final PanAndZoomStateHolder zoomPanMemorizer;
 
     /*
      * The imageViewPager holds the state of the currently shown image. It relies
@@ -155,6 +157,7 @@ public class ImageDetailViewImpl implements ImageDetailView {
     }
 
     private void setScaleAndCenter(final SubsamplingScaleImageView imageView, final PanAndZoomState panAndZoomState) {
+        Log.d("ImageDetailViewImpl.setScaleAndCenter", "Setting scale and center");
         imageView.setScaleAndCenter(panAndZoomState.getScale(), panAndZoomState.getCenterPoint().orElse(null));
         updateExifTextView(imageView.getScale());
     }
@@ -199,12 +202,11 @@ public class ImageDetailViewImpl implements ImageDetailView {
         return imageViewPager.findViewById(ImagePagerAdapter.getPhotoViewId(position));
     }
 
-    private ZoomPanRestoreHandler buildZoomPanRestoreHandler() {
-        return new ZoomPanRestoreHandler() {
+    private PanAndZoomStateHolder buildZoomPanRestoreHandler() {
+        return new PanAndZoomStateHolder() {
 
             @Override
-            void onApplyPanAndZoomState(final PanAndZoomState targetPanAndZoomState) {
-                setScaleAndCenter(getOnScreenPhotoView(), targetPanAndZoomState);
+            public void onImageReady() {
                 crossViewEventHandler.enableCrossViewEvents();
             }
 

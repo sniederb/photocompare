@@ -158,7 +158,6 @@ public class PhotoViewMediator {
     }
 
     boolean onPageSelected(final ImageDetailView sourceView, final int position) {
-        panAndZoomOffset = null;
         final boolean positionAllowed = isImageIndexAllowed(sourceView, position);
         if (!positionAllowed) {
             sourceView.setCurrentIndex(getNextValidImageIndex(sourceView, position));
@@ -169,6 +168,7 @@ public class PhotoViewMediator {
         } else {
             bottomViewIndex = position;
         }
+        // note that panAndZoomOffset is kept, assuming that an appropriate image view state was used to load the next image
         return true;
     }
 

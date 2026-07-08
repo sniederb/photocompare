@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ class ImagePagerAdapter extends PagerAdapter {
     // limit zoom by minimum DPI. default is 160
     private static final int MINIMUM_DPI = 64;
     private CrossViewEventHandler matrixChangeListener;
-    private ZoomPanRestoreHandler zoomPanHandler;
+    private PanAndZoomStateHolder zoomPanHandler;
     private final ImageViewListener imageViewListener = new ImageViewListener();
 
     private final ArrayList<ImageBean> galleryImageList;
@@ -58,7 +59,7 @@ class ImagePagerAdapter extends PagerAdapter {
         imageViewListener.addListener(matrixChangeListener);
     }
 
-    void setZoomPanRestoreHandler(final ZoomPanRestoreHandler zoomPanHandler) {
+    void setZoomPanRestoreHandler(final PanAndZoomStateHolder zoomPanHandler) {
         this.zoomPanHandler = zoomPanHandler;
         imageViewListener.addListener(zoomPanHandler);
     }
@@ -114,11 +115,10 @@ class ImagePagerAdapter extends PagerAdapter {
     }
 
     private void loadHighResImage(final SubsamplingScaleImageView photoView, final int position) {
-        // register event handlers *before* setting image, so get the onReady event
         photoView.setOnImageEventListener(imageViewListener);
         photoView.setOnStateChangedListener(imageViewListener);
-        zoomPanHandler.resetImageResourceState();
-        photoView.setImage(ImageSource.uri(galleryImageList.get(position).getFileUri()));
+        ImageViewState state = zoomPanHandler.getImageViewState().orElse(null);
+        photoView.setImage(ImageSource.uri(galleryImageList.get(position).getFileUri()), state);
         highResPositions.put(position, photoView);
     }
 
